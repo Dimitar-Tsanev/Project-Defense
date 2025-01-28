@@ -1,0 +1,19 @@
+package medical_clinics.specialty.model;
+
+public enum SpecialtyName {
+
+    DERMATOLOGY,
+    FAMILY_MEDICINE,
+    INTERNAL_MEDICINE,
+    GYNAECOLOGY,
+    NEUROLOGY,
+    ALLERGIST,
+    CARDIOLOGY,
+    PSYCHIATRY,
+    GASTROENTEROLOGY,
+    PEDIATRICS,
+    ENDOCRINOLOGY,
+    OPHTHALMOLOGY,
+    ORTHOPEDICS
+
+}
