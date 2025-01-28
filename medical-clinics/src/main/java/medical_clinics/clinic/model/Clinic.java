@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import medical_clinics.physician.model.Physician;
 import medical_clinics.specialty.model.Specialty;
 
-import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,12 +28,6 @@ public class Clinic {
 
     @Column(nullable = false, unique = true)
     private String address;
-
-    @Basic(optional = false)
-    private LocalTime startOfWorkingDay;
-
-    @Basic(optional = false)
-    private LocalTime endOfWorkingDay;
 
     @ManyToMany
     @JoinTable(

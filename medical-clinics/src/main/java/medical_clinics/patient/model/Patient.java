@@ -30,6 +30,9 @@ public class Patient {
     @Basic(optional = false)
     private String lastName;
 
+    @Column(unique = true)
+    private String personIdentificationCode;
+
     private String country;
 
     private String city;

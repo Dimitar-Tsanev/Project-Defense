@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -23,4 +24,10 @@ public class WorkDay {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DaysOfWeek daysOfWeek;
+
+    @Basic(optional = false)
+    private LocalTime startOfWorkingDay;
+
+    @Basic(optional = false)
+    private LocalTime endOfWorkingDay;
 }
