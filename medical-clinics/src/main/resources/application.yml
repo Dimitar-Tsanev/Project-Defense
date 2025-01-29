@@ -9,3 +9,9 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
     defer-datasource-initialization: true
+
+user.account:
+    default:
+      role: PATIENT
+      status: PENDING
+      messagingBlocked: true

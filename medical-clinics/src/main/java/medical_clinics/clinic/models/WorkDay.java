@@ -1,4 +1,4 @@
-package medical_clinics.clinic.model;
+package medical_clinics.clinic.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.clinic.model.Clinic;
+import medical_clinics.clinic.models.Clinic;
 import medical_clinics.patient.model.Patient;
 import medical_clinics.schedule.models.DailySchedule;
 import medical_clinics.specialty.model.Specialty;
