@@ -2,7 +2,6 @@ package medical_clinics.web.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +14,7 @@ import medical_clinics.shared.validation.password_validator.Password;
 @Data
 @Builder
 
-public class RegisterRequest {
-
+public class LoginRequest {
     @NotBlank(message = "{not.blank}")
     @Email(
             message = "{email.format.not.match}",
@@ -34,17 +32,4 @@ public class RegisterRequest {
             message = "{password.not.match}"
     )
     private String password;
-
-    @NotBlank(message = "{not.blank}")
-    @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
-    private String firstName;
-
-    @NotBlank(message = "{not.blank}")
-    @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
-    private String lastName;
-
-    private String phone;
-
 }

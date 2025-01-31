@@ -1,13 +1,14 @@
-package medical_clinics.shared.validation;
+package medical_clinics.shared.validation.password_validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import medical_clinics.shared.validation.anotations.Password;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class PasswordValidator implements ConstraintValidator<Password, CharSequence> {
     private static final String PATTERN_TEMPLATE = "[A-Za-z\\d!@#$%%^&*()_+<>?.]*$";
 
@@ -39,11 +40,11 @@ public class PasswordValidator implements ConstraintValidator<Password, CharSequ
 
     @Override
     public boolean isValid ( CharSequence value, ConstraintValidatorContext context ) {
-        if ( message.isBlank () ){
+        if ( message.isBlank ( ) ) {
             isMessageEmpty = true;
             message = "Password must not contain white spaces. And must contain at least: %s";
 
-        }else {
+        } else {
             isMessageEmpty = false;
         }
         String pattern = getPatternBuilder ( ) + PATTERN_TEMPLATE;
@@ -54,19 +55,18 @@ public class PasswordValidator implements ConstraintValidator<Password, CharSequ
 
         boolean isValid = matcher.matches ( );
 
-        if(!isValid){
-            if(isMessageEmpty && !buildMessage.isBlank ()){
+        if ( !isValid ) {
+            if ( isMessageEmpty && !buildMessage.isBlank ( ) ) {
                 message = String.format ( message, buildMessage );
 
-            }else if(isMessageEmpty && buildMessage.isBlank ()){
+            } else if ( isMessageEmpty && buildMessage.isBlank ( ) ) {
                 message = String.format ( message, "letter digit or one of this .!@#$%^&*()_+<>? characters " );
             }
-            context.unwrap( HibernateConstraintValidatorContext.class)
-                    .buildConstraintViolationWithTemplate(message)
-                    .addConstraintViolation()
-                    .disableDefaultConstraintViolation();
+            context.unwrap ( HibernateConstraintValidatorContext.class )
+                    .buildConstraintViolationWithTemplate ( message )
+                    .addConstraintViolation ( )
+                    .disableDefaultConstraintViolation ( );
         }
-
         return isValid;
     }
 
@@ -76,7 +76,7 @@ public class PasswordValidator implements ConstraintValidator<Password, CharSequ
         patternBuilder.append ( "^" );
         patternBuilder.append ( NO_SPACE );
 
-        if( isMessageEmpty ){
+        if ( isMessageEmpty ) {
             buildMessage = "";
         }
         if ( this.constraintDigit ) {
@@ -95,7 +95,7 @@ public class PasswordValidator implements ConstraintValidator<Password, CharSequ
             patternBuilder.append ( SPECIAL_CHAR );
             buildMessage = "one of the following characters: .!@#$%^&*()_+<>?  ";
         }
-        buildMessage = buildMessage.substring ( 0, buildMessage.length ( ) - 2);
+        buildMessage = buildMessage.substring ( 0, buildMessage.length ( ) - 2 );
 
         return patternBuilder;
     }
