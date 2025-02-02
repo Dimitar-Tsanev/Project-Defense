@@ -23,7 +23,7 @@ public class WorkDay {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private DaysOfWeek daysOfWeek;
+    private DaysOfWeek dayOfWeek;
 
     @Basic(optional = false)
     private LocalTime startOfWorkingDay;

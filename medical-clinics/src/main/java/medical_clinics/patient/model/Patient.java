@@ -41,6 +41,8 @@ public class Patient {
 
     private String phone;
 
+    private String email;
+
     @OneToOne(targetEntity = UserAccount.class)
     private UserAccount userAccount;
 

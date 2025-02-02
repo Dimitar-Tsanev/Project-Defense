@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import medical_clinics.physician.model.Physician;
 import medical_clinics.specialty.model.Specialty;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -17,6 +17,10 @@ import java.util.UUID;
 @Data
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(
+        name = "UniqueCityAndAddress",
+        columnNames = {"city", "address"}
+))
 public class Clinic {
 
     @Id
@@ -26,16 +30,16 @@ public class Clinic {
     @Basic(optional = false)
     private String city;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String address;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     @JoinTable(
             name = "clinics_work_days",
             joinColumns = @JoinColumn(name = "clinic_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "work_day_id", referencedColumnName = "id")
     )
-    private List<WorkDay> workingDays;
+    private Collection<WorkDay> workingDays;
 
     @Basic(optional = false)
     private String description;
@@ -55,8 +59,8 @@ public class Clinic {
             joinColumns = @JoinColumn(name = "clinic_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "specialty_id", referencedColumnName = "id")
     )
-    private List<Specialty> specialtyList;
+    private Collection<Specialty> specialtyList;
 
     @OneToMany(mappedBy = "workplace", targetEntity = Physician.class, fetch = FetchType.EAGER)
-    private List<Physician> physicians;
+    private Collection<Physician> physicians;
 }

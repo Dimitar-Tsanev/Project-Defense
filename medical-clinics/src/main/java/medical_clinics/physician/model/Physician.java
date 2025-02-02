@@ -41,6 +41,9 @@ public class Physician {
 
     private String description;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
     @OneToOne(targetEntity = UserAccount.class)
     private UserAccount userAccount;
 
