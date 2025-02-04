@@ -1,31 +1,58 @@
 package medical_clinics.specialty.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import medical_clinics.physician.model.Physician;
 
-import java.util.List;
-import java.util.UUID;
-
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Data
+import java.util.*;
 
 @Entity
 public class Specialty {
 
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Setter
+    @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
     private SpecialtyName name;
 
     @OneToMany(mappedBy = "specialty", targetEntity = Physician.class)
-    private List<Physician> specialists;
+    private Collection<Physician> specialists;
+
+    public Specialty() {
+        specialists = new ArrayList<> ();
+    }
+
+    public Specialty(SpecialtyName name) {
+        this.name = name;
+        specialists = new ArrayList<> ();
+    }
+
+    public Collection<Physician> getSpecialists () {
+        return Collections.unmodifiableCollection (specialists);
+    }
+
+    public void addPhysician ( Physician specialist ) {
+        this.specialists.add ( specialist);
+    }
+
+    @Override
+    public boolean equals ( Object o ) {
+        if ( o == null || getClass ( ) != o.getClass ( ) ) return false;
+
+        Specialty specialty = (Specialty) o;
+        return id.equals ( specialty.id ) && name == specialty.name;
+    }
+
+    @Override
+    public int hashCode () {
+        int result = id.hashCode ( );
+        result = 31 * result + name.hashCode ( );
+        return result;
+    }
 }
