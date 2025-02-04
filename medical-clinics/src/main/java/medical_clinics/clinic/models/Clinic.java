@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import medical_clinics.physician.model.Physician;
 import medical_clinics.specialty.model.Specialty;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -63,4 +65,57 @@ public class Clinic {
 
     @OneToMany(mappedBy = "workplace", targetEntity = Physician.class, fetch = FetchType.EAGER)
     private Collection<Physician> physicians;
+
+    public Collection<Specialty> getSpecialtyList () {
+        if (specialtyList == null) {
+            specialtyList = new ArrayList<>();
+        }
+        return Collections.unmodifiableCollection (specialtyList);
+    }
+
+    public void setSpecialtyList (Collection<Specialty> specialtyList) {
+        for (Specialty s : specialtyList) {
+            addSpeciality ( s );
+        }
+    }
+
+    public void addSpeciality( Specialty specialty) {
+        if ( specialtyList == null ) {
+            specialtyList = new ArrayList<> ();
+        }
+        specialtyList.add(specialty);
+    }
+
+    public void removeSpeciality( Specialty specialty) {
+        if ( specialtyList == null ) {
+            return;
+        }
+        specialtyList.remove(specialty);
+    }
+
+    public Collection<Physician> getPhysicians() {
+        if ( physicians == null ) {
+            physicians = new ArrayList<>();
+        }
+        return Collections.unmodifiableCollection (physicians);
+    }
+
+    public void setPhysicians(Collection<Physician> physicians) {
+        for (Physician p : physicians) {
+            addPhysician ( p );
+        }
+    }
+
+    public void addPhysician( Physician physician) {
+        if ( physicians == null ) {
+            physicians = new ArrayList<> ();
+        }
+        physicians.add(physician);
+    }
+    public void removePhysician( Physician physician) {
+        if ( physicians == null ) {
+            return;
+        }
+        physicians.remove(physician);
+    }
 }

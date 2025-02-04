@@ -4,7 +4,7 @@ import medical_clinics.clinic.models.Clinic;
 import medical_clinics.specialty.mapper.SpecialityMapper;
 import medical_clinics.web.dto.ClinicDetails;
 import medical_clinics.web.dto.ClinicShortInfo;
-import medical_clinics.web.dto.NewClinicRequest;
+import medical_clinics.web.dto.CreateEditClinicRequest;
 
 import java.util.stream.Collectors;
 
@@ -37,7 +37,7 @@ public class ClinicMapper {
                 .build ( );
     }
 
-    public static Clinic mapToClinic ( NewClinicRequest clinic ) {
+    public static Clinic mapToClinic ( CreateEditClinicRequest clinic ) {
         return Clinic.builder ( )
                 .city ( clinic.getCity ( ) )
                 .address ( clinic.getAddress ( ) )
