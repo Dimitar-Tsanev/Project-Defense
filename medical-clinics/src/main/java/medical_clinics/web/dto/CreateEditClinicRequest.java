@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @Data
 
-public class NewClinicRequest {
+public class CreateEditClinicRequest {
     private String city;
 
     private String address;

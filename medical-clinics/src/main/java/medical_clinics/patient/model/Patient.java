@@ -9,7 +9,7 @@ import medical_clinics.medical_record_note.model.MedicalRecordNote;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.user_account.model.UserAccount;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -18,6 +18,9 @@ import java.util.UUID;
 @Data
 
 @Entity
+@Table(
+        uniqueConstraints = @UniqueConstraint(name = "UniquePhoneAndEmail", columnNames = {"phone", "email"})
+)
 public class Patient {
 
     @Id
@@ -30,8 +33,7 @@ public class Patient {
     @Basic(optional = false)
     private String lastName;
 
-    @Column(unique = true)
-    private String personIdentificationCode;
+    private String identificationCode;
 
     private String country;
 
@@ -47,8 +49,8 @@ public class Patient {
     private UserAccount userAccount;
 
     @OneToMany(mappedBy = "patient", targetEntity = MedicalRecordNote.class)
-    private List<MedicalRecordNote> medicalRecord;
+    private Collection<MedicalRecordNote> medicalRecord;
 
-    @OneToMany (mappedBy = "patient", targetEntity = TimeSlot.class)
-    private List<TimeSlot> appointments;
+    @OneToMany(mappedBy = "patient", targetEntity = TimeSlot.class)
+    private Collection<TimeSlot> appointments;
 }

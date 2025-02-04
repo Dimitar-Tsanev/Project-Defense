@@ -12,4 +12,6 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
     Optional<Patient> findByPhone ( String phone );
 
     Optional<Patient> findByEmail ( String email );
+
+    Optional<Patient> findByCountryAndIdentificationCode ( String country, String identificationCode );
 }

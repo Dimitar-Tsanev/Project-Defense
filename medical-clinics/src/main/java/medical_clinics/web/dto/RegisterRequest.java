@@ -37,14 +37,16 @@ public class RegisterRequest {
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
+    @Pattern(regexp = "^[A-Za-z]+$", message = "{name.unsuported.characters}")
     private String firstName;
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
+    @Pattern(regexp = "^[A-Za-z]+$", message = "{name.unsuported.characters}")
     private String lastName;
 
+    @Size(min = 4, max = 21, message = "{phone.length.length}")
+    @Pattern(regexp = "^[+]*\\d+$", message = "{phone.unsuported.characters}")
     private String phone;
 
 }
