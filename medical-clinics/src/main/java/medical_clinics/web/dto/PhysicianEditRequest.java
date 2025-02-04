@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.shared.validation.password_validator.Password;
 
 @NoArgsConstructor
 @AllArgsConstructor
