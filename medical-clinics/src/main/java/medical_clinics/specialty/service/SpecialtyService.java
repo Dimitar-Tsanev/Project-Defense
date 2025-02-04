@@ -36,7 +36,7 @@ public class SpecialtyService {
 
         specialty.addPhysician(physician);
         return specialtyRepository.save(specialty);
-    };
+    }
 
     public UUID getIdBySpecialtyName ( String specialtyName ){
         SpecialtyName specialty = SpecialityMapper.mapNameFromString ( specialtyName );
