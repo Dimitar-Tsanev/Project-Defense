@@ -2,91 +2,68 @@ package medical_clinics.physician.service;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import medical_clinics.clinic.models.Clinic;
 import medical_clinics.clinic.services.ClinicService;
-import medical_clinics.patient.service.PatientService;
-import medical_clinics.physician.mapper.PhysicianMapper;
 import medical_clinics.physician.model.Physician;
 import medical_clinics.physician.repository.PhysicianRepository;
+import medical_clinics.schedule.services.DailyScheduleService;
 import medical_clinics.shared.exception.PersonalInformationDontMatchException;
 import medical_clinics.shared.exception.PhysicianAlreadyExistException;
 import medical_clinics.shared.exception.PhysicianNotFoundException;
+import medical_clinics.shared.mappers.PhysicianMapper;
+import medical_clinics.specialty.model.Specialty;
 import medical_clinics.specialty.service.SpecialtyService;
-import medical_clinics.user_account.model.Role;
-import medical_clinics.user_account.model.UserAccount;
-import medical_clinics.user_account.service.UserAccountService;
-import medical_clinics.web.dto.CreatePhysician;
-import medical_clinics.web.dto.PhysicianEditRequest;
-import medical_clinics.web.dto.RegisterRequest;
+import medical_clinics.web.dto.*;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class PhysicianService {
+
     private final PhysicianRepository physicianRepository;
+    private final DailyScheduleService dailyScheduleService;
     private final ClinicService clinicService;
     private final SpecialtyService specialtyService;
-    private final UserAccountService userAccountService;
-    private final PatientService patientService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void addNew ( CreatePhysician physician ) {
+    public void addPhysician ( CreatePhysician physician ) {
         checkPhysicianDataForConflict ( physician );
+
+        eventPublisher.publishEvent ( physician );
 
         Physician newPhysician = PhysicianMapper.mapFromCreate ( physician );
 
-        Optional<UserAccount> account = userAccountService.getAccountIdByEmail ( physician.getEmail ( ) );
-
-        if ( account.isPresent ( ) ) {
-            checkForPatientConflict (
-                    physician.getEmail ( ), physician.getFirstName ( ), physician.getLastName ( )
-            );
-            UserAccount userAccount = account.get ( );
-            userAccount.setRole ( Role.PHYSICIAN );
-            newPhysician.setUserAccount ( userAccount );
-        }
-
-        UUID clinicID = clinicService.getClinicIdByCityAndAddress (
+        Clinic clinic = clinicService.getClinicIdByCityAndAddress (
                 physician.getWorkplaceCity ( ), physician.getWorkplaceAddress ( )
         );
 
-        UUID specialityID = specialtyService.getIdBySpecialtyName ( physician.getSpecialty ( ) );
+        Specialty specialty = specialtyService.getSpecialtyByName ( physician.getSpecialty ( ) );
 
-        newPhysician.setSpecialty ( specialtyService.addPhysician ( specialityID, newPhysician ) );
-        newPhysician.setWorkplace ( clinicService.addPhysician ( clinicID, newPhysician ) );
-        physicianRepository.save ( newPhysician );
-    }
+        newPhysician.setSpecialty ( specialty );
+        newPhysician.setWorkplace ( clinic );
 
-    public boolean isEmailOfPhysician ( String email ) {
-        return physicianRepository.findByEmail ( email ).isPresent ( );
-    }
+        newPhysician = physicianRepository.save ( newPhysician );
 
-    @Transactional
-    public void addPhysicianAccount ( RegisterRequest registerRequest, UserAccount userAccount ) {
-        Optional<Physician> physicianOptional = physicianRepository.findByEmail ( registerRequest.getEmail ( ) );
-
-        if ( physicianOptional.isEmpty ( ) ) {
-            throw new PhysicianNotFoundException ( "Physician not found" );
-        }
-
-        Physician physician = physicianOptional.get ( );
-
-        if ( !physician.getFirstName ( ).equals ( registerRequest.getFirstName ( ) ) ||
-                !physician.getLastName ( ).equals ( registerRequest.getLastName ( ) ) ) {
-            throw new PersonalInformationDontMatchException (
-                    "Personal information don't match the email"
-            );
-        }
-
-        physician.setUserAccount ( userAccount );
-        physicianRepository.save ( physician );
+        NewPhysicianEvent physicianEvent = new NewPhysicianEvent (
+                newPhysician
+        );
+        eventPublisher.publishEvent ( physicianEvent );
     }
 
     @Transactional
-    public void editPhysician ( UUID id, PhysicianEditRequest physicianEdit ) {
-        Physician physician = getById ( id );
+    public void editPhysician ( PhysicianEditRequest physicianEdit ) {
+        Physician physician = physicianRepository.findById (
+                physicianEdit.getId ( )
+        ).orElseThrow ( () ->
+                new PhysicianNotFoundException ( "Physician id not found" )
+        );
 
         if ( !physician.getEmail ( ).equals ( physicianEdit.getEmail ( ) ) ) {
             Optional<Physician> findByEmail = physicianRepository.findByEmail ( physicianEdit.getEmail ( ) );
@@ -96,13 +73,14 @@ public class PhysicianService {
             }
         }
 
-        if ( patientService.findByEmail ( physician.getEmail ( ) ) ) {
-            patientService.editPatient ( physician.getEmail ( ), physicianEdit );
-        }
+        PhysicianChangeEvent physicianChangeEvent = PhysicianChangeEvent.builder ( )
+                .firstName ( physicianEdit.getFirstName ( ) )
+                .lastName ( physicianEdit.getLastName ( ) )
+                .oldEmail ( physician.getEmail ( ) )
+                .newEmail ( physicianEdit.getEmail ( ) )
+                .build ( );
 
-        if ( userAccountService.findByEmail ( physician.getEmail ( ) ) ) {
-            userAccountService.changeAccountEmail ( physician.getEmail ( ), physicianEdit.getEmail ( ) );
-        }
+        eventPublisher.publishEvent ( physicianChangeEvent );
 
         physician.setEmail ( physicianEdit.getEmail ( ) );
         physician.setFirstName ( physicianEdit.getFirstName ( ) );
@@ -112,29 +90,110 @@ public class PhysicianService {
         physician.setPictureUrl ( physicianEdit.getPictureUrl ( ) );
     }
 
-    public boolean isInformationInConflict ( String email, String firstName, String lastName ) {
-        Optional<Physician> physicianByEmail = physicianRepository.findByEmail ( email );
+    @Transactional
+    public void generateSchedule ( UUID physicianAccountId, Collection<DailyScheduleDto> dailySchedules ) {
+        Optional<Physician> physicianOptional = physicianRepository.findByUserAccount_Id ( physicianAccountId );
 
-        if ( physicianByEmail.isEmpty ( ) ) {
-            return false;
+        if ( physicianOptional.isEmpty ( ) ) {
+            throw new PhysicianNotFoundException ( "Physician not found" );
         }
-        Physician physician = physicianByEmail.get ( );
 
-        return !physician.getFirstName ( ).equals ( firstName ) || !physician.getLastName ( ).equals ( lastName );
+        Physician physician = physicianOptional.get ( );
+
+        for ( DailyScheduleDto dailyScheduleDto : dailySchedules ) {
+            dailyScheduleService.generateDaySchedule ( physician, dailyScheduleDto );
+        }
     }
 
-    private void checkForPatientConflict ( String email, String firstName, String lastName ) {
-        boolean patientDataConflict = patientService.isInformationInConflict (
-                email,
-                firstName,
-                lastName
-        );
+    @EventListener
+    void checkIsEditAccountOnPhysician ( EditedAccountEvent editedAccount ) {
+        String newEmail = editedAccount.getNewEmail ( );
+        String oldEmail = editedAccount.getOldEmail ( );
 
-        if ( patientDataConflict ) {
+        if ( isInformationInConflict ( oldEmail, editedAccount.getFirstName ( ), editedAccount.getLastName ( ) ) ) {
             throw new PersonalInformationDontMatchException (
-                    "Physician email match patient with different information"
+                    "For editing names in Physician related Account contact your administrator"
             );
         }
+
+        if ( !newEmail.equals ( oldEmail ) ) {
+            Optional<Physician> findByNewEmail = physicianRepository.findByEmail ( newEmail );
+
+            if ( findByNewEmail.isPresent ( ) ) {
+                throw new PhysicianAlreadyExistException ( "Email already exists" );
+            }
+
+            Optional<Physician> findByOldEmail = physicianRepository.findByEmail ( oldEmail );
+
+            if ( findByOldEmail.isPresent ( ) ) {
+                Physician physician = findByOldEmail.get ( );
+
+                physician.setEmail ( newEmail );
+                physicianRepository.save ( physician );
+            }
+        }
+    }
+
+    @EventListener
+    void checkForPhysicianConflict ( CreatePatient patient ) {
+        String email = patient.getEmail ( );
+        String firstName = patient.getFirstName ( );
+        String lastName = patient.getLastName ( );
+
+        boolean physicianDataConflict = isInformationInConflict ( email, firstName, lastName );
+
+        if ( physicianDataConflict ) {
+            throw new PersonalInformationDontMatchException (
+                    "Patient email match physician with different information"
+            );
+        }
+    }
+
+    @EventListener
+    void setAccount ( PatientRoleChangeToPhysician physicianRoleChange ) {
+        String email = physicianRoleChange.getUserAccount ( ).getEmail ( );
+
+        Optional<Physician> physicianOptional = physicianRepository.findByEmail ( email );
+
+        if ( physicianOptional.isPresent ( ) ) {
+            Physician physician = physicianOptional.get ( );
+            physician.setUserAccount ( physicianRoleChange.getUserAccount ( ) );
+            physicianRepository.save ( physician );
+        }
+    }
+
+    @EventListener
+    void addPhysicianAccount ( NewUserAccountEvent newUserAccount ) {
+        String newAccountEmail = newUserAccount.getUserAccount ( ).getEmail ( );
+        String firstName = newUserAccount.getFirstName ( );
+        String lastName = newUserAccount.getLastName ( );
+
+        if ( isInformationInConflict ( newAccountEmail, firstName, lastName ) ) {
+            throw new PersonalInformationDontMatchException (
+                    "Personal information don't match the email"
+            );
+        }
+
+        Optional<Physician> optionalPhysician = physicianRepository.findByEmail ( newAccountEmail );
+
+        if ( optionalPhysician.isPresent ( ) ) {
+            Physician physician = optionalPhysician.get ( );
+
+            physician.setUserAccount ( newUserAccount.getUserAccount ( ) );
+            physicianRepository.save ( physician );
+        }
+    }
+
+    private boolean isInformationInConflict ( String email, String firstName, String lastName ) {
+        Optional<Physician> optionalPhysician = physicianRepository.findByEmail ( email );
+
+        if ( optionalPhysician.isEmpty ( ) ) {
+            return false;
+        }
+
+        Physician physician = optionalPhysician.get ( );
+
+        return !physician.getFirstName ( ).equals ( firstName ) || !physician.getLastName ( ).equals ( lastName );
     }
 
     private void checkPhysicianDataForConflict ( CreatePhysician physician ) {
@@ -142,7 +201,7 @@ public class PhysicianService {
                 physicianRepository.findByIdentificationNumber ( physician.getIdentificationNumber ( ) );
 
         Optional<Physician> physicianByEmail =
-                physicianRepository.findByEmail ( physician.getIdentificationNumber ( ) );
+                physicianRepository.findByEmail ( physician.getEmail ( ) );
 
         if ( physicianByIdentNumber.isPresent ( ) || physicianByEmail.isPresent ( ) ) {
             throw new PhysicianAlreadyExistException (
@@ -151,9 +210,4 @@ public class PhysicianService {
         }
     }
 
-    private Physician getById ( UUID id ) {
-        return physicianRepository.findById ( id ).orElseThrow ( () ->
-                new PhysicianNotFoundException ( "Physician id not found" )
-        );
-    }
 }

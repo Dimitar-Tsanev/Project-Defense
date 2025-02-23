@@ -13,8 +13,7 @@ spring:
 user.account:
     default:
       role: PATIENT
-      status: PENDING
-      messagingBlocked: true
+      status: ACTIVE
 app:
   jwt:
     secret: ${JWT_SECRET}

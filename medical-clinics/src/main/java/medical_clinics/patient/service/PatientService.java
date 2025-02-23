@@ -1,20 +1,15 @@
 package medical_clinics.patient.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import medical_clinics.patient.mapper.PatientMapper;
 import medical_clinics.patient.model.Patient;
 import medical_clinics.patient.repository.PatientRepository;
-import medical_clinics.physician.service.PhysicianService;
 import medical_clinics.shared.exception.PatientAlreadyExistsException;
-import medical_clinics.shared.exception.PersonalInformationDontMatchException;
 import medical_clinics.shared.exception.PatientNotFoundException;
-import medical_clinics.user_account.model.UserAccount;
-import medical_clinics.user_account.service.UserAccountService;
-import medical_clinics.web.dto.CreateEditPatient;
-import medical_clinics.web.dto.PatientInfo;
-import medical_clinics.web.dto.PhysicianEditRequest;
-import medical_clinics.web.dto.RegisterRequest;
+import medical_clinics.shared.exception.PersonalInformationDontMatchException;
+import medical_clinics.shared.mappers.PatientMapper;
+import medical_clinics.web.dto.*;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,55 +19,56 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PatientService {
     private static final String PATIENT_NOT_FOUND = "Patient with provided id dose not exist";
-    private static final String PATIENT_MATCH_OTHER_PERSON = "Patient information match other person data";
+    private static final String MATCH_OTHER_PERSON = "Match other person data";
 
     private final PatientRepository patientRepository;
-    private final PhysicianService physicianService;
-    private final UserAccountService userAccountService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public void addPatient ( CreateEditPatient createEditPatient ) {
-        Patient patient = PatientMapper.mapFromCreateEditPatient ( createEditPatient );
+    public void addPatient ( CreatePatient createPatient ) {
+        Patient patient = PatientMapper.mapFromCreateEditPatient ( createPatient );
 
-        if ( checkPatientExist ( patient, patient.getEmail ( ) ) ||
-                isCountryAndIdentificationPresent (
-                        patient.getCountry ( ),
-                        patient.getIdentificationCode ( )
-                )
-        ) {
+        boolean findByPhoneOrEmail = checkPatientExist ( patient );
+        boolean findByCountryAndIdentificationCode = isCountryAndIdentificationPresent (
+                patient.getCountry ( ),
+                patient.getIdentificationCode ( )
+        );
+
+        if ( findByPhoneOrEmail || findByCountryAndIdentificationCode ) {
             throw new PatientAlreadyExistsException ( "Patient already exists" );
         }
 
-        checkForPhysicianConflict (
-                patient.getEmail ( ), patient.getFirstName ( ), patient.getLastName ( )
-        );
+        eventPublisher.publishEvent ( createPatient );
 
         patientRepository.save ( patient );
     }
 
     public PatientInfo getPatientInfoById ( UUID id ) {
         Patient patient = patientRepository.findById ( id ).orElseThrow ( () ->
-                new PatientNotFoundException ( PATIENT_NOT_FOUND ) );
+                new PatientNotFoundException ( PATIENT_NOT_FOUND )
+        );
 
         return PatientMapper.mapToPatientInfo ( patient );
     }
 
     public PatientInfo getPatientInfoByEmail ( String email ) {
         Patient patient = patientRepository.findByEmail ( email ).orElseThrow ( () ->
-                new PatientNotFoundException ( PATIENT_NOT_FOUND ) );
+                new PatientNotFoundException ( PATIENT_NOT_FOUND )
+        );
 
         return PatientMapper.mapToPatientInfo ( patient );
     }
 
     public PatientInfo getPatientInfoByPhone ( String phoneNumber ) {
         Patient patient = patientRepository.findByPhone ( phoneNumber ).orElseThrow ( () ->
-                new PatientNotFoundException ( PATIENT_NOT_FOUND ) );
+                new PatientNotFoundException ( PATIENT_NOT_FOUND )
+        );
 
         return PatientMapper.mapToPatientInfo ( patient );
     }
 
     public PatientInfo getPatientInfoByCountryAndIdentificationCode (
-            String country, String identificationCode
-    ) {
+            String country, String identificationCode ) {
+
         Patient patient = patientRepository.findByCountryAndIdentificationCode (
                         country, identificationCode
                 )
@@ -83,63 +79,95 @@ public class PatientService {
         return PatientMapper.mapToPatientInfo ( patient );
     }
 
-    @Transactional
-    public void editPatientInfo ( UUID id, CreateEditPatient editRequest ) {
-        Patient patient = getPatientByEmail ( editRequest.getEmail ( ) );
+    @EventListener
+    void editPatientInfo ( EditedAccountEvent editedAccount ) {
+        String newEmail = editedAccount.getNewEmail ( );
+        String oldEmail = editedAccount.getOldEmail ( );
 
-        checkForNewInformationConflict ( patient, editRequest );
-        checkForPhysicianConflict (
-                editRequest.getEmail ( ), editRequest.getFirstName ( ), editRequest.getLastName ( )
+        Optional<Patient> findByOldEmail = patientRepository.findByEmail ( oldEmail );
+
+        if ( findByOldEmail.isEmpty ( ) ) {
+            throw new PatientNotFoundException ( PATIENT_NOT_FOUND );
+        }
+
+        Patient patient = findByOldEmail.get ( );
+
+        if(areContactsInConflict ( patient, newEmail, editedAccount.getPhone () )){
+            throw new PersonalInformationDontMatchException ( MATCH_OTHER_PERSON );
+        }
+
+        patient.setFirstName ( editedAccount.getFirstName ( ) );
+        patient.setLastName ( editedAccount.getLastName ( ) );
+        patient.setEmail ( newEmail );
+        patient.setPhone ( editedAccount.getPhone ( ) );
+        patient.setCountry ( editedAccount.getCountry ( ) );
+        patient.setCity( editedAccount.getCity ( ) );
+        patient.setAddress ( editedAccount.getAddress ( ) );
+
+        patientRepository.save( patient );
+    }
+
+    @EventListener
+    void editPhysicianWhichIsPatient ( PhysicianChangeEvent physicianChange ) {
+        Optional<Patient> patientOptional = patientRepository.findByEmail (
+                physicianChange.getOldEmail ( )
         );
-        if ( isContactEdited ( patient.getEmail ( ), editRequest.getEmail ( ) ) &&
-                        userAccountService.findByEmail ( patient.getEmail ( ) ) ) {
 
-            userAccountService.changeAccountEmail (
-                    patient.getEmail ( ), editRequest.getEmail ( )
-            );
+        if ( patientOptional.isEmpty ( ) ) {
+            return;
         }
-        patient = PatientMapper.mapFromCreateEditPatient ( editRequest );
-        patient.setId ( id );
-        patientRepository.save ( patient );
-    }
 
-    public void editPatient ( String oldEmail, PhysicianEditRequest physicianEdit ) {
-        Patient patient = getPatientByEmail ( oldEmail );
+        Patient patient = patientOptional.get ( );
 
-        if ( isEmailInConflict ( patient, physicianEdit.getEmail ( ) ) ) {
-            throw new PersonalInformationDontMatchException ( PATIENT_MATCH_OTHER_PERSON );
+        if ( isEmailInConflict ( patient, physicianChange.getNewEmail ( ) ) ) {
+            throw new PatientAlreadyExistsException ( MATCH_OTHER_PERSON );
         }
-        patient.setEmail ( physicianEdit.getEmail ( ) );
-        patient.setFirstName ( physicianEdit.getFirstName ( ) );
-        patient.setLastName ( physicianEdit.getLastName ( ) );
+
+        patient.setEmail ( physicianChange.getNewEmail ( ) );
+        patient.setFirstName ( physicianChange.getFirstName ( ) );
+        patient.setLastName ( physicianChange.getLastName ( ) );
 
         patientRepository.save ( patient );
     }
 
-    @Transactional
-    public void addPatientAccount ( RegisterRequest request, UserAccount userAccount ) {
-        Patient patient = PatientMapper.mapFromRegistrationRequest ( request );
+    @EventListener
+    void addPatientAccount ( NewUserAccountEvent newUserAccount ) {
+        Patient patient = PatientMapper.mapFromNewUserAccount ( newUserAccount );
 
-        if ( checkPatientExist ( patient, userAccount.getEmail ( ) ) ) {
+        if ( checkPatientExist ( patient ) ) {
             Optional<Patient> patientByPhone = patientRepository.findByPhone ( patient.getPhone ( ) );
 
-            patient = patientByPhone.orElseGet ( () ->
-                    patientRepository.findByEmail ( userAccount.getEmail ( ) ).get ( ) );
+            if ( patientByPhone.isEmpty ( ) ) {
+                patient = patientRepository.findByEmail ( patient.getEmail ( ) ).get ( );
 
-            if ( patient.getPhone ( ) == null ) {
-                patient.setPhone ( request.getPhone ( ) );
+                if ( patient.getPhone ( ) == null ) {
+                    patient.setPhone ( newUserAccount.getPhoneNumber ( ) );
+                }
+
+            } else {
+                patient = patientByPhone.get ( );
+                patient.setEmail ( newUserAccount.getUserAccount ( ).getEmail ( ) );
             }
         }
-        patient.setEmail ( userAccount.getEmail ( ) );
-        patient.setUserAccount ( userAccount );
+        patient.setUserAccount ( newUserAccount.getUserAccount ( ) );
         patientRepository.save ( patient );
     }
 
-    public boolean findByEmail ( String email ) {
-        return patientRepository.findByEmail ( email ).isPresent ( );
+    @EventListener
+    void checkForPatientConflict ( CreatePhysician physician ) {
+        String email = physician.getEmail ( );
+        String firstName = physician.getFirstName ( );
+        String lastName = physician.getLastName ( );
+        boolean isPatientDataConflict = isInformationInConflict ( email, firstName, lastName );
+
+        if ( isPatientDataConflict ) {
+            throw new PersonalInformationDontMatchException (
+                    "Physician email match patient with different information"
+            );
+        }
     }
 
-    public boolean isInformationInConflict (
+    private boolean isInformationInConflict (
             String email, String firstName, String lastName
     ) {
         Optional<Patient> patientByEmail = patientRepository.findByEmail ( email );
@@ -153,7 +181,13 @@ public class PatientService {
                 !patient.getLastName ( ).equals ( lastName );
     }
 
-    private boolean checkPatientExist ( Patient request, String email ) {
+    private boolean checkPatientExist ( Patient request ) {
+        PersonalInformationDontMatchException error = new PersonalInformationDontMatchException (
+                "Phone number or email dose not match with names"
+        );
+        String email = request.getEmail ( );
+        String phone = request.getPhone ( );
+
         Optional<Patient> patientByEmail = Optional.empty ( );
 
         if ( email != null && !email.isBlank ( ) ) {
@@ -162,8 +196,8 @@ public class PatientService {
 
         Optional<Patient> patientByPhone = Optional.empty ( );
 
-        if ( request.getPhone ( ) != null ) {
-            patientByPhone = patientRepository.findByPhone ( request.getPhone ( ) );
+        if ( phone != null && !phone.isBlank ( ) ) {
+            patientByPhone = patientRepository.findByPhone ( phone );
         }
 
         if ( patientByEmail.isEmpty ( ) && patientByPhone.isEmpty ( ) ) {
@@ -175,48 +209,36 @@ public class PatientService {
                     patientByEmail.get ( ), patientByPhone.get ( )
             );
 
-            if ( isEmailAndPhoneOnSamePerson ) {
-                return isNamesMatches ( patientByEmail.get ( ), request );
+            if ( !isEmailAndPhoneOnSamePerson ) {
+                throw error;
             }
+
+            if ( !isNamesMatches ( patientByEmail.get ( ), request ) ) {
+                throw error;
+            }
+            return true;
         }
 
         if ( patientByEmail.isEmpty ( ) ) {
-            return isNamesMatches ( patientByPhone.get ( ), request );
+            if ( isNamesMatches ( patientByPhone.get ( ), request ) ) {
+                return true;
+            }
+            throw error;
         }
 
-        return isNamesMatches ( patientByEmail.get ( ), request );
+        if ( isNamesMatches ( patientByEmail.get ( ), request ) ) {
+            return true;
+        }
+        throw error;
     }
 
-    private boolean isNamesMatches ( Patient patient, Patient fromRegistrationRequest ) {
-        if ( !patient.getFirstName ( ).equals ( fromRegistrationRequest.getFirstName ( ) ) ||
-                !patient.getLastName ( ).equals ( fromRegistrationRequest.getLastName ( ) ) ) {
-
-            throw new PersonalInformationDontMatchException ( "Phone number or email dose not match with names" );
-        }
-        return true;
+    private boolean isNamesMatches ( Patient patient1, Patient patient2 ) {
+        return patient1.getFirstName ( ).equals ( patient2.getFirstName ( ) ) &&
+                patient1.getLastName ( ).equals ( patient2.getLastName ( ) );
     }
 
     private boolean isCountryAndIdentificationPresent ( String country, String identification ) {
         return patientRepository.findByCountryAndIdentificationCode ( country, identification ).isPresent ( );
-    }
-
-    private void checkForNewInformationConflict ( Patient patient, CreateEditPatient editPatient ) {
-        if ( isIdentificationInConflict ( patient, editPatient ) ||
-                areContactsInConflict ( patient, editPatient.getEmail ( ), editPatient.getPhone ( ) ) ) {
-
-            throw new PatientAlreadyExistsException ( PATIENT_MATCH_OTHER_PERSON );
-        }
-    }
-
-    private boolean isIdentificationInConflict ( Patient patient, CreateEditPatient editPatient ) {
-        if ( !patient.getIdentificationCode ( ).equals ( editPatient.getIdentificationCode ( ) ) ||
-                !patient.getCountry ( ).equals ( editPatient.getCountry ( ) ) ) {
-
-            return isCountryAndIdentificationPresent (
-                    editPatient.getCountry ( ), editPatient.getIdentificationCode ( )
-            );
-        }
-        return false;
     }
 
     private boolean areContactsInConflict ( Patient patient, String newEmail, String newPhone ) {
@@ -254,25 +276,5 @@ public class PatientService {
             return !oldContact.equals ( newContact );
         }
         return newContact != null;
-    }
-
-    private void checkForPhysicianConflict ( String email, String firstName, String lastName ) {
-        boolean physicianDataConflict = physicianService.isInformationInConflict (
-                email,
-                firstName,
-                lastName
-        );
-
-        if ( physicianDataConflict ) {
-            throw new PersonalInformationDontMatchException (
-                    "Patient email match physician with different information"
-            );
-        }
-    }
-
-    private Patient getPatientByEmail ( String email ) {
-        return patientRepository.findByEmail ( email ).orElseThrow ( () ->
-                new PatientNotFoundException ( PATIENT_NOT_FOUND )
-        );
     }
 }

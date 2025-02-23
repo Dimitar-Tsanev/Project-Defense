@@ -2,7 +2,7 @@ package medical_clinics.web;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import medical_clinics.user_account.service.AuthenticationService;
+import medical_clinics.shared.security.AuthenticationService;
 import medical_clinics.user_account.service.UserAccountService;
 import medical_clinics.web.dto.LoginRequest;
 import medical_clinics.web.dto.RegisterRequest;

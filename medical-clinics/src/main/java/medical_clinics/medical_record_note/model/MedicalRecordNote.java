@@ -26,11 +26,11 @@ public class MedicalRecordNote {
     private String documentNumber;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(nullable = false)
     private Patient patient;
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "physician_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(nullable = false)
     private Physician physician;
 
     @Basic(optional = false)

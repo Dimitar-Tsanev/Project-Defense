@@ -2,17 +2,18 @@ package medical_clinics.clinic.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import medical_clinics.clinic.mappers.ClinicMapper;
 import medical_clinics.clinic.models.Clinic;
 import medical_clinics.clinic.models.WorkDay;
 import medical_clinics.clinic.repositories.ClinicRepository;
-import medical_clinics.physician.model.Physician;
 import medical_clinics.shared.exception.ExistingClinicException;
 import medical_clinics.shared.exception.NoSuchClinicException;
-import medical_clinics.shared.exception.PhysicianAlreadyExistException;
+import medical_clinics.shared.mappers.ClinicMapper;
+import medical_clinics.specialty.model.Specialty;
 import medical_clinics.web.dto.ClinicDetails;
 import medical_clinics.web.dto.ClinicShortInfo;
 import medical_clinics.web.dto.CreateEditClinicRequest;
+import medical_clinics.web.dto.NewPhysicianEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
@@ -34,18 +35,6 @@ public class ClinicService {
                 .stream ( )
                 .map ( ClinicMapper::mapClinicToClinicShortInfo )
                 .collect ( Collectors.toList ( ) );
-    }
-
-    public UUID getClinicIdByCityAndAddress ( String city, String address ) {
-        Clinic clinic = clinicRepository.findByCityAndAddress ( address, city )
-                .orElseThrow ( () ->
-                        new NoSuchClinicException (
-                                "Clinic in [%s] on [%s] dose not exists"
-                                        .formatted (  city, address )
-                        )
-                );
-
-        return clinic.getId ( );
     }
 
     public ClinicDetails getClinicById ( UUID id ) {
@@ -83,7 +72,7 @@ public class ClinicService {
         newClinicInfo.setId ( oldClinicInfo.getId ( ) );
         newClinicInfo.setWorkingDays ( workDays );
         newClinicInfo.setPhysicians ( oldClinicInfo.getPhysicians ( ) );
-        newClinicInfo.setSpecialtyList ( oldClinicInfo.getSpecialtyList ( ) );
+        newClinicInfo.setSpecialties ( oldClinicInfo.getSpecialties ( ) );
 
         clinicRepository.save ( newClinicInfo );
     }
@@ -93,24 +82,31 @@ public class ClinicService {
         clinicRepository.deleteById ( id );
     }
 
-    @Transactional
-    public Clinic addPhysician ( UUID clinicID, Physician newPhysician ) {
-        Clinic clinic = getById (clinicID );
 
-        boolean containsPhysician = clinic.getPhysicians ().contains ( newPhysician );
+    public Clinic getClinicIdByCityAndAddress ( String city, String address ) {
+        return clinicRepository.findByCityAndAddress ( city, address )
+                .orElseThrow ( () ->
+                        new NoSuchClinicException (
+                                "Clinic in [%s] on [%s] dose not exists"
+                                        .formatted ( city, address )
+                        )
+                );
+    }
 
-        if ( containsPhysician ) {
-            throw new PhysicianAlreadyExistException ( "Physician already exists in clinic" );
-        }
+    @EventListener
+    void addPhysicianSpeciality ( NewPhysicianEvent newPhysician ) {
+        Clinic clinic = newPhysician.getPhysician ( ).getWorkplace ( );
 
-        boolean containsSpeciality = clinic.getSpecialtyList ().contains ( newPhysician.getSpecialty ());
+        Specialty specialty = newPhysician.getPhysician ( ).getSpecialty ( );
+
+        boolean containsSpeciality = clinic
+                .getSpecialties ( )
+                .contains ( specialty );
 
         if ( !containsSpeciality ) {
-            clinic.addSpeciality ( newPhysician.getSpecialty ( ) ) ;
+            clinic.addSpeciality ( specialty );
         }
-
-        clinic.addPhysician ( newPhysician );
-        return clinicRepository.save ( clinic );
+        clinicRepository.save ( clinic );
     }
 
     private Clinic getById ( UUID id ) {

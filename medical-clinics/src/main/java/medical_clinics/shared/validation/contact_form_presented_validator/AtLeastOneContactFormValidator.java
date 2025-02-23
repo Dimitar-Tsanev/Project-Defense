@@ -2,10 +2,10 @@ package medical_clinics.shared.validation.contact_form_presented_validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import medical_clinics.web.dto.CreateEditPatient;
+import medical_clinics.web.dto.CreatePatient;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
-public class AtLeastOneContactFormValidator implements ConstraintValidator<AtLeastOneContactForm, CreateEditPatient> {
+public class AtLeastOneContactFormValidator implements ConstraintValidator<AtLeastOneContactForm, CreatePatient> {
 
     private String message;
 
@@ -18,7 +18,7 @@ public class AtLeastOneContactFormValidator implements ConstraintValidator<AtLea
     }
 
     @Override
-    public boolean isValid ( CreateEditPatient patient, ConstraintValidatorContext context ) {
+    public boolean isValid ( CreatePatient patient, ConstraintValidatorContext context ) {
         String email = patient.getEmail ( );
         String phone = patient.getPhone ( );
 

@@ -1,4 +1,4 @@
-package medical_clinics.physician.mapper;
+package medical_clinics.shared.mappers;
 
 import medical_clinics.physician.model.Physician;
 import medical_clinics.web.dto.CreatePhysician;
@@ -17,4 +17,5 @@ public class PhysicianMapper {
                 .identificationNumber ( createPhysician.getIdentificationNumber ( ) )
                 .build ( );
     }
+
 }

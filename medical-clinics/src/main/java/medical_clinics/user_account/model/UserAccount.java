@@ -33,10 +33,4 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus status;
-
-    @Column(nullable = false)
-    private boolean isMessagingBlocked;
-
-    private String confirmationCode;
-
 }

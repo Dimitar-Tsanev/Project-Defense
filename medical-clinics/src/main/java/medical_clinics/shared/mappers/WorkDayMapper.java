@@ -1,4 +1,4 @@
-package medical_clinics.clinic.mappers;
+package medical_clinics.shared.mappers;
 
 import medical_clinics.clinic.models.DaysOfWeek;
 import medical_clinics.clinic.models.WorkDay;

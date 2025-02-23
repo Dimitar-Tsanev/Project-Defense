@@ -1,7 +1,6 @@
-package medical_clinics.clinic.mappers;
+package medical_clinics.shared.mappers;
 
 import medical_clinics.clinic.models.Clinic;
-import medical_clinics.specialty.mapper.SpecialityMapper;
 import medical_clinics.web.dto.ClinicDetails;
 import medical_clinics.web.dto.ClinicShortInfo;
 import medical_clinics.web.dto.CreateEditClinicRequest;
@@ -32,7 +31,7 @@ public class ClinicMapper {
                         clinic.getWorkingDays().stream( ).map ( WorkDayMapper::mapToDto ).collect( Collectors.toSet () )
                 )
                 .specialties (
-                        clinic.getSpecialtyList ().stream( ).map ( SpecialityMapper::mapToDto ).collect( Collectors.toSet ())
+                        clinic.getSpecialties ().stream( ).map ( SpecialityMapper::mapToDto ).collect( Collectors.toSet ())
                 )
                 .build ( );
     }

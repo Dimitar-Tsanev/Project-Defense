@@ -33,7 +33,10 @@ public class TimeSlot {
     private Integer durationInMinutes;
 
     @ManyToOne
-    @JoinColumn(name = "patient_id", referencedColumnName = "id")
+    @JoinColumn
     private Patient patient;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private DailySchedule dailySchedule;
 }

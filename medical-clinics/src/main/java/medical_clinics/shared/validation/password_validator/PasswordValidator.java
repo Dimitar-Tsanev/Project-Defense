@@ -60,7 +60,7 @@ public class PasswordValidator implements ConstraintValidator<Password, CharSequ
                 message = String.format ( message, buildMessage );
 
             } else if ( isMessageEmpty && buildMessage.isBlank ( ) ) {
-                message = String.format ( message, "letter digit or one of this .!@#$%^&*()_+<>? characters " );
+                message = String.format ( message, "letter, digit or one of this .!@#$%^&*()_+<>? characters " );
             }
             context.unwrap ( HibernateConstraintValidatorContext.class )
                     .buildConstraintViolationWithTemplate ( message )

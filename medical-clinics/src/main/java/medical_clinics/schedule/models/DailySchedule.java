@@ -9,8 +9,8 @@ import medical_clinics.physician.model.Physician;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.UUID;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,10 +33,11 @@ public class DailySchedule {
     @Basic(optional = false)
     private LocalTime endTime;
 
-    @ManyToMany(mappedBy = "schedules",targetEntity = Physician.class)
-    private List<Physician> physician;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Physician physician;
 
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = TimeSlot.class)
-    private List<TimeSlot> timeSlots;
+    @OneToMany(mappedBy = "dailySchedule", fetch = FetchType.EAGER)
+    private Collection<TimeSlot> timeSlots;
 
 }

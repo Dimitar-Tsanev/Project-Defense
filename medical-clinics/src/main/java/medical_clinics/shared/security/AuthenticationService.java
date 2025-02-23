@@ -1,7 +1,6 @@
-package medical_clinics.user_account.service;
+package medical_clinics.shared.security;
 
 import lombok.RequiredArgsConstructor;
-import medical_clinics.shared.JwtService;
 import medical_clinics.web.dto.LoginRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

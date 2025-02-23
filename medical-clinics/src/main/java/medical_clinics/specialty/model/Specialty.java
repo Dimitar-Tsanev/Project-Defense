@@ -37,10 +37,6 @@ public class Specialty {
         return Collections.unmodifiableCollection (specialists);
     }
 
-    public void addPhysician ( Physician specialist ) {
-        this.specialists.add ( specialist);
-    }
-
     @Override
     public boolean equals ( Object o ) {
         if ( o == null || getClass ( ) != o.getClass ( ) ) return false;

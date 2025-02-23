@@ -2,18 +2,18 @@ package medical_clinics.web.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Data
+@Getter
 
-public class PatientInfo {
-    private UUID id;
+public class EditedAccountEvent {
+    private UUID AccountId;
 
     private String firstName;
 
@@ -27,6 +27,7 @@ public class PatientInfo {
 
     private String phone;
 
-    private String email;
+    private String newEmail;
 
+    private String oldEmail;
 }

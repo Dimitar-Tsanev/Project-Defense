@@ -2,7 +2,7 @@ package medical_clinics.clinic.services;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import medical_clinics.clinic.mappers.WorkDayMapper;
+import medical_clinics.shared.mappers.WorkDayMapper;
 import medical_clinics.clinic.models.DaysOfWeek;
 import medical_clinics.clinic.models.WorkDay;
 import medical_clinics.clinic.repositories.WorkDaysRepository;
@@ -16,7 +16,6 @@ import java.util.*;
 @AllArgsConstructor
 public class WorkDayService {
     private final WorkDaysRepository workDaysRepository;
-
 
     @Transactional
     @Modifying

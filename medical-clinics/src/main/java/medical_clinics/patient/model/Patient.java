@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Entity
 @Table(
-        uniqueConstraints = @UniqueConstraint(name = "UniquePhoneAndEmail", columnNames = {"phone", "email"})
+        uniqueConstraints = @UniqueConstraint(name = "UniquePhoneAndEmail", columnNames = {"email","phone"})
 )
 public class Patient {
 

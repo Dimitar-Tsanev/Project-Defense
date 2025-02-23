@@ -1,4 +1,4 @@
-package medical_clinics.specialty.mapper;
+package medical_clinics.shared.mappers;
 
 import medical_clinics.specialty.model.Specialty;
 import medical_clinics.specialty.model.SpecialtyName;

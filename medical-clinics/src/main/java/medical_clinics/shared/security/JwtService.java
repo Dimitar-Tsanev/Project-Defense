@@ -1,4 +1,4 @@
-package medical_clinics.shared;
+package medical_clinics.shared.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
