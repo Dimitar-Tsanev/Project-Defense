@@ -7,6 +7,7 @@ import medical_clinics.shared.exception.UserAlreadyExistsException;
 import medical_clinics.shared.mappers.UserAccountMapper;
 import medical_clinics.user_account.model.Role;
 import medical_clinics.user_account.model.UserAccount;
+import medical_clinics.user_account.model.UserStatus;
 import medical_clinics.user_account.property.UserProperty;
 import medical_clinics.user_account.repository.UserAccountRepository;
 import medical_clinics.web.dto.*;
@@ -18,8 +19,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +77,37 @@ public class UserAccountService implements UserDetailsService {
         }
 
         eventPublisher.publishEvent ( UserAccountMapper.mapToEditedAccountEvent ( accountEdit, oldEmail ) );
+    }
 
+    public void promoteToAdmin ( UUID accountId ) {
+        UserAccount userAccount = getById ( accountId );
+        userAccount.setRole ( Role.ADMIN );
+        userAccountRepository.save ( userAccount );
+    }
+
+    @Transactional
+    public void demoteAccount ( UUID accountId ) {
+        UserAccount userAccount = getById ( accountId );
+        Role role = userProperty.getRole ( );
+
+        eventPublisher.publishEvent ( new DemoteAccountEvent ( userAccount.getId ( ), role ) );
+        userAccount.setRole ( role );
+
+        userAccountRepository.save ( userAccount );
+    }
+
+    public void deleteUserAccount ( UUID accountId ) {
+        UserAccount userAccount = getById ( accountId );
+
+        userAccount.setStatus ( UserStatus.INACTIVE );
+        userAccountRepository.save ( userAccount );
+    }
+
+    public void blockUserAccount ( UUID accountId ) {
+        UserAccount userAccount = getById ( accountId );
+
+        userAccount.setStatus ( UserStatus.BLOCKED );
+        userAccountRepository.save ( userAccount );
     }
 
     @Override
@@ -92,8 +123,14 @@ public class UserAccountService implements UserDetailsService {
     }
 
     @EventListener
-    void checkIfUserAccountExists ( NewPhysicianEvent createPhysician ) {
-        String email = createPhysician.getPhysician ().getEmail ( );
+    @Transactional
+    void demoteAccount ( DismissedStaffEvent dismissedStaffEvent ) {
+        demoteAccount ( dismissedStaffEvent.getUserAccountId ( ) );
+    }
+
+    @EventListener
+    void changeRoleToPhysician ( PhysicianAccountEvent physician ) {
+        String email = physician.getEmail ( );
 
         Optional<UserAccount> user = userAccountRepository.findByEmail ( email );
 
@@ -123,5 +160,11 @@ public class UserAccountService implements UserDetailsService {
     private void changeAccountEmail ( UserAccount userAccount, String newEmail ) {
         userAccount.setEmail ( newEmail );
         userAccountRepository.save ( userAccount );
+    }
+
+    private UserAccount getById ( UUID id ) {
+        return userAccountRepository.findById ( id ).orElseThrow ( () ->
+                new UserAccountNotFoundException ( "User with provided id not found" )
+        );
     }
 }
