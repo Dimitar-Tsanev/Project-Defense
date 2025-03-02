@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PatientService {
-    private static final String PATIENT_NOT_FOUND = "Patient with provided id dose not exist";
+    private static final String PATIENT_NOT_FOUND = "Patient with provided information dose not exist";
     private static final String MATCH_OTHER_PERSON = "Match other person data";
 
     private final PatientRepository patientRepository;
@@ -66,6 +66,12 @@ public class PatientService {
         return PatientMapper.mapToPatientInfo ( patient );
     }
 
+    public Patient getPatientByUserAccountId ( UUID userAccountId ) {
+        return patientRepository.findByUserAccount_Id ( userAccountId ).orElseThrow ( () ->
+                new PatientNotFoundException ( PATIENT_NOT_FOUND )
+        );
+    }
+
     public PatientInfo getPatientInfoByCountryAndIdentificationCode (
             String country, String identificationCode ) {
 
@@ -92,7 +98,7 @@ public class PatientService {
 
         Patient patient = findByOldEmail.get ( );
 
-        if(areContactsInConflict ( patient, newEmail, editedAccount.getPhone () )){
+        if ( areContactsInConflict ( patient, newEmail, editedAccount.getPhone ( ) ) ) {
             throw new PersonalInformationDontMatchException ( MATCH_OTHER_PERSON );
         }
 
@@ -101,10 +107,10 @@ public class PatientService {
         patient.setEmail ( newEmail );
         patient.setPhone ( editedAccount.getPhone ( ) );
         patient.setCountry ( editedAccount.getCountry ( ) );
-        patient.setCity( editedAccount.getCity ( ) );
+        patient.setCity ( editedAccount.getCity ( ) );
         patient.setAddress ( editedAccount.getAddress ( ) );
 
-        patientRepository.save( patient );
+        patientRepository.save ( patient );
     }
 
     @EventListener
