@@ -13,14 +13,13 @@ import medical_clinics.shared.exception.PhysicianNotFoundException;
 import medical_clinics.shared.mappers.PhysicianMapper;
 import medical_clinics.specialty.model.Specialty;
 import medical_clinics.specialty.service.SpecialtyService;
+import medical_clinics.user_account.model.Role;
 import medical_clinics.web.dto.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -51,10 +50,35 @@ public class PhysicianService {
 
         newPhysician = physicianRepository.save ( newPhysician );
 
-        NewPhysicianEvent physicianEvent = new NewPhysicianEvent (
-                newPhysician
+        clinicService.addPhysicianSpeciality ( newPhysician );
+
+        PhysicianAccountEvent physicianEvent = new PhysicianAccountEvent (
+                newPhysician.getEmail ()
         );
         eventPublisher.publishEvent ( physicianEvent );
+    }
+
+    @Transactional
+    public void dismissPhysician ( UUID id ) {
+        Optional<Physician> physicianById = physicianRepository.findById ( id );
+
+        if ( physicianById.isEmpty ( ) ) {
+            throw new PhysicianNotFoundException ( "Physician with provided id dose not exist" );
+        }
+
+        Physician physician = physicianById.get ( );
+
+        UUID formerWorkplaceId = physician.getWorkplace ().getId ();
+        UUID specialtyId = physician.getSpecialty ().getId ();
+        UUID accountID = physician.getUserAccount ().getId ();
+
+        physician.setWorkplace ( null );
+        physician.setUserAccount ( null );
+
+        physicianRepository.save ( physician );
+
+        notifyUserAccount (accountID);
+        notifyClinic (formerWorkplaceId, specialtyId );
     }
 
     @Transactional
@@ -88,6 +112,7 @@ public class PhysicianService {
         physician.setAbbreviation ( physicianEdit.getAbbreviation ( ) );
         physician.setDescription ( physicianEdit.getDescription ( ) );
         physician.setPictureUrl ( physicianEdit.getPictureUrl ( ) );
+        physicianRepository.save ( physician );
     }
 
     @Transactional
@@ -103,6 +128,13 @@ public class PhysicianService {
         for ( DailyScheduleDto dailyScheduleDto : dailySchedules ) {
             dailyScheduleService.generateDaySchedule ( physician, dailyScheduleDto );
         }
+    }
+
+    public List<PhysicianShortInfo> getPhysiciansByClinicAndSpeciality ( UUID clinicId, UUID specialityId ) {
+        List<Physician> clinicEmployed = physicianRepository.findAllByWorkplace_IdAndSpecialty_Id ( clinicId, specialityId );
+
+        return clinicEmployed.stream ( ).map ( PhysicianMapper::mapToPhysicianShortInfo ).toList ( );
+
     }
 
     @EventListener
@@ -184,6 +216,17 @@ public class PhysicianService {
         }
     }
 
+    @EventListener
+    void checkIsPhysicianAccount ( DemoteAccountEvent userAccountDemoted ) {
+        Optional<Physician> physician = physicianRepository.findByUserAccount_Id (
+                userAccountDemoted.getAccountId ( )
+        );
+
+        if ( physician.isPresent ( ) && !Role.PHYSICIAN.equals ( userAccountDemoted.getRole ( ) ) ) {
+            eventPublisher.publishEvent ( new PhysicianAccountEvent (physician.get ().getEmail ()) );
+        }
+    }
+
     private boolean isInformationInConflict ( String email, String firstName, String lastName ) {
         Optional<Physician> optionalPhysician = physicianRepository.findByEmail ( email );
 
@@ -210,4 +253,19 @@ public class PhysicianService {
         }
     }
 
+    private void notifyClinic(UUID workplaceId, UUID specialtyId) {
+        boolean isTheOnlySpecialistInClinic = physicianRepository
+                .findAllByWorkplace_IdAndSpecialty_Id ( workplaceId,specialtyId )
+                .size () == 1;
+
+        if ( isTheOnlySpecialistInClinic ){
+            eventPublisher.publishEvent ( new NoSpecialistsLeftEvent ( workplaceId, specialtyId ) );
+        }
+    }
+
+    private void notifyUserAccount ( UUID userAccountId ) {
+        if ( userAccountId != null ) {
+            eventPublisher.publishEvent ( new DismissedStaffEvent ( userAccountId ) );
+        }
+    }
 }
