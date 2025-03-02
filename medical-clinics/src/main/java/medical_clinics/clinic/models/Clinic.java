@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import medical_clinics.physician.model.Physician;
 import medical_clinics.specialty.model.Specialty;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -61,7 +61,7 @@ public class Clinic {
 
     public void addSpeciality( Specialty specialty) {
         if ( specialties == null ) {
-            specialties = new ArrayList<> ();
+            specialties = new HashSet<> (  );
         }
         specialties.add(specialty);
     }
