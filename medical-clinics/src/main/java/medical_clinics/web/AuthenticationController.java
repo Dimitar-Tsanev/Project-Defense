@@ -7,9 +7,8 @@ import medical_clinics.user_account.service.UserAccountService;
 import medical_clinics.web.dto.LoginRequest;
 import medical_clinics.web.dto.RegisterRequest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<RegisterRequest> register ( @RequestBody @Valid RegisterRequest request ) {
         userAccountService.register ( request );
-        return ResponseEntity.accepted ( ).build ( );
+        return ResponseEntity.status ( HttpStatus.CREATED ).build ( );
     }
 
     @PostMapping("/login")
@@ -34,11 +33,5 @@ public class AuthenticationController {
                 HttpHeaders.AUTHORIZATION,
                 authenticationService.authenticate ( request )
         ).build ( );
-    }
-
-    @GetMapping("/some")
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_PATIENT')")
-    public ResponseEntity<?> some () {
-        return ResponseEntity.ok ( "yo" );
     }
 }
