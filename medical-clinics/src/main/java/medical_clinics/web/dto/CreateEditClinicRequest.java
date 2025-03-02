@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +19,10 @@ import java.util.List;
 @Data
 
 public class CreateEditClinicRequest {
+
+    @org.hibernate.validator.constraints.UUID
+    private UUID clinicId;
+
     @NotBlank
     private String city;
 
