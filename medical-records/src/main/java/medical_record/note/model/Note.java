@@ -1,12 +1,10 @@
-package medical_clinics.medical_record_note.model;
+package medical_record.note.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.patient.model.Patient;
-import medical_clinics.physician.model.Physician;
 
 import java.util.UUID;
 
@@ -16,7 +14,7 @@ import java.util.UUID;
 @Data
 
 @Entity
-public class MedicalRecordNote {
+public class Note {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,13 +23,11 @@ public class MedicalRecordNote {
     @Column(unique = true, nullable = false)
     private String documentNumber;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false)
-    private Patient patient;
+    @Basic(optional = false)
+    private UUID patientId;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false)
-    private Physician physician;
+    @Basic(optional = false)
+    private UUID physicianId;
 
     @Basic(optional = false)
     private String diagnosis;
@@ -42,7 +38,7 @@ public class MedicalRecordNote {
     private String chiefComplaint;
 
     @Basic(optional = false)
-    private String MedicalHistory;
+    private String medicalHistory;
 
     @Basic(optional = false)
     private String examination;
