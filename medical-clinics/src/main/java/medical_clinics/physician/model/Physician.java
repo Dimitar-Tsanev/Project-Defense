@@ -3,7 +3,6 @@ package medical_clinics.physician.model;
 import jakarta.persistence.*;
 import lombok.*;
 import medical_clinics.clinic.models.Clinic;
-import medical_clinics.patient.model.Patient;
 import medical_clinics.schedule.models.DailySchedule;
 import medical_clinics.specialty.model.Specialty;
 import medical_clinics.user_account.model.UserAccount;

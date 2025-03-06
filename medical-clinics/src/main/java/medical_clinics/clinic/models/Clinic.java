@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.physician.model.Physician;
 import medical_clinics.specialty.model.Specialty;
 
 import java.util.Collection;
