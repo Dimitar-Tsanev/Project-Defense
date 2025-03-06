@@ -53,9 +53,6 @@ public class Physician {
     @JoinColumn(nullable = false)
     private Specialty specialty;
 
-    @ManyToMany
-    private Collection<Patient> patients;
-
     @OneToMany(mappedBy = "physician", targetEntity = DailySchedule.class, fetch = FetchType.EAGER)
     private Collection<DailySchedule> schedules;
 }

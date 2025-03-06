@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.medical_record_note.model.MedicalRecordNote;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.user_account.model.UserAccount;
 
@@ -19,7 +18,7 @@ import java.util.UUID;
 
 @Entity
 @Table(
-        uniqueConstraints = @UniqueConstraint(name = "UniquePhoneAndEmail", columnNames = {"email","phone"})
+        uniqueConstraints = @UniqueConstraint(name = "UniquePhoneAndEmail", columnNames = {"email", "phone"})
 )
 public class Patient {
 
@@ -47,9 +46,6 @@ public class Patient {
 
     @OneToOne(targetEntity = UserAccount.class)
     private UserAccount userAccount;
-
-    @OneToMany(mappedBy = "patient", targetEntity = MedicalRecordNote.class)
-    private Collection<MedicalRecordNote> medicalRecord;
 
     @OneToMany(mappedBy = "patient", targetEntity = TimeSlot.class)
     private Collection<TimeSlot> appointments;

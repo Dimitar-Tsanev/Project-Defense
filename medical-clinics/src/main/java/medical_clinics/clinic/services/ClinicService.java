@@ -120,7 +120,6 @@ public class ClinicService {
         Clinic newClinicInfo = ClinicMapper.mapToClinic ( clinic );
         newClinicInfo.setId ( oldClinicInfo.getId ( ) );
         newClinicInfo.setWorkingDays ( workDays );
-        newClinicInfo.setPhysicians ( oldClinicInfo.getPhysicians ( ) );
         newClinicInfo.setSpecialties ( oldClinicInfo.getSpecialties ( ) );
 
         clinicRepository.save ( newClinicInfo );

@@ -56,9 +56,6 @@ public class Clinic {
     @ManyToMany
     private Collection<Specialty> specialties;
 
-    @OneToMany(mappedBy = "workplace", targetEntity = Physician.class)
-    private Collection<Physician> physicians;
-
     public void addSpeciality( Specialty specialty) {
         if ( specialties == null ) {
             specialties = new HashSet<> (  );

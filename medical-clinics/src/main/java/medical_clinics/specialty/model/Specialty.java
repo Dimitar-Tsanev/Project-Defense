@@ -2,39 +2,28 @@ package medical_clinics.specialty.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import medical_clinics.physician.model.Physician;
 
 import java.util.*;
+
+@Getter
+@NoArgsConstructor
 
 @Entity
 public class Specialty {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Setter
-    @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
     private SpecialtyName name;
 
-    @OneToMany(mappedBy = "specialty", targetEntity = Physician.class)
-    private Collection<Physician> specialists;
-
-    public Specialty() {
-        specialists = new ArrayList<> ();
-    }
-
     public Specialty(SpecialtyName name) {
         this.name = name;
-        specialists = new ArrayList<> ();
-    }
-
-    public Collection<Physician> getSpecialists () {
-        return Collections.unmodifiableCollection (specialists);
     }
 
     @Override
