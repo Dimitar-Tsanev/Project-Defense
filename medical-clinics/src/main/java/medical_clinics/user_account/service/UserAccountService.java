@@ -11,6 +11,7 @@ import medical_clinics.user_account.model.UserStatus;
 import medical_clinics.user_account.property.UserProperty;
 import medical_clinics.user_account.repository.UserAccountRepository;
 import medical_clinics.web.dto.*;
+import medical_clinics.web.dto.events.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,6 +50,17 @@ public class UserAccountService implements UserDetailsService {
         );
 
         eventPublisher.publishEvent ( newUserAccountEvent );
+    }
+
+    public UserDataResponse getAccountData ( String email ) {
+        UserAccount account = userAccountRepository.findByEmail ( email ).orElseThrow (
+                () -> new UserAccountNotFoundException ( "User with this email does not exist" )
+        );
+
+        return UserDataResponse.builder ( )
+                .accountId ( account.getId ( ) )
+                .role ( account.getRole ( ) )
+                .build ( );
     }
 
     @Transactional
@@ -116,6 +128,7 @@ public class UserAccountService implements UserDetailsService {
                 .findByEmail ( email )
                 .map ( UserAccountMapper::mapToUserDetails )
                 .orElseThrow ( () ->
+
                         new UsernameNotFoundException (
                                 "User with [%s] email not found".formatted ( email )
                         )

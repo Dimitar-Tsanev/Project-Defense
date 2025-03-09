@@ -6,8 +6,12 @@ import medical_clinics.patient.repository.PatientRepository;
 import medical_clinics.shared.exception.PatientAlreadyExistsException;
 import medical_clinics.shared.exception.PatientNotFoundException;
 import medical_clinics.shared.exception.PersonalInformationDontMatchException;
+import medical_clinics.shared.exception.UserAlreadyExistsException;
 import medical_clinics.shared.mappers.PatientMapper;
 import medical_clinics.web.dto.*;
+import medical_clinics.web.dto.events.EditedAccountEvent;
+import medical_clinics.web.dto.events.NewUserAccountEvent;
+import medical_clinics.web.dto.events.PhysicianChangeEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -64,6 +68,16 @@ public class PatientService {
         );
 
         return PatientMapper.mapToPatientInfo ( patient );
+    }
+
+    public UserDataResponse getPatientDataByUserDataResponse ( UserDataResponse userDataResponse ) {
+        Patient patient = getPatientByUserAccountId ( userDataResponse.getAccountId ( ) );
+
+        return UserDataResponse.builder ( )
+                .accountId ( userDataResponse.getAccountId ( ) )
+                .role ( userDataResponse.getRole ( ) )
+                .patientInfo ( PatientMapper.mapToPatientInfo ( patient ) )
+                .build ( );
     }
 
     public Patient getPatientByUserAccountId ( UUID userAccountId ) {
@@ -146,12 +160,21 @@ public class PatientService {
             if ( patientByPhone.isEmpty ( ) ) {
                 patient = patientRepository.findByEmail ( patient.getEmail ( ) ).get ( );
 
+                if (patient.getUserAccount () != null) {
+                    throw new UserAlreadyExistsException ( "User already has account " + patient.getUserAccount ( ).getEmail () );
+                }
+
                 if ( patient.getPhone ( ) == null ) {
                     patient.setPhone ( newUserAccount.getPhoneNumber ( ) );
                 }
 
             } else {
                 patient = patientByPhone.get ( );
+
+                if (patient.getUserAccount () != null) {
+                    throw new UserAlreadyExistsException ( "User already has account " + patient.getUserAccount ( ).getEmail () );
+                }
+
                 patient.setEmail ( newUserAccount.getUserAccount ( ).getEmail ( ) );
             }
         }
@@ -173,9 +196,7 @@ public class PatientService {
         }
     }
 
-    private boolean isInformationInConflict (
-            String email, String firstName, String lastName
-    ) {
+    private boolean isInformationInConflict ( String email, String firstName, String lastName ) {
         Optional<Patient> patientByEmail = patientRepository.findByEmail ( email );
 
         if ( patientByEmail.isEmpty ( ) ) {
@@ -191,6 +212,7 @@ public class PatientService {
         PersonalInformationDontMatchException error = new PersonalInformationDontMatchException (
                 "Phone number or email dose not match with names"
         );
+
         String email = request.getEmail ( );
         String phone = request.getPhone ( );
 
