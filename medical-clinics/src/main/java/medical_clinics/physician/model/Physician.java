@@ -45,7 +45,7 @@ public class Physician {
     private UserAccount userAccount;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Clinic workplace;
 
     @ManyToOne
