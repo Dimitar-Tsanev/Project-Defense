@@ -11,7 +11,6 @@ import java.util.List;
 public class ExceptionResponse {
 
     private Integer errorCode;
-    private String description;
     private List<String> messages;
 
 }
