@@ -11,6 +11,7 @@ import medical_clinics.shared.exception.NoSuchClinicException;
 import medical_clinics.shared.mappers.ClinicMapper;
 import medical_clinics.specialty.model.Specialty;
 import medical_clinics.web.dto.*;
+import medical_clinics.web.dto.events.NoSpecialistsLeftEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
@@ -37,17 +38,59 @@ public class ClinicService {
     }
 
     @Transactional
-    public void upsertClinic (CreateEditClinicRequest clinic){
-        if ( clinic.getClinicId () != null ) {
-                updateClinic ( clinic );
+    public UUID addClinic ( CreateEditClinicRequest clinic ) {
+        Clinic newClinic = ClinicMapper.mapToClinic ( clinic );
+
+        Optional<Clinic> exists = clinicRepository.findByCityAndAddress ( clinic.getCity ( ), clinic.getAddress ( ) );
+
+        if ( exists.isPresent ( ) ) {
+            throw new ExistingClinicException ( "Clinic in same city and address already exists" );
         }
 
-        addClinic ( clinic );
+        return clinicRepository.save ( newClinic ).getId ( );
+    }
+
+    @Transactional
+    @Modifying
+    public void updateClinic ( UUID clinicId, CreateEditClinicRequest clinic ) {
+        Optional<Clinic> exists = clinicRepository.findById ( clinicId );
+
+        if ( exists.isEmpty ( ) ) {
+            throw new NoSuchClinicException ( "Clinic with provided id does not exist" );
+        }
+
+        Clinic oldClinicInfo = exists.get ( );
+
+        if ( !oldClinicInfo.getCity ( ).equals ( clinic.getCity ( ) ) ||
+                !oldClinicInfo.getAddress ( ).equals ( clinic.getAddress ( ) ) ) {
+
+            Optional<Clinic> optionalClinic = clinicRepository.findByCityAndAddress (
+                    clinic.getCity ( ), clinic.getAddress ( )
+            );
+
+            if ( optionalClinic.isPresent ( ) ) {
+                throw new ExistingClinicException (
+                        "New clinic address match other clinic with id: " + optionalClinic.get ( ).getId ( )
+                );
+            }
+        }
+
+        Collection<WorkDay> workDays = workDayService.updateWorkDays (
+                oldClinicInfo.getWorkingDays ( ), clinic.getWorkingDays ( )
+        );
+
+        Clinic newClinicInfo = ClinicMapper.mapToClinic ( clinic );
+        newClinicInfo.setId ( oldClinicInfo.getId ( ) );
+        newClinicInfo.setWorkingDays ( workDays );
+        newClinicInfo.setSpecialties ( oldClinicInfo.getSpecialties ( ) );
+
+        clinicRepository.save ( newClinicInfo );
     }
 
     @Transactional
     public void deleteClinic ( UUID id ) {
-        clinicRepository.deleteById ( id );
+        Clinic clinic = getById ( id );
+        clinicRepository.deleteById ( clinic.getId ( ) );
     }
 
 
@@ -67,10 +110,10 @@ public class ClinicService {
 
         UUID specialityToRemove = noSpecialists.getSpecialtyId ( );
 
-        Set<Specialty> specialitiesLeft = clinic.getSpecialties ()
-                .stream( )
-                .filter ( specialty -> !specialty.getId ().equals ( specialityToRemove ) )
-                .collect( Collectors.toSet());
+        Set<Specialty> specialitiesLeft = clinic.getSpecialties ( )
+                .stream ( )
+                .filter ( specialty -> !specialty.getId ( ).equals ( specialityToRemove ) )
+                .collect ( Collectors.toSet ( ) );
 
         clinic.setSpecialties ( specialitiesLeft );
         clinicRepository.save ( clinic );
@@ -89,40 +132,6 @@ public class ClinicService {
             clinic.addSpeciality ( specialty );
         }
         clinicRepository.save ( clinic );
-    }
-
-    private void addClinic ( CreateEditClinicRequest clinic ) {
-        Clinic newClinic = ClinicMapper.mapToClinic ( clinic );
-
-        Optional<Clinic> exists = clinicRepository.findByCityAndAddress ( clinic.getCity ( ), clinic.getAddress ( ) );
-
-        if ( exists.isPresent ( ) ) {
-            throw new ExistingClinicException ( "Clinic in same city and address already exists" );
-        }
-
-        clinicRepository.save ( newClinic );
-    }
-
-    @Modifying
-    private void updateClinic ( CreateEditClinicRequest clinic ) {
-        Optional<Clinic> exists = clinicRepository.findById ( clinic.getClinicId () );
-
-        if ( exists.isEmpty ( ) ) {
-            throw new NoSuchClinicException ( "Clinic with provided id does not exist" );
-        }
-
-        Clinic oldClinicInfo = exists.get ( );
-
-        Collection<WorkDay> workDays = workDayService.updateWorkDays (
-                oldClinicInfo.getWorkingDays ( ), clinic.getWorkingDays ( )
-        );
-
-        Clinic newClinicInfo = ClinicMapper.mapToClinic ( clinic );
-        newClinicInfo.setId ( oldClinicInfo.getId ( ) );
-        newClinicInfo.setWorkingDays ( workDays );
-        newClinicInfo.setSpecialties ( oldClinicInfo.getSpecialties ( ) );
-
-        clinicRepository.save ( newClinicInfo );
     }
 
     private Clinic getById ( UUID id ) {
