@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 
 import java.util.List;
-import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,10 +18,6 @@ import java.util.UUID;
 @Data
 
 public class CreateEditClinicRequest {
-
-    @org.hibernate.validator.constraints.UUID
-    private UUID clinicId;
-
     @NotBlank
     private String city;
 
@@ -37,7 +32,7 @@ public class CreateEditClinicRequest {
 
     @NotBlank
     @Size(min = 4, max = 21, message = "{phone.length.length}")
-    @Pattern(regexp = "^[+]*\\d+$", message = "{phone.unsuported.characters}")
+    @Pattern(regexp = "^[+]?\\d+$", message = "{phone.unsupported.characters}")
     private String phoneNumber;
 
     @NotBlank
