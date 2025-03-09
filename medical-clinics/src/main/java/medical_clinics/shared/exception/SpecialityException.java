@@ -1,6 +1,8 @@
 package medical_clinics.shared.exception;
 
-public class SpecialityException extends IllegalArgumentException{
+import java.util.NoSuchElementException;
+
+public class SpecialityException extends NoSuchElementException {
     public SpecialityException ( String message ) {
         super ( message );
     }
