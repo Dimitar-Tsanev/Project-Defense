@@ -15,6 +15,7 @@ import medical_clinics.specialty.model.Specialty;
 import medical_clinics.specialty.service.SpecialtyService;
 import medical_clinics.user_account.model.Role;
 import medical_clinics.web.dto.*;
+import medical_clinics.web.dto.events.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;

@@ -2,7 +2,7 @@ package medical_clinics.shared.mappers;
 
 import medical_clinics.patient.model.Patient;
 import medical_clinics.web.dto.CreatePatient;
-import medical_clinics.web.dto.NewUserAccountEvent;
+import medical_clinics.web.dto.events.NewUserAccountEvent;
 import medical_clinics.web.dto.PatientInfo;
 
 public class PatientMapper {

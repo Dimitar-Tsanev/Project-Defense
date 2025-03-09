@@ -19,17 +19,17 @@ public class CreatePhysician {
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
+    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsupported.characters}")
     private String firstName;
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
+    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsupported.characters}")
     private String lastName;
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 5, max = 18, message = "{identification.code.length}")
-    @Pattern(regexp = "^[0-9A-Z]+([.-]*[0-9A-Z]+)+$", message = "{identification.code.unsuported.character}")
+    @Pattern(regexp = "^[0-9A-Z]+([.-]*[0-9A-Z]+)+$", message = "{identification.code.unsupported.character}")
     private String identificationNumber;
 
     private String abbreviation;

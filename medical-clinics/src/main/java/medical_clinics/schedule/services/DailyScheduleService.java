@@ -10,7 +10,7 @@ import medical_clinics.shared.mappers.DailyScheduleMapper;
 import medical_clinics.schedule.models.DailySchedule;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.schedule.repositories.DailyScheduleRepository;
-import medical_clinics.shared.exception.ScheduleException;
+import medical_clinics.shared.exception.ScheduleConflictException;
 import medical_clinics.web.dto.DailyScheduleDto;
 import org.springframework.stereotype.Service;
 
@@ -67,7 +67,7 @@ public class DailyScheduleService {
         }
 
         if ( workDayOptional.isEmpty () ) {
-            throw new ScheduleException ( "Schedule day dose not match work day of the Clinic" );
+            throw new ScheduleConflictException ( "Schedule day dose not match work day of the Clinic" );
         }
 
         return workDayOptional.get ( );
@@ -76,14 +76,14 @@ public class DailyScheduleService {
     private void checkScheduleStartTimeIncorrect (WorkDay workDay, LocalTime scheduleStartTime ) {
         LocalTime clinicBeginOfWorkday = workDay.getStartOfWorkingDay ();
         if( scheduleStartTime.isBefore ( clinicBeginOfWorkday )){
-            throw new ScheduleException ("Schedule start time is before clinic work day start" );
+            throw new ScheduleConflictException ("Schedule start time is before clinic work day start" );
         }
     }
 
     private void isScheduleEndTimeIncorrect (WorkDay workDay, LocalTime scheduleEndTime ) {
         LocalTime clinicEndOfWorkday = workDay.getEndOfWorkingDay ( );
         if (scheduleEndTime.isAfter ( clinicEndOfWorkday )){
-            throw new ScheduleException ("Schedule end time is after clinic work day end" );
+            throw new ScheduleConflictException ("Schedule end time is after clinic work day end" );
         }
     }
 }

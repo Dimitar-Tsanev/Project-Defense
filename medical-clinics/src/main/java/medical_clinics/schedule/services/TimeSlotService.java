@@ -7,7 +7,8 @@ import medical_clinics.patient.service.PatientService;
 import medical_clinics.schedule.models.Status;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.schedule.repositories.TimeSlotRepository;
-import medical_clinics.shared.exception.ScheduleException;
+import medical_clinics.shared.exception.ScheduleConflictException;
+import medical_clinics.shared.exception.ScheduleNotFoundException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +70,7 @@ public class TimeSlotService {
         timeSlotRepository.save ( timeSlot );
 
         if ( errorFlag ) {
-            throw new ScheduleException ( "The appointment hour you are trying to preserve is not available." );
+            throw new ScheduleConflictException ( "The appointment hour you are trying to preserve is not available." );
         }
     }
 
@@ -89,7 +90,7 @@ public class TimeSlotService {
 
     private TimeSlot getIfExist ( UUID timeSlotId ) {
         return timeSlotRepository.findById ( timeSlotId ).orElseThrow ( () ->
-                new ScheduleException ( "The appointment hour you are trying to preserve does not exist." )
+                new ScheduleNotFoundException ( "The appointment hour you are trying to preserve does not exist." )
         );
     }
 

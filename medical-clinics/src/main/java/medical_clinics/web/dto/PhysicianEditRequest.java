@@ -24,12 +24,12 @@ public class PhysicianEditRequest {
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
+    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsupported.characters}")
     private String firstName;
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
+    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsupported.characters}")
     private String lastName;
 
     private String abbreviation;

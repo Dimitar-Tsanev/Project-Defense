@@ -20,22 +20,22 @@ public class CreatePatient {
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
+    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsupported.characters}")
     private String firstName;
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
-    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsuported.characters}")
+    @Pattern(regexp = "[A-Za-z]+", message = "{name.unsupported.characters}")
     private String lastName;
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 5, max = 18, message = "{identification.code.length}")
-    @Pattern(regexp = "^[0-9A-Z]+([.-]*[0-9A-Z]+)+$", message = "{identification.code.unsuported.character}")
+    @Pattern(regexp = "^[0-9A-Z]+([.-]*[0-9A-Z]+)+$", message = "{identification.code.unsupported.character}")
     private String identificationCode;
 
     @NotBlank(message = "{not.blank}")
     @Size(min = 4, max = 56, message = "{country.length}")
-    @Pattern(regexp = "^[A-Za-z ]+$", message = "{country.unsuported.characters}")
+    @Pattern(regexp = "^[A-Za-z ]+$", message = "{country.unsupported.characters}")
     private String country;
 
     private String city;
@@ -43,7 +43,7 @@ public class CreatePatient {
     private String address;
 
     @Size(min = 4, max = 21, message = "{phone.length.length}")
-    @Pattern(regexp = "^[+]*\\d+$", message = "{phone.unsuported.characters}")
+    @Pattern(regexp = "^[+]*\\d+$", message = "{phone.unsupported.characters}")
     private String phone;
 
     @Email(

@@ -1,4 +1,4 @@
-package medical_clinics.web.dto;
+package medical_clinics.web.dto.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
