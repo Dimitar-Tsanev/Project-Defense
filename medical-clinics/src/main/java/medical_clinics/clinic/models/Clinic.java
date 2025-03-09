@@ -34,8 +34,6 @@ public class Clinic {
     private String address;
 
     @OneToMany(
-            mappedBy = "clinic",
-            targetEntity = WorkDay.class,
             fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST}
     )
     private Collection<WorkDay> workingDays;

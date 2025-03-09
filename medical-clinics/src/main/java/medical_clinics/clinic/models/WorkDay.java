@@ -30,8 +30,4 @@ public class WorkDay {
 
     @Basic(optional = false)
     private LocalTime endOfWorkingDay;
-
-    @ManyToOne
-    @JoinColumn()
-    private Clinic clinic;
 }
