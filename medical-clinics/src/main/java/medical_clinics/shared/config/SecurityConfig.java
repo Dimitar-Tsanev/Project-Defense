@@ -7,7 +7,9 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -31,6 +33,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private static final String JWT_ALGORITHM = JWSAlgorithm.HS256.getName ( );
 
@@ -48,8 +51,12 @@ public class SecurityConfig {
                 .oauth2ResourceServer ( config ->
                         config.jwt ( Customizer.withDefaults ( ) ) )
                 .authorizeHttpRequests ( authorizeRequests ->
-                        authorizeRequests.requestMatchers ( "/register", "/login" ).permitAll ( )
-                                .anyRequest ( ).authenticated ( )
+                        authorizeRequests.requestMatchers (
+                                        "/auth/**", "/api-docs*/**", "/swagger-ui/**"
+                                ).permitAll ( )
+                                .requestMatchers ( HttpMethod.GET, "/clinics*/**" ).permitAll ()
+                                .anyRequest ( )
+                                .authenticated ( )
                 )
                 .httpBasic ( withDefaults ( ) )
                 .build ( );
