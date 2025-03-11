@@ -54,7 +54,7 @@ public class SecurityConfig {
                         authorizeRequests.requestMatchers (
                                         "/auth/**", "/api-docs*/**", "/swagger-ui/**"
                                 ).permitAll ( )
-                                .requestMatchers ( HttpMethod.GET, "/clinics*/**" ).permitAll ()
+                                .requestMatchers ( HttpMethod.GET, "/clinics*/**" ).permitAll ( )
                                 .anyRequest ( )
                                 .authenticated ( )
                 )

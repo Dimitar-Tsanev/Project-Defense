@@ -53,10 +53,10 @@ public class Clinic {
     @ManyToMany
     private Collection<Specialty> specialties;
 
-    public void addSpeciality( Specialty specialty) {
+    public void addSpeciality ( Specialty specialty ) {
         if ( specialties == null ) {
-            specialties = new HashSet<> (  );
+            specialties = new HashSet<> ( );
         }
-        specialties.add(specialty);
+        specialties.add ( specialty );
     }
 }

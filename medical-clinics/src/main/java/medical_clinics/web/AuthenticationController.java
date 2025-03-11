@@ -10,16 +10,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import medical_clinics.patient.service.PatientService;
-import medical_clinics.shared.handler.ExceptionResponse;
 import medical_clinics.shared.security.AuthenticationService;
-import medical_clinics.user_account.model.UserAccount;
 import medical_clinics.user_account.service.UserAccountService;
 import medical_clinics.web.dto.LoginRequest;
 import medical_clinics.web.dto.RegisterRequest;
-import medical_clinics.web.dto.UserDataResponse;
+import medical_clinics.web.dto.response.UserDataResponse;
+import medical_clinics.web.exception_handler.ExceptionResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +32,6 @@ public class AuthenticationController {
 
     private final UserAccountService userAccountService;
     private final PatientService patientService;
-
     private final AuthenticationService authenticationService;
 
     @Operation(summary = "Create a new user account")
@@ -105,7 +102,8 @@ public class AuthenticationController {
 
         UserDataResponse userData = userAccountService.getAccountData ( request.getEmail ( ) );
 
-        userData = patientService.getPatientDataByUserDataResponse ( userData );
+        userData.setPatientInfo ( patientService.getPatientInfoByUserAccountId ( userData.getAccountId () ) );
+
 
         return ResponseEntity.ok ( ).header ( HttpHeaders.AUTHORIZATION, token ).body ( userData );
     }

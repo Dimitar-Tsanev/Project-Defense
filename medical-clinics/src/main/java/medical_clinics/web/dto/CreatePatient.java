@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.shared.validation.contact_form_presented_validator.AtLeastOneContactForm;
+import medical_clinics.web.validation.contact_form_presented_validator.AtLeastOneContactForm;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,7 +43,7 @@ public class CreatePatient {
     private String address;
 
     @Size(min = 4, max = 21, message = "{phone.length.length}")
-    @Pattern(regexp = "^[+]*\\d+$", message = "{phone.unsupported.characters}")
+    @Pattern(regexp = "^[+]?\\d+$", message = "{phone.unsupported.characters}")
     private String phone;
 
     @Email(

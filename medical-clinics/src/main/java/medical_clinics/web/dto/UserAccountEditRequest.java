@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import medical_clinics.shared.validation.password_change.PasswordChange;
-import medical_clinics.shared.validation.password_validator.Password;
+import medical_clinics.web.validation.password_change.PasswordChange;
+import medical_clinics.web.validation.password_validator.Password;
 
 import java.util.UUID;
 
@@ -18,8 +18,8 @@ import java.util.UUID;
 @PasswordChange
 public class UserAccountEditRequest {
 
-    @NotNull
-    @org.hibernate.validator.constraints.UUID
+    @NotNull(message = "{not.blank}")
+    @org.hibernate.validator.constraints.UUID(message = "{UUID.valid}")
     private UUID id;
 
     @NotBlank(message = "{not.blank}")
@@ -41,10 +41,10 @@ public class UserAccountEditRequest {
     private String address;
 
     @Size(min = 4, max = 21, message = "{phone.length.length}")
-    @Pattern(regexp = "^[+]*\\d+$", message = "{phone.unsupported.characters}")
+    @Pattern(regexp = "^[+]?\\d+$", message = "{phone.unsupported.characters}")
     private String phone;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     @Email(
             message = "{email.format.not.match}",
             regexp = "^[a-zA-Z0-9]+([._-][0-9a-zA-Z]+)*@[a-zA-Z0-9]+([.-][0-9a-zA-Z]+)*\\.[a-zA-Z]{2,}$"

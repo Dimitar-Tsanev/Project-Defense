@@ -10,10 +10,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import medical_clinics.clinic.services.ClinicService;
-import medical_clinics.shared.handler.ExceptionResponse;
-import medical_clinics.web.dto.ClinicDetails;
-import medical_clinics.web.dto.ClinicShortInfo;
 import medical_clinics.web.dto.CreateEditClinicRequest;
+import medical_clinics.web.dto.response.ClinicDetails;
+import medical_clinics.web.dto.response.ClinicShortInfo;
+import medical_clinics.web.exception_handler.ExceptionResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,7 +65,7 @@ public class ClinicController {
             )
     })
     @PostMapping("/")
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> addNewClinic ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for clinic creation ", required = true,
             content = @Content(schema = @Schema(implementation = CreateEditClinicRequest.class)
@@ -119,7 +119,7 @@ public class ClinicController {
             )
     })
     @PutMapping("/{clinicId}")
-    @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> editClinic ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for clinic update ", required = true,
             content = @Content(schema = @Schema(implementation = CreateEditClinicRequest.class)

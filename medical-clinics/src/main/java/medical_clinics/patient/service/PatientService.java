@@ -1,17 +1,19 @@
 package medical_clinics.patient.service;
 
 import lombok.RequiredArgsConstructor;
+import medical_clinics.patient.exceptions.PatientAlreadyExistsException;
+import medical_clinics.patient.exceptions.PatientNotFoundException;
+import medical_clinics.patient.mapper.PatientMapper;
 import medical_clinics.patient.model.Patient;
 import medical_clinics.patient.repository.PatientRepository;
-import medical_clinics.shared.exception.PatientAlreadyExistsException;
-import medical_clinics.shared.exception.PatientNotFoundException;
 import medical_clinics.shared.exception.PersonalInformationDontMatchException;
-import medical_clinics.shared.exception.UserAlreadyExistsException;
-import medical_clinics.shared.mappers.PatientMapper;
-import medical_clinics.web.dto.*;
+import medical_clinics.user_account.exceptions.UserAlreadyExistsException;
+import medical_clinics.web.dto.CreatePatient;
+import medical_clinics.web.dto.CreatePhysician;
 import medical_clinics.web.dto.events.EditedAccountEvent;
 import medical_clinics.web.dto.events.NewUserAccountEvent;
 import medical_clinics.web.dto.events.PhysicianChangeEvent;
+import medical_clinics.web.dto.response.PatientInfo;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -46,12 +48,10 @@ public class PatientService {
         patientRepository.save ( patient );
     }
 
-    public PatientInfo getPatientInfoById ( UUID id ) {
-        Patient patient = patientRepository.findById ( id ).orElseThrow ( () ->
+    public Patient getPatientById ( UUID id ) {
+        return patientRepository.findById ( id ).orElseThrow ( () ->
                 new PatientNotFoundException ( PATIENT_NOT_FOUND )
         );
-
-        return PatientMapper.mapToPatientInfo ( patient );
     }
 
     public PatientInfo getPatientInfoByEmail ( String email ) {
@@ -70,14 +70,8 @@ public class PatientService {
         return PatientMapper.mapToPatientInfo ( patient );
     }
 
-    public UserDataResponse getPatientDataByUserDataResponse ( UserDataResponse userDataResponse ) {
-        Patient patient = getPatientByUserAccountId ( userDataResponse.getAccountId ( ) );
-
-        return UserDataResponse.builder ( )
-                .accountId ( userDataResponse.getAccountId ( ) )
-                .role ( userDataResponse.getRole ( ) )
-                .patientInfo ( PatientMapper.mapToPatientInfo ( patient ) )
-                .build ( );
+    public PatientInfo getPatientInfoByUserAccountId ( UUID accountId ) {
+        return PatientMapper.mapToPatientInfo ( getPatientByUserAccountId ( accountId ) );
     }
 
     public Patient getPatientByUserAccountId ( UUID userAccountId ) {
@@ -160,8 +154,8 @@ public class PatientService {
             if ( patientByPhone.isEmpty ( ) ) {
                 patient = patientRepository.findByEmail ( patient.getEmail ( ) ).get ( );
 
-                if (patient.getUserAccount () != null) {
-                    throw new UserAlreadyExistsException ( "User already has account " + patient.getUserAccount ( ).getEmail () );
+                if ( patient.getUserAccount ( ) != null ) {
+                    throw new UserAlreadyExistsException ( "User already has account " + patient.getUserAccount ( ).getEmail ( ) );
                 }
 
                 if ( patient.getPhone ( ) == null ) {
@@ -171,8 +165,8 @@ public class PatientService {
             } else {
                 patient = patientByPhone.get ( );
 
-                if (patient.getUserAccount () != null) {
-                    throw new UserAlreadyExistsException ( "User already has account " + patient.getUserAccount ( ).getEmail () );
+                if ( patient.getUserAccount ( ) != null ) {
+                    throw new UserAlreadyExistsException ( "User already has account " + patient.getUserAccount ( ).getEmail ( ) );
                 }
 
                 patient.setEmail ( newUserAccount.getUserAccount ( ).getEmail ( ) );

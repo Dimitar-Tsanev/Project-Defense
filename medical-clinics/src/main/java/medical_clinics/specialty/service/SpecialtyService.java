@@ -2,8 +2,8 @@ package medical_clinics.specialty.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
-import medical_clinics.shared.exception.SpecialityException;
-import medical_clinics.shared.mappers.SpecialityMapper;
+import medical_clinics.specialty.exceptions.SpecialityException;
+import medical_clinics.specialty.mapper.SpecialityMapper;
 import medical_clinics.specialty.model.Specialty;
 import medical_clinics.specialty.model.SpecialtyName;
 import medical_clinics.specialty.repository.SpecialtyRepository;

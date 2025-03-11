@@ -9,19 +9,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
 
 public class PhysicianEditRequest {
-
-    @NotBlank
-    @org.hibernate.validator.constraints.UUID
-    private UUID id;
-
     @NotBlank(message = "{not.blank}")
     @Size(min = 2, max = 30, message = "{name.length}")
     @Pattern(regexp = "[A-Za-z]+", message = "{name.unsupported.characters}")
@@ -38,7 +31,7 @@ public class PhysicianEditRequest {
 
     private String description;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     @Email(
             message = "{email.format.not.match}",
             regexp = "^[a-zA-Z0-9]+([._-][0-9a-zA-Z]+)*@[a-zA-Z0-9]+([.-][0-9a-zA-Z]+)*\\.[a-zA-Z]{2,}$"

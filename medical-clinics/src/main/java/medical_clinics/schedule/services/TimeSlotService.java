@@ -4,11 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import medical_clinics.patient.model.Patient;
 import medical_clinics.patient.service.PatientService;
+import medical_clinics.schedule.exceptions.ScheduleConflictException;
+import medical_clinics.schedule.exceptions.ScheduleNotFoundException;
 import medical_clinics.schedule.models.Status;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.schedule.repositories.TimeSlotRepository;
-import medical_clinics.shared.exception.ScheduleConflictException;
-import medical_clinics.shared.exception.ScheduleNotFoundException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

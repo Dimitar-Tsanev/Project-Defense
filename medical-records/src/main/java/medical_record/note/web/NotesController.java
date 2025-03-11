@@ -6,35 +6,46 @@ import medical_record.note.service.NoteService;
 import medical_record.note.web.dtos.NoteDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
-@RestController("api/v1/notes")
+@RestController("/api/v1/notes")
 public class NotesController {
     private final NoteService noteService;
 
     @PostMapping
-    public ResponseEntity<NoteDto> createNote( @Valid NoteDto note) {
-        NoteDto createdNote = noteService.addNote(note);
-        return ResponseEntity.status ( HttpStatus.CREATED ).body(createdNote);
+    public ResponseEntity<Void> createNote ( @Valid @RequestBody NoteDto note ) {
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest ( )
+                .path ( "/{id}" )
+                .buildAndExpand (
+                        noteService.addNote ( note )
+                )
+                .toUri ( );
+
+        return ResponseEntity.created ( location ).build ( );
+    }
+
+    @GetMapping("/{noteId}")
+    public ResponseEntity<NoteDto> getNote ( @PathVariable UUID noteId ) {
+        return ResponseEntity.ok ( noteService.getNoteById ( noteId ) );
     }
 
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<Collection<NoteDto>> getNoteById( @PathVariable UUID patientId) {
-        List<NoteDto> patientMedicalRecord = noteService.getPatientMedicalRecord (patientId);
-        return ResponseEntity.status(HttpStatus.OK).body(patientMedicalRecord);
+    public ResponseEntity<Collection<NoteDto>> getNoteById ( @PathVariable UUID patientId ) {
+        List<NoteDto> patientMedicalRecord = noteService.getPatientMedicalRecord ( patientId );
+        return ResponseEntity.status ( HttpStatus.OK ).body ( patientMedicalRecord );
     }
 
-    @GetMapping("physician/{physicianID}")
-    public ResponseEntity<Collection<NoteDto>> getPhysicianNotes( @PathVariable UUID physicianID) {
-        List<NoteDto> patientMedicalRecord = noteService.getPhysicianNotes(physicianID);
-        return ResponseEntity.status(HttpStatus.OK).body(patientMedicalRecord);
+    @GetMapping("/physician/{physicianId}")
+    public ResponseEntity<Collection<NoteDto>> getPhysicianNotes ( @PathVariable UUID physicianId ) {
+        List<NoteDto> patientMedicalRecord = noteService.getPhysicianNotes ( physicianId );
+        return ResponseEntity.status ( HttpStatus.OK ).body ( patientMedicalRecord );
     }
 }

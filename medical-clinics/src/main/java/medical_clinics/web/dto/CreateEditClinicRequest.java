@@ -18,28 +18,28 @@ import java.util.List;
 @Data
 
 public class CreateEditClinicRequest {
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     private String city;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     private String address;
 
-    @NotEmpty
+    @NotEmpty(message = "{clinic.workdays.empty}")
     private List<WorkDayDto> workingDays;
 
-    @NotEmpty
+    @NotEmpty(message = "{not.blank}")
     private String description;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     @Size(min = 4, max = 21, message = "{phone.length.length}")
     @Pattern(regexp = "^[+]?\\d+$", message = "{phone.unsupported.characters}")
     private String phoneNumber;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     private String identificationNumber;
 
-    @NotBlank
-    @URL
+    @NotBlank(message = "{not.blank}")
+    @URL(message = "{valid.URL}")
     private String pictureUrl;
 
 }

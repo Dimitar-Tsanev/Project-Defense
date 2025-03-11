@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import medical_record.note.model.Note;
 import medical_record.note.repository.NoteRepository;
 import medical_record.note.util.NoteMapper;
+import medical_record.note.util.NoteNotFound;
 import medical_record.note.web.dtos.NoteDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -18,16 +20,26 @@ public class NoteService {
     private final NoteRepository noteRepository;
 
     public NoteDto addNote ( @Valid NoteDto noteDto ) {
-       Note note =  noteRepository.save ( NoteMapper.mapFromDto ( noteDto ) );
+        Note note = noteRepository.save ( NoteMapper.mapFromDto ( noteDto ) );
 
-       return NoteMapper.mapToDto ( note );
+        return NoteMapper.mapToDto ( note );
     }
 
     public List<NoteDto> getPatientMedicalRecord ( UUID patientId ) {
-        return noteRepository.findAllByPatientId(patientId).stream().map ( NoteMapper::mapToDto ).toList ( );
+        return noteRepository.findAllByPatientId ( patientId ).stream ( ).map ( NoteMapper::mapToDto ).toList ( );
     }
 
     public List<NoteDto> getPhysicianNotes ( UUID physicianID ) {
-        return noteRepository.findAllByPhysicianId(physicianID).stream ().map ( NoteMapper::mapToDto ).toList ();
+        return noteRepository.findAllByPhysicianId ( physicianID ).stream ( ).map ( NoteMapper::mapToDto ).toList ( );
+    }
+
+    public NoteDto getNoteById ( UUID noteId ) {
+        Optional<Note> note = noteRepository.findById ( noteId );
+
+        if ( note.isPresent ( ) ) {
+            return NoteMapper.mapToDto ( note.get ( ) );
+        }
+
+        throw new NoteNotFound ( "Note not found" );
     }
 }

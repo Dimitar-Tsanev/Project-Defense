@@ -14,7 +14,7 @@ public interface PhysicianRepository extends JpaRepository<Physician, UUID> {
 
     Optional<Physician> findByEmail ( String email );
 
-    List<Physician> findAllByWorkplace_IdAndSpecialty_Id (UUID clinicId, UUID specialityId);
+    List<Physician> findAllByWorkplace_IdAndSpecialty_Id ( UUID clinicId, UUID specialityId );
 
     Optional<Physician> findByUserAccount_Id ( UUID userAccountId );
 }

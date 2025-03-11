@@ -34,24 +34,24 @@ public class CreatePhysician {
 
     private String abbreviation;
 
-    @URL
+    @URL(message = "{valid.URL}")
     private String pictureUrl;
 
     private String description;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     @Email(
             message = "{email.format.not.match}",
             regexp = "^[a-zA-Z0-9]+([._-][0-9a-zA-Z]+)*@[a-zA-Z0-9]+([.-][0-9a-zA-Z]+)*\\.[a-zA-Z]{2,}$"
     )
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     private String workplaceCity;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     private String workplaceAddress;
 
-    @NotBlank
+    @NotBlank(message = "{not.blank}")
     private String specialty;
 }

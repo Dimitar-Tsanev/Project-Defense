@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
@@ -22,7 +22,7 @@ public class Specialty {
     @Column(nullable = false, unique = true)
     private SpecialtyName name;
 
-    public Specialty(SpecialtyName name) {
+    public Specialty ( SpecialtyName name ) {
         this.name = name;
     }
 

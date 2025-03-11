@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.shared.validation.password_validator.Password;
+import medical_clinics.web.validation.password_validator.Password;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,6 +46,6 @@ public class RegisterRequest {
     private String lastName;
 
     @Size(min = 4, max = 21, message = "{phone.length.length}")
-    @Pattern(regexp = "^[+]*\\d+$", message = "{phone.unsupported.characters}")
+    @Pattern(regexp = "^[+]?\\d+$", message = "{phone.unsupported.characters}")
     private String phone;
 }
