@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -22,6 +23,12 @@ public class Note {
 
     @Column(unique = true, nullable = false)
     private String documentNumber;
+
+    @Basic(optional = false)
+    private LocalDate creationDate;
+
+    @Basic(optional = false)
+    private String clinicIdentificationNumber;
 
     @Basic(optional = false)
     private UUID patientId;

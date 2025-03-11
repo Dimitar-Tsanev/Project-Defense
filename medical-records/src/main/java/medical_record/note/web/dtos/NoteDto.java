@@ -1,14 +1,12 @@
 package medical_record.note.web.dtos;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -20,6 +18,16 @@ public class NoteDto {
 
     private UUID noteId;
 
+    @NotBlank
+    private String documentNumber;
+
+    @NotNull
+    @PastOrPresent
+    private LocalDate creationDate;
+
+    @NotBlank
+    private String clinicIdentificationNumber;
+
     @NotNull
     @org.hibernate.validator.constraints.UUID
     private UUID patientId;
@@ -30,10 +38,10 @@ public class NoteDto {
 
     @NotBlank
     @Size(min = 5, max = 255)
-    @Pattern ( regexp = "[A-Za-z0-9,.\\- _]")
+    @Pattern(regexp = "[A-Za-z0-9,.\\- _]")
     private String diagnosis;
 
-    @Pattern ( regexp = "^[A-Z]\\d{2}\\.\\d$" )
+    @Pattern(regexp = "^[A-Z]\\d{2}\\.\\d$")
     private String diagnosisCode;
 
     private String chiefComplaint;
