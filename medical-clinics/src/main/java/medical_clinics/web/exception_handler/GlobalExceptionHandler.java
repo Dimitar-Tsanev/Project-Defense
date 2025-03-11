@@ -1,9 +1,21 @@
-package medical_clinics.shared.handler;
+package medical_clinics.web.exception_handler;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import medical_clinics.shared.exception.*;
+import medical_clinics.clinic.exceptions.ExistingClinicException;
+import medical_clinics.clinic.exceptions.NoSuchClinicException;
+import medical_clinics.patient.exceptions.PatientAlreadyExistsException;
+import medical_clinics.patient.exceptions.PatientNotFoundException;
+import medical_clinics.physician.exceptions.PhysicianAlreadyExistException;
+import medical_clinics.physician.exceptions.PhysicianNotFoundException;
+import medical_clinics.records.exceptions.NoteException;
+import medical_clinics.schedule.exceptions.ScheduleConflictException;
+import medical_clinics.schedule.exceptions.ScheduleNotFoundException;
+import medical_clinics.shared.exception.PersonalInformationDontMatchException;
+import medical_clinics.specialty.exceptions.SpecialityException;
+import medical_clinics.user_account.exceptions.UserAccountNotFoundException;
+import medical_clinics.user_account.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,7 +34,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ExceptionResponse> handleConstraintViolationException ( ConstraintViolationException e ) {
-        log.error ( e.getMessage ( ), e.getCause () );
+        logException ( e );
+
         return ResponseEntity
                 .status ( HttpStatus.BAD_REQUEST )
                 .body (
@@ -52,7 +65,7 @@ public class GlobalExceptionHandler {
                 .map ( entry -> entry.getKey ( ) + ": " + String.join ( ", ", entry.getValue ( )
                 ) ).toList ( );
 
-        log.error ( e.getMessage ( ), e.getCause ( ) );
+        logException ( e );
 
         return ResponseEntity
                 .status ( HttpStatus.BAD_REQUEST )
@@ -65,9 +78,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ExceptionResponse> handleException(BadCredentialsException e ) {
-        BadCredentialsException ex = new BadCredentialsException ( "Invalid email or password", e.fillInStackTrace () );
+    public ResponseEntity<ExceptionResponse> handleException ( BadCredentialsException e ) {
+        BadCredentialsException ex = new BadCredentialsException ( "Invalid email or password", e );
         return buildResponseError ( HttpStatus.UNAUTHORIZED, ex );
+    }
+
+    @ExceptionHandler(NoteException.class)
+    public ResponseEntity<ExceptionResponse> handleNoteException ( NoteException e ) {
+        logException ( e );
+
+        return ResponseEntity.status ( HttpStatus.valueOf ( e.getStatusCode ( ) ) ).body (
+                ExceptionResponse.builder ( )
+                        .errorCode ( e.getStatusCode ( ) )
+                        .messages ( List.of ( e.getMessage ( ) ) )
+                        .build ( )
+        );
     }
 
     @ExceptionHandler({
@@ -94,9 +119,24 @@ public class GlobalExceptionHandler {
         return buildResponseError ( HttpStatus.NOT_FOUND, e );
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> handleUndefinedException ( Exception e ) {
+        log.error ( "Internal server error caused by: {} and message {}",
+                e.getClass ( ).getName ( ), e.getMessage ( ) );
+
+        return ResponseEntity.status ( HttpStatus.INTERNAL_SERVER_ERROR ).body (
+                ExceptionResponse.builder ( )
+                        .errorCode ( HttpStatus.INTERNAL_SERVER_ERROR.value ( ) )
+                        .messages (
+                                List.of ( "Internal server error caused by: {} and message {}",
+                                        e.getClass ( ).getName ( ), e.getMessage ( ) )
+                        )
+                        .build ( )
+        );
+    }
 
     private ResponseEntity<ExceptionResponse> buildResponseError ( HttpStatus status, Exception e ) {
-        log.error ( e.getMessage ( ), e.getCause () );
+        logException ( e );
         return ResponseEntity
                 .status ( status )
                 .body ( ExceptionResponse.builder ( )
@@ -104,5 +144,9 @@ public class GlobalExceptionHandler {
                         .messages ( List.of ( e.getMessage ( ) ) )
                         .build ( )
                 );
+    }
+
+    private void logException ( Exception e ) {
+        log.error ( "Exception occur cause: {} message: {}", e.getCause ( ).toString ( ), e.getMessage ( ) );
     }
 }
