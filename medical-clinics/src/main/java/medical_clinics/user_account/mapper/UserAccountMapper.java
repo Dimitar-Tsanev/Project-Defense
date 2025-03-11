@@ -1,12 +1,13 @@
-package medical_clinics.shared.mappers;
+package medical_clinics.user_account.mapper;
 
 import medical_clinics.shared.security.UserDetailsImpl;
 import medical_clinics.user_account.model.UserAccount;
 import medical_clinics.user_account.property.UserProperty;
-import medical_clinics.web.dto.events.EditedAccountEvent;
-import medical_clinics.web.dto.events.NewUserAccountEvent;
 import medical_clinics.web.dto.RegisterRequest;
 import medical_clinics.web.dto.UserAccountEditRequest;
+import medical_clinics.web.dto.events.EditedAccountEvent;
+import medical_clinics.web.dto.events.NewUserAccountEvent;
+import medical_clinics.web.dto.response.AccountInformation;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserAccountMapper {
@@ -56,6 +57,15 @@ public class UserAccountMapper {
                 .phone ( accountEdit.getPhone ( ) )
                 .newEmail ( accountEdit.getEmail ( ) )
                 .oldEmail ( oldEmail )
+                .build ( );
+    }
+
+    public static AccountInformation mapToAccountInformation ( UserAccount userAccount ) {
+        return AccountInformation.builder ( )
+                .id ( userAccount.getId ( ) )
+                .email ( userAccount.getEmail ( ) )
+                .status ( userAccount.getStatus ( ).name ( ) )
+                .role ( userAccount.getRole ( ).name ( ) )
                 .build ( );
     }
 }
