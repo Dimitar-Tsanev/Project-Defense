@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Project-Defense.iml" filepath="$PROJECT_DIR$/.idea/Project-Defense.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/bg.SoftUni.medical-clinics.main.iml" filepath="$PROJECT_DIR$/.idea/modules/bg.SoftUni.medical-clinics.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bg.SoftUni.medical-records.main.iml" filepath="$PROJECT_DIR$/.idea/modules/bg.SoftUni.medical-records.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/medical-clinics.main.iml" filepath="$PROJECT_DIR$/.idea/modules/medical-clinics.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/medical-records.main.iml" filepath="$PROJECT_DIR$/.idea/modules/medical-records.main.iml" />
     </modules>
