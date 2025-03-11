@@ -2,16 +2,19 @@ package medical_clinics.user_account.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import medical_clinics.shared.exception.UserAccountNotFoundException;
-import medical_clinics.shared.exception.UserAlreadyExistsException;
-import medical_clinics.shared.mappers.UserAccountMapper;
+import medical_clinics.user_account.exceptions.UserAccountNotFoundException;
+import medical_clinics.user_account.exceptions.UserAlreadyExistsException;
+import medical_clinics.user_account.mapper.UserAccountMapper;
 import medical_clinics.user_account.model.Role;
 import medical_clinics.user_account.model.UserAccount;
 import medical_clinics.user_account.model.UserStatus;
 import medical_clinics.user_account.property.UserProperty;
 import medical_clinics.user_account.repository.UserAccountRepository;
-import medical_clinics.web.dto.*;
+import medical_clinics.web.dto.RegisterRequest;
+import medical_clinics.web.dto.UserAccountEditRequest;
 import medical_clinics.web.dto.events.*;
+import medical_clinics.web.dto.response.AccountInformation;
+import medical_clinics.web.dto.response.UserDataResponse;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,17 +23,30 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserAccountService implements UserDetailsService {
-
     private final UserAccountRepository userAccountRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final UserProperty userProperty;
+
+    @Override
+    public UserDetails loadUserByUsername ( String email ) throws UsernameNotFoundException {
+        return userAccountRepository
+                .findByEmail ( email )
+                .map ( UserAccountMapper::mapToUserDetails )
+                .orElseThrow ( () ->
+
+                        new UsernameNotFoundException (
+                                "User with [%s] email not found".formatted ( email )
+                        )
+                );
+    }
 
     @Transactional
     public void register ( RegisterRequest registerRequest ) {
@@ -57,14 +73,25 @@ public class UserAccountService implements UserDetailsService {
                 () -> new UserAccountNotFoundException ( "User with this email does not exist" )
         );
 
-        return UserDataResponse.builder ( )
-                .accountId ( account.getId ( ) )
-                .role ( account.getRole ( ) )
-                .build ( );
+        UserDataResponse userData =  new UserDataResponse( );
+        userData.setAccountId ( account.getId ( ) );
+        userData.setRole ( account.getRole ( ) );
+
+        return userData;
+    }
+
+    public UserAccount getById ( UUID id ) {
+        return userAccountRepository.findById ( id ).orElseThrow ( () ->
+                new UserAccountNotFoundException ( "User with provided id not found" )
+        );
     }
 
     @Transactional
-    public void editUserAccount ( UserAccountEditRequest accountEdit ) {
+    public void editUserAccount ( UUID pathId, UserAccountEditRequest accountEdit ) {
+        if ( !pathId.equals ( accountEdit.getId ( ) ) ) {
+            throw new UserAlreadyExistsException ( "Id provided with the form is differ from request parameter" );
+        }
+
         Optional<UserAccount> userAccountIfExist = userAccountRepository.findById ( accountEdit.getId ( ) );
 
         String newEmail = accountEdit.getEmail ( );
@@ -87,25 +114,19 @@ public class UserAccountService implements UserDetailsService {
             userAccount.setPassword ( passwordEncoder.encode ( accountEdit.getNewPassword ( ) ) );
             userAccountRepository.save ( userAccount );
         }
-
         eventPublisher.publishEvent ( UserAccountMapper.mapToEditedAccountEvent ( accountEdit, oldEmail ) );
     }
 
-    public void promoteToAdmin ( UUID accountId ) {
-        UserAccount userAccount = getById ( accountId );
-        userAccount.setRole ( Role.ADMIN );
-        userAccountRepository.save ( userAccount );
-    }
-
     @Transactional
-    public void demoteAccount ( UUID accountId ) {
-        UserAccount userAccount = getById ( accountId );
-        Role role = userProperty.getRole ( );
+    public void switchUserAccountRole ( UUID userId ) {
+        UserAccount userAccount = getById ( userId );
 
-        eventPublisher.publishEvent ( new DemoteAccountEvent ( userAccount.getId ( ), role ) );
-        userAccount.setRole ( role );
+        if ( userAccount.getRole ( ).equals ( Role.ADMIN ) ) {
+            demoteAccount ( userAccount );
+            return;
+        }
 
-        userAccountRepository.save ( userAccount );
+        promoteToAdmin ( userAccount );
     }
 
     public void deleteUserAccount ( UUID accountId ) {
@@ -122,23 +143,27 @@ public class UserAccountService implements UserDetailsService {
         userAccountRepository.save ( userAccount );
     }
 
-    @Override
-    public UserDetails loadUserByUsername ( String email ) throws UsernameNotFoundException {
-        return userAccountRepository
-                .findByEmail ( email )
-                .map ( UserAccountMapper::mapToUserDetails )
-                .orElseThrow ( () ->
+    public List<AccountInformation> getAllAccounts () {
+        return userAccountRepository.findAll ( ).stream ( )
+                .map ( UserAccountMapper::mapToAccountInformation )
+                .toList ( );
+    }
 
-                        new UsernameNotFoundException (
-                                "User with [%s] email not found".formatted ( email )
-                        )
-                );
+    @Transactional
+    void demoteAccount ( UserAccount userAccount ) {
+        Role role = userProperty.getRole ( );
+
+        eventPublisher.publishEvent ( new DemoteAccountEvent ( userAccount.getId ( ), role ) );
+        userAccount.setRole ( role );
+
+        userAccountRepository.save ( userAccount );
     }
 
     @EventListener
     @Transactional
     void demoteAccount ( DismissedStaffEvent dismissedStaffEvent ) {
-        demoteAccount ( dismissedStaffEvent.getUserAccountId ( ) );
+        UserAccount account = getById ( dismissedStaffEvent.getUserAccountId ( ) );
+        demoteAccount ( account );
     }
 
     @EventListener
@@ -170,14 +195,13 @@ public class UserAccountService implements UserDetailsService {
         }
     }
 
-    private void changeAccountEmail ( UserAccount userAccount, String newEmail ) {
-        userAccount.setEmail ( newEmail );
+    private void promoteToAdmin ( UserAccount userAccount ) {
+        userAccount.setRole ( Role.ADMIN );
         userAccountRepository.save ( userAccount );
     }
 
-    private UserAccount getById ( UUID id ) {
-        return userAccountRepository.findById ( id ).orElseThrow ( () ->
-                new UserAccountNotFoundException ( "User with provided id not found" )
-        );
+    private void changeAccountEmail ( UserAccount userAccount, String newEmail ) {
+        userAccount.setEmail ( newEmail );
+        userAccountRepository.save ( userAccount );
     }
 }
