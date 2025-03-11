@@ -4,23 +4,30 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import medical_clinics.clinic.models.Clinic;
 import medical_clinics.clinic.services.ClinicService;
+import medical_clinics.physician.exceptions.PhysicianAlreadyExistException;
+import medical_clinics.physician.exceptions.PhysicianNotFoundException;
+import medical_clinics.physician.mapper.PhysicianMapper;
 import medical_clinics.physician.model.Physician;
 import medical_clinics.physician.repository.PhysicianRepository;
 import medical_clinics.schedule.services.DailyScheduleService;
 import medical_clinics.shared.exception.PersonalInformationDontMatchException;
-import medical_clinics.shared.exception.PhysicianAlreadyExistException;
-import medical_clinics.shared.exception.PhysicianNotFoundException;
-import medical_clinics.shared.mappers.PhysicianMapper;
 import medical_clinics.specialty.model.Specialty;
 import medical_clinics.specialty.service.SpecialtyService;
 import medical_clinics.user_account.model.Role;
-import medical_clinics.web.dto.*;
+import medical_clinics.web.dto.CreatePatient;
+import medical_clinics.web.dto.CreatePhysician;
+import medical_clinics.web.dto.DailyScheduleDto;
+import medical_clinics.web.dto.PhysicianEditRequest;
 import medical_clinics.web.dto.events.*;
+import medical_clinics.web.dto.response.PhysicianInfo;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -33,7 +40,7 @@ public class PhysicianService {
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public void addPhysician ( CreatePhysician physician ) {
+    public UUID addPhysician ( CreatePhysician physician ) {
         checkPhysicianDataForConflict ( physician );
 
         eventPublisher.publishEvent ( physician );
@@ -54,9 +61,10 @@ public class PhysicianService {
         clinicService.addPhysicianSpeciality ( newPhysician );
 
         PhysicianAccountEvent physicianEvent = new PhysicianAccountEvent (
-                newPhysician.getEmail ()
+                newPhysician.getEmail ( )
         );
         eventPublisher.publishEvent ( physicianEvent );
+        return newPhysician.getId ( );
     }
 
     @Transactional
@@ -69,23 +77,23 @@ public class PhysicianService {
 
         Physician physician = physicianById.get ( );
 
-        UUID formerWorkplaceId = physician.getWorkplace ().getId ();
-        UUID specialtyId = physician.getSpecialty ().getId ();
-        UUID accountID = physician.getUserAccount ().getId ();
+        UUID formerWorkplaceId = physician.getWorkplace ( ).getId ( );
+        UUID specialtyId = physician.getSpecialty ( ).getId ( );
+        UUID accountID = physician.getUserAccount ( ).getId ( );
 
         physician.setWorkplace ( null );
         physician.setUserAccount ( null );
 
         physicianRepository.save ( physician );
 
-        notifyUserAccount (accountID);
-        notifyClinic (formerWorkplaceId, specialtyId );
+        notifyUserAccount ( accountID );
+        notifyClinic ( formerWorkplaceId, specialtyId );
     }
 
     @Transactional
-    public void editPhysician ( PhysicianEditRequest physicianEdit ) {
+    public void editPhysician ( UUID physicianId, PhysicianEditRequest physicianEdit ) {
         Physician physician = physicianRepository.findById (
-                physicianEdit.getId ( )
+                physicianId
         ).orElseThrow ( () ->
                 new PhysicianNotFoundException ( "Physician id not found" )
         );
@@ -131,11 +139,22 @@ public class PhysicianService {
         }
     }
 
-    public List<PhysicianShortInfo> getPhysiciansByClinicAndSpeciality ( UUID clinicId, UUID specialityId ) {
-        List<Physician> clinicEmployed = physicianRepository.findAllByWorkplace_IdAndSpecialty_Id ( clinicId, specialityId );
+    public List<PhysicianInfo> getPhysiciansByClinicAndSpeciality ( UUID clinicId, UUID specialityId ) {
+        List<Physician> clinicEmployed = physicianRepository.findAllByWorkplace_IdAndSpecialty_Id (
+                clinicId, specialityId
+        );
 
-        return clinicEmployed.stream ( ).map ( PhysicianMapper::mapToPhysicianShortInfo ).toList ( );
+        return clinicEmployed.stream ( ).map ( PhysicianMapper::mapToPhysicianInfo ).toList ( );
+    }
 
+    public Physician getPhysicianById ( UUID physicianId ) {
+        return physicianRepository.findById ( physicianId ).orElseThrow ( () ->
+                new PhysicianNotFoundException ( "Physician id not found" )
+        );
+    }
+
+    public PhysicianInfo getPhysicianInfo ( UUID physicianId ) {
+        return PhysicianMapper.mapToPhysicianInfo ( getPhysicianById ( physicianId ));
     }
 
     @EventListener
@@ -224,7 +243,7 @@ public class PhysicianService {
         );
 
         if ( physician.isPresent ( ) && !Role.PHYSICIAN.equals ( userAccountDemoted.getRole ( ) ) ) {
-            eventPublisher.publishEvent ( new PhysicianAccountEvent (physician.get ().getEmail ()) );
+            eventPublisher.publishEvent ( new PhysicianAccountEvent ( physician.get ( ).getEmail ( ) ) );
         }
     }
 
@@ -254,12 +273,12 @@ public class PhysicianService {
         }
     }
 
-    private void notifyClinic(UUID workplaceId, UUID specialtyId) {
+    private void notifyClinic ( UUID workplaceId, UUID specialtyId ) {
         boolean isTheOnlySpecialistInClinic = physicianRepository
-                .findAllByWorkplace_IdAndSpecialty_Id ( workplaceId,specialtyId )
-                .size () == 1;
+                .findAllByWorkplace_IdAndSpecialty_Id ( workplaceId, specialtyId )
+                .size ( ) == 1;
 
-        if ( isTheOnlySpecialistInClinic ){
+        if ( isTheOnlySpecialistInClinic ) {
             eventPublisher.publishEvent ( new NoSpecialistsLeftEvent ( workplaceId, specialtyId ) );
         }
     }
