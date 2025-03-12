@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.web.validation.day_of_week_valdatior.DayOfWeek;
+import medical_clinics.web.validation.day_of_week.DayOfWeekName;
+
 
 import java.time.LocalTime;
 
@@ -17,7 +18,7 @@ import java.time.LocalTime;
 public class WorkDayDto {
 
     @NotNull(message = "{not.blank}")
-    @DayOfWeek(message = "{day.of.week}")
+    @DayOfWeekName(message = "{day.of.week}")
     private String dayName;
 
     @NotNull(message = "{not.blank}")

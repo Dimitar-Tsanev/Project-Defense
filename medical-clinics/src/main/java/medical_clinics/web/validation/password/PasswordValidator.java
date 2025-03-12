@@ -1,4 +1,4 @@
-package medical_clinics.web.validation.password_validator;
+package medical_clinics.web.validation.password;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

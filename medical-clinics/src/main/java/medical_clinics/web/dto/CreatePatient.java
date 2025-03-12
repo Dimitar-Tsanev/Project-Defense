@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.web.validation.contact_form_presented_validator.AtLeastOneContactForm;
+import medical_clinics.web.validation.contact_form_present.AtLeastOneContactForm;
 
 @NoArgsConstructor
 @AllArgsConstructor

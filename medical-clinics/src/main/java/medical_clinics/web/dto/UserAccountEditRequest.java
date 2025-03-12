@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import medical_clinics.web.validation.password_change.PasswordChange;
-import medical_clinics.web.validation.password_validator.Password;
+import medical_clinics.web.validation.password.Password;
 
 import java.util.UUID;
 

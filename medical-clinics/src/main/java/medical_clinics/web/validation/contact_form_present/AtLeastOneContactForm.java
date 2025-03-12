@@ -1,4 +1,4 @@
-package medical_clinics.web.validation.contact_form_presented_validator;
+package medical_clinics.web.validation.contact_form_present;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

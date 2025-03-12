@@ -1,4 +1,4 @@
-package medical_clinics.web.validation.day_of_week_valdatior;
+package medical_clinics.web.validation.day_of_week;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -9,21 +9,22 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DayOfWeekValidator implements ConstraintValidator<DayOfWeek, CharSequence> {
+
+public class DayOfWeekNameValidator implements ConstraintValidator<DayOfWeekName, CharSequence> {
     private String message;
 
     private boolean isMessageEmpty;
 
     @Override
-    public void initialize ( DayOfWeek constraintAnnotation ) {
+    public void initialize ( DayOfWeekName constraint ) {
         if ( message.isBlank ( ) ) {
             isMessageEmpty = true;
-            message = "Password must not contain white spaces. And must contain at least: %s";
 
         } else {
+            this.message = constraint.message ( );
             isMessageEmpty = false;
         }
-        ConstraintValidator.super.initialize ( constraintAnnotation );
+        ConstraintValidator.super.initialize ( constraint );
     }
 
     @Override

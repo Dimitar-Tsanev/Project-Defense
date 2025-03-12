@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import medical_clinics.web.validation.password_validator.Password;
+import medical_clinics.web.validation.password.Password;
 
 @NoArgsConstructor
 @AllArgsConstructor
