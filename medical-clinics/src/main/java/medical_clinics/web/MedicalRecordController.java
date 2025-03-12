@@ -107,7 +107,6 @@ public class MedicalRecordController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Note created successfully",
-                    content = @Content(schema = @Schema(implementation = NoteResponse.class)),
                     headers = @Header(name = HttpHeaders.LOCATION, description = "link to the note")
             ),
             @ApiResponse(responseCode = "400", description = "Invalid input provided",

@@ -38,7 +38,6 @@ public class PhysicianController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Physician created successfully",
-                    content = @Content(schema = @Schema(implementation = PhysicianInfo.class)),
                     headers = @Header(name = HttpHeaders.LOCATION, description = "Link to created physician")
             ),
             @ApiResponse(responseCode = "400", description = "Invalid input provided",
