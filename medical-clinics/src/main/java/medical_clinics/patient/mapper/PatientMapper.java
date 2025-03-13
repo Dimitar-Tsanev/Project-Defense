@@ -37,6 +37,7 @@ public class PatientMapper {
                 .firstName ( patient.getFirstName ( ) )
                 .lastName ( patient.getLastName ( ) )
                 .country ( patient.getCountry ( ) )
+                .identificationCode ( patient.getIdentificationCode ( ) )
                 .city ( patient.getCity ( ) )
                 .address ( patient.getAddress ( ) )
                 .phone ( patient.getPhone ( ) )

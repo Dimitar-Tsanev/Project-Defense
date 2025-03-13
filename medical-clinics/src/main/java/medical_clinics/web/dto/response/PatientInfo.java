@@ -21,6 +21,8 @@ public class PatientInfo {
 
     private String country;
 
+    private String identificationCode;
+
     private String city;
 
     private String address;
