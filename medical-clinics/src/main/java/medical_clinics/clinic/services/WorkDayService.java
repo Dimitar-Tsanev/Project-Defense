@@ -22,7 +22,7 @@ public class WorkDayService {
     public Collection<WorkDay> updateWorkDays ( Collection<WorkDay> oldWorkDays, Collection<WorkDayDto> newWorkDays ) {
         Map<DaysOfWeek, UUID> daysMap = new HashMap<> ( );
 
-        Set<WorkDay> workingDays = new HashSet<> ( );
+        List<WorkDay> workingDays = new ArrayList<> ( );
 
         oldWorkDays.forEach ( w -> daysMap.put ( w.getDayOfWeek ( ), w.getId ( ) ) );
 
