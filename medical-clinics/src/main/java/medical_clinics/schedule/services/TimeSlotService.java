@@ -6,18 +6,18 @@ import medical_clinics.patient.model.Patient;
 import medical_clinics.patient.service.PatientService;
 import medical_clinics.schedule.exceptions.ScheduleConflictException;
 import medical_clinics.schedule.exceptions.ScheduleNotFoundException;
+import medical_clinics.schedule.mapper.DailyScheduleMapper;
 import medical_clinics.schedule.models.Status;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.schedule.repositories.TimeSlotRepository;
+import medical_clinics.web.dto.response.PatientAppointment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -46,6 +46,39 @@ public class TimeSlotService {
         return timeSlotRepository.saveAll ( timeSlots );
     }
 
+    public void inactivate ( UUID timeSlotId ) {
+        Optional<TimeSlot> timeSlotOptional = timeSlotRepository.findById ( timeSlotId );
+
+        if ( timeSlotOptional.isEmpty ( ) ) {
+            throw new ScheduleNotFoundException ( "TimeSlot with id " + timeSlotId + " not found" );
+        }
+
+        TimeSlot timeSlot = timeSlotOptional.get ( );
+
+        if ( timeSlot.getPatient ( ) != null ) {
+            String names = timeSlot.getPatient ( ).getFirstName ( ) + " " + timeSlot.getPatient ( ).getLastName ( );
+            String email = timeSlot.getPatient ( ).getEmail ( );
+            String phone = timeSlot.getPatient ( ).getPhone ( );
+            String patientFormated = names + ", contacts:  " + email + ", " + phone;
+
+            String date = timeSlot.getDailySchedule ( ).getDate ( ).format ( DateTimeFormatter.ofPattern ( "dd-MMM-yyyy" ) );
+            String time = timeSlot.getStartTime ( ).format ( DateTimeFormatter.ofPattern ( "HH:mm" ) );
+            String timeslotDayAndTime = date + ", " + time;
+
+            throw new ScheduleConflictException ( "Timeslot cannot be inactivated because it is reserved." +
+                    " Contact the Patient - [%s] to release the appointment then inactivate the timeslot: [%s]"
+                            .formatted ( patientFormated, timeslotDayAndTime )
+            );
+        }
+
+        timeSlot.setStatus ( Status.INACTIVE );
+        timeSlotRepository.save ( timeSlot );
+    }
+
+    public void delete ( TimeSlot timeSlot ) {
+        timeSlotRepository.delete ( timeSlot );
+    }
+
     @Transactional
     public void makeAppointment ( UUID accountId, UUID timeSlotId ) {
         TimeSlot timeSlot = getIfExist ( timeSlotId );
@@ -72,6 +105,28 @@ public class TimeSlotService {
         if ( errorFlag ) {
             throw new ScheduleConflictException ( "The appointment hour you are trying to preserve is not available." );
         }
+    }
+
+    public List<PatientAppointment> getPatientAppointments ( UUID patientId ) {
+        return timeSlotRepository.findAllByPatientId ( patientId ).stream ( ).map ( DailyScheduleMapper::mapToAppointment ).toList ( );
+    }
+
+    public void releaseAppointment ( UUID accountId, UUID appointmentId ) {
+        TimeSlot timeSlot = getIfExist ( appointmentId );
+
+        if ( !accountId.equals ( timeSlot.getPatient ( ).getUserAccount ( ).getId ( ) ) ) {
+            throw new ScheduleConflictException (
+                    "The appointment hour you are trying to release not belong to user account: " + accountId
+            );
+        }
+
+        if ( isPassed ( timeSlot ) ) {
+            return;
+        }
+
+        timeSlot.setStatus ( Status.FREE );
+        timeSlot.setPatient ( null );
+        timeSlotRepository.save ( timeSlot );
     }
 
     @Scheduled(cron = "0 */15 06-22 * * *")
