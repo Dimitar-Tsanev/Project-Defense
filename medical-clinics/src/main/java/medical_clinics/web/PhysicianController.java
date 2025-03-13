@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import medical_clinics.physician.service.PhysicianService;
 import medical_clinics.web.dto.CreatePhysician;
 import medical_clinics.web.dto.PhysicianEditRequest;
-import medical_clinics.web.dto.response.ClinicShortInfo;
 import medical_clinics.web.dto.response.PhysicianInfo;
 import medical_clinics.web.exception_handler.ExceptionResponse;
 import org.springframework.http.HttpHeaders;
