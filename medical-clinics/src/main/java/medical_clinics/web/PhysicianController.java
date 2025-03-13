@@ -131,7 +131,7 @@ public class PhysicianController {
     @Operation(summary = "Get list of physicians by there workplace ( clinicId ) and speciality (specialityId)")
     @ApiResponses(
             @ApiResponse(responseCode = "200",
-                    content = @Content(schema = @Schema(implementation = ClinicShortInfo[].class))
+                    content = @Content(schema = @Schema(implementation = PhysicianInfo[].class))
             )
     )
     @GetMapping("/{clinicId}/{specialityId}")
