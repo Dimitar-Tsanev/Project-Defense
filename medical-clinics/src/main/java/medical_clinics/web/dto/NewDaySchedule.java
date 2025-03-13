@@ -17,7 +17,7 @@ import java.time.LocalTime;
 @Data
 @Builder
 
-public class DailyScheduleDto {
+public class NewDaySchedule {
 
     @NotNull(message = "{not.blank}")
     @Future(message = "{schedule.date}")
