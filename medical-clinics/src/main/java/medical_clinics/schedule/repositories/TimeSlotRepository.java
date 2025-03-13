@@ -14,4 +14,6 @@ import java.util.UUID;
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, UUID> {
 
     List<TimeSlot> findAllByStatusEqualsAndStartTimeBeforeAndDailySchedule_Date ( Status status, LocalTime time, LocalDate date );
+
+    List<TimeSlot> findAllByPatientId ( UUID patientId );
 }
