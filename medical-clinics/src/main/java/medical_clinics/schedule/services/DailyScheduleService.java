@@ -7,27 +7,35 @@ import medical_clinics.clinic.models.DaysOfWeek;
 import medical_clinics.clinic.models.WorkDay;
 import medical_clinics.physician.model.Physician;
 import medical_clinics.schedule.exceptions.ScheduleConflictException;
+import medical_clinics.schedule.exceptions.ScheduleNotFoundException;
 import medical_clinics.schedule.mapper.DailyScheduleMapper;
 import medical_clinics.schedule.models.DailySchedule;
 import medical_clinics.schedule.models.TimeSlot;
+import medical_clinics.schedule.repositories.ArchivedSchedulesRepository;
 import medical_clinics.schedule.repositories.DailyScheduleRepository;
-import medical_clinics.web.dto.DailyScheduleDto;
+import medical_clinics.web.dto.NewDaySchedule;
+import medical_clinics.web.dto.response.PhysicianDaySchedule;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class DailyScheduleService {
     private final DailyScheduleRepository dailyScheduleRepository;
     private final TimeSlotService timeSlotService;
+    private final ArchivedSchedulesRepository archivedSchedulesRepository;
 
     @Transactional
-    public void generateDaySchedule ( Physician physician, DailyScheduleDto dailyScheduleDto ) {
-        DailySchedule dailySchedule = DailyScheduleMapper.mapToDailySchedule ( dailyScheduleDto );
+    public void generateDaySchedule ( Physician physician, NewDaySchedule newDaySchedule ) {
+        DailySchedule dailySchedule = DailyScheduleMapper.mapToDailySchedule ( newDaySchedule );
 
         Clinic physicianWorkplace = physician.getWorkplace ( );
 
@@ -42,13 +50,63 @@ public class DailyScheduleService {
         Collection<TimeSlot> timeSlots = timeSlotService.generateTimeSlots (
                 dailySchedule.getStartTime ( ),
                 dailySchedule.getEndTime ( ),
-                dailyScheduleDto.getTimeSlotInterval ( )
+                newDaySchedule.getTimeSlotInterval ( )
         );
 
         dailySchedule.setTimeSlots ( timeSlots );
         dailySchedule.setPhysician ( physician );
 
         dailyScheduleRepository.save ( dailySchedule );
+    }
+
+    @Transactional
+    public void inactivateDaySchedule ( UUID physicianId, LocalDate localDate ) {
+        Optional<DailySchedule> schedule = dailyScheduleRepository.findByPhysicianIdAndDate ( physicianId, localDate );
+
+        if ( schedule.isEmpty ( ) ) {
+            throw new ScheduleNotFoundException ( "Cant find schedule on date [%s] for physician [%s]".formatted (
+                    localDate.format ( DateTimeFormatter.ofPattern ( "dd MM yyyy" ) ), physicianId ) );
+        }
+
+        schedule.get ( ).getTimeSlots ( ).forEach ( t -> timeSlotService.inactivate ( t.getId ( ) ) );
+    }
+
+    public List<PhysicianDaySchedule> getPublicPhysicianSchedules ( UUID physicianId ) {
+        List<DailySchedule> dailySchedules = dailyScheduleRepository.findAllByPhysicianId ( physicianId );
+        return dailySchedules.stream ( ).map ( DailyScheduleMapper::mapToPublicResponse ).toList ( );
+    }
+
+    public List<PhysicianDaySchedule> getPrivatePhysicianSchedules ( UUID physicianId ) {
+        List<DailySchedule> dailySchedules = dailyScheduleRepository.findAllByPhysicianId ( physicianId );
+        return dailySchedules.stream ( ).map ( DailyScheduleMapper::mapToPrivateResponse ).toList ( );
+    }
+
+    public void deletePhysicianFutureSchedules ( Physician physician ) {
+        List<DailySchedule> schedules = dailyScheduleRepository.findAllByPhysicianIdAndDateAfter (
+                physician.getId ( ), LocalDate.now ( )
+        );
+
+        for ( DailySchedule schedule : schedules ) {
+            schedule.getTimeSlots ( ).forEach ( timeSlot -> {
+                archivedSchedulesRepository.save ( DailyScheduleMapper.mapToArchive ( timeSlot ) );
+                timeSlotService.delete ( timeSlot );
+            } );
+            dailyScheduleRepository.delete ( schedule );
+        }
+    }
+
+    @Scheduled(cron = "0 00 00 * * *")
+    @Transactional
+    void archiveSchedules () {
+        List<DailySchedule> dailySchedules = dailyScheduleRepository.findAllByDateBefore ( LocalDate.now ( ) );
+
+        for ( DailySchedule dailySchedule : dailySchedules ) {
+            dailySchedule.getTimeSlots ( ).forEach ( timeSlot -> {
+                archivedSchedulesRepository.save ( DailyScheduleMapper.mapToArchive ( timeSlot ) );
+                timeSlotService.delete ( timeSlot );
+            } );
+            dailyScheduleRepository.delete ( dailySchedule );
+        }
     }
 
     private WorkDay getWorkDayOfClinic ( Clinic clinic, LocalDate scheduleDate ) {
