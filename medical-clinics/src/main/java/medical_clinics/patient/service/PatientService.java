@@ -18,8 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class PatientService {
     private final PatientRepository patientRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    public void addPatient ( CreatePatient createPatient ) {
+    public UUID addPatient ( CreatePatient createPatient ) {
         Patient patient = PatientMapper.mapFromCreateEditPatient ( createPatient );
 
         boolean findByPhoneOrEmail = checkPatientExist ( patient );
@@ -45,29 +44,34 @@ public class PatientService {
 
         eventPublisher.publishEvent ( createPatient );
 
+        return patientRepository.save ( patient ).getId ( );
+    }
+
+    public void updatePatientInfo ( UUID patientId, String country, String identificationCode ) {
+        Optional<Patient> patientByIdentificationProvided = patientRepository.findByCountryAndIdentificationCode (
+                country, identificationCode
+        );
+
+        if ( patientByIdentificationProvided.isPresent ( ) ) {
+            throw new PatientAlreadyExistsException ( MATCH_OTHER_PERSON );
+        }
+
+        Patient patient = getPatientById ( patientId );
+
+        patient.setCountry ( country );
+        patient.setIdentificationCode ( identificationCode );
+
         patientRepository.save ( patient );
+    }
+
+    public PatientInfo getPatientInfoById ( UUID patientId ) {
+        return PatientMapper.mapToPatientInfo ( getPatientById ( patientId ) );
     }
 
     public Patient getPatientById ( UUID id ) {
         return patientRepository.findById ( id ).orElseThrow ( () ->
                 new PatientNotFoundException ( PATIENT_NOT_FOUND )
         );
-    }
-
-    public PatientInfo getPatientInfoByEmail ( String email ) {
-        Patient patient = patientRepository.findByEmail ( email ).orElseThrow ( () ->
-                new PatientNotFoundException ( PATIENT_NOT_FOUND )
-        );
-
-        return PatientMapper.mapToPatientInfo ( patient );
-    }
-
-    public PatientInfo getPatientInfoByPhone ( String phoneNumber ) {
-        Patient patient = patientRepository.findByPhone ( phoneNumber ).orElseThrow ( () ->
-                new PatientNotFoundException ( PATIENT_NOT_FOUND )
-        );
-
-        return PatientMapper.mapToPatientInfo ( patient );
     }
 
     public PatientInfo getPatientInfoByUserAccountId ( UUID accountId ) {
@@ -80,18 +84,38 @@ public class PatientService {
         );
     }
 
-    public PatientInfo getPatientInfoByCountryAndIdentificationCode (
-            String country, String identificationCode ) {
+    public List<PatientInfo> findPatient ( String phoneNumber,
+                                           String email,
+                                           Map<String, String> countryAndIdentificationCode ) {
 
-        Patient patient = patientRepository.findByCountryAndIdentificationCode (
-                        country, identificationCode
-                )
-                .orElseThrow (
-                        () -> new PatientNotFoundException ( PATIENT_NOT_FOUND )
-                );
+        Map<UUID, Patient> patientInfoList = new HashMap<> ( );
 
-        return PatientMapper.mapToPatientInfo ( patient );
+        if ( email != null && !email.isBlank ( ) ) {
+            patientRepository.findByEmail ( email )
+                    .ifPresent ( value -> patientInfoList.put ( value.getId ( ), value ) );
+        }
+
+        if ( phoneNumber != null && !phoneNumber.isBlank ( ) ) {
+
+            patientRepository.findByPhone ( phoneNumber )
+                    .ifPresent ( value -> patientInfoList.putIfAbsent ( value.getId ( ), value ) );
+        }
+
+        if ( countryAndIdentificationCode.containsKey ( "country" ) &&
+                countryAndIdentificationCode.containsKey ( "identificationCode" ) ) {
+
+            patientRepository.findByCountryAndIdentificationCode (
+                    countryAndIdentificationCode.get ( "country" ),
+                    countryAndIdentificationCode.get ( "identificationCode" )
+
+            ).ifPresent ( value -> patientInfoList.putIfAbsent ( value.getId ( ), value ) );
+        }
+
+        return patientInfoList.values ( ).stream ( )
+                .map ( PatientMapper::mapToPatientInfo )
+                .toList ( );
     }
+
 
     @EventListener
     void editPatientInfo ( EditedAccountEvent editedAccount ) {
@@ -155,7 +179,9 @@ public class PatientService {
                 patient = patientRepository.findByEmail ( patient.getEmail ( ) ).get ( );
 
                 if ( patient.getUserAccount ( ) != null ) {
-                    throw new UserAlreadyExistsException ( "User already has account " + patient.getUserAccount ( ).getEmail ( ) );
+                    throw new UserAlreadyExistsException (
+                            "User already has account " + patient.getUserAccount ( ).getEmail ( )
+                    );
                 }
 
                 if ( patient.getPhone ( ) == null ) {
@@ -166,7 +192,9 @@ public class PatientService {
                 patient = patientByPhone.get ( );
 
                 if ( patient.getUserAccount ( ) != null ) {
-                    throw new UserAlreadyExistsException ( "User already has account " + patient.getUserAccount ( ).getEmail ( ) );
+                    throw new UserAlreadyExistsException (
+                            "User already has account " + patient.getUserAccount ( ).getEmail ( )
+                    );
                 }
 
                 patient.setEmail ( newUserAccount.getUserAccount ( ).getEmail ( ) );
@@ -272,7 +300,7 @@ public class PatientService {
             return false;
         }
 
-        if ( !isContactEdited ( patient.getEmail ( ), newEmail ) ) {
+        if ( isContactRetains ( patient.getEmail ( ), newEmail ) ) {
             return false;
         }
 
@@ -284,19 +312,19 @@ public class PatientService {
             return false;
         }
 
-        if ( !isContactEdited ( patient.getPhone ( ), newPhone ) ) {
+        if ( isContactRetains ( patient.getPhone ( ), newPhone ) ) {
             return false;
         }
 
         return patientRepository.findByPhone ( newPhone ).isPresent ( );
     }
 
-    private boolean isContactEdited ( String oldContact, String newContact ) {
+    private boolean isContactRetains ( String oldContact, String newContact ) {
         boolean isContactPresent = oldContact != null;
 
         if ( isContactPresent ) {
-            return !oldContact.equals ( newContact );
+            return oldContact.equals ( newContact );
         }
-        return newContact != null;
+        return newContact == null;
     }
 }
