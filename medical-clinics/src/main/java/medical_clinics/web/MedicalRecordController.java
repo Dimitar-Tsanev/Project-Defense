@@ -13,6 +13,7 @@ import medical_clinics.records.service.RecordsService;
 import medical_clinics.web.dto.NewNoteRequest;
 import medical_clinics.web.dto.response.NoteResponse;
 import medical_clinics.web.exception_handler.ExceptionResponse;
+import medical_clinics.web.validation.new_note_patient.NewNoteConstrainPatientNecessaryInformation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -124,10 +125,13 @@ public class MedicalRecordController {
     })
     @PreAuthorize("hasRole('PHYSICIAN')")
     @PostMapping("/physicians/{physicianId}")
-    public ResponseEntity<Void> addNewNote ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            description = "Information for note creation", required = true,
-            content = @Content(schema = @Schema(implementation = NewNoteRequest.class)
-            )) @PathVariable UUID physicianId, @RequestParam UUID patientId, @RequestBody @Valid NewNoteRequest note ) {
+    public ResponseEntity<Void> addNewNote (
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Information for note creation", required = true,
+                    content = @Content(schema = @Schema(implementation = NewNoteRequest.class))
+            )
+            @PathVariable UUID physicianId, @RequestBody @Valid NewNoteRequest note,
+            @RequestParam @Valid @NewNoteConstrainPatientNecessaryInformation UUID patientId ) {
 
         URI location = ServletUriComponentsBuilder
                 .fromPath ( "http://localhost:8080/api/v1/medical-records/" )
