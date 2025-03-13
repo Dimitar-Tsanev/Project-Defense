@@ -16,7 +16,7 @@ import medical_clinics.specialty.service.SpecialtyService;
 import medical_clinics.user_account.model.Role;
 import medical_clinics.web.dto.CreatePatient;
 import medical_clinics.web.dto.CreatePhysician;
-import medical_clinics.web.dto.DailyScheduleDto;
+import medical_clinics.web.dto.NewDaySchedule;
 import medical_clinics.web.dto.PhysicianEditRequest;
 import medical_clinics.web.dto.events.*;
 import medical_clinics.web.dto.response.PhysicianInfo;
@@ -83,6 +83,7 @@ public class PhysicianService {
 
         physician.setWorkplace ( null );
         physician.setUserAccount ( null );
+        dailyScheduleService.deletePhysicianFutureSchedules ( physician );
 
         physicianRepository.save ( physician );
 
@@ -125,7 +126,7 @@ public class PhysicianService {
     }
 
     @Transactional
-    public void generateSchedule ( UUID physicianAccountId, Collection<DailyScheduleDto> dailySchedules ) {
+    public void generateSchedule ( UUID physicianAccountId, Collection<NewDaySchedule> dailySchedules ) {
         Optional<Physician> physicianOptional = physicianRepository.findByUserAccount_Id ( physicianAccountId );
 
         if ( physicianOptional.isEmpty ( ) ) {
@@ -134,8 +135,8 @@ public class PhysicianService {
 
         Physician physician = physicianOptional.get ( );
 
-        for ( DailyScheduleDto dailyScheduleDto : dailySchedules ) {
-            dailyScheduleService.generateDaySchedule ( physician, dailyScheduleDto );
+        for ( NewDaySchedule newDaySchedule : dailySchedules ) {
+            dailyScheduleService.generateDaySchedule ( physician, newDaySchedule );
         }
     }
 
@@ -154,7 +155,7 @@ public class PhysicianService {
     }
 
     public PhysicianInfo getPhysicianInfo ( UUID physicianId ) {
-        return PhysicianMapper.mapToPhysicianInfo ( getPhysicianById ( physicianId ));
+        return PhysicianMapper.mapToPhysicianInfo ( getPhysicianById ( physicianId ) );
     }
 
     @EventListener
