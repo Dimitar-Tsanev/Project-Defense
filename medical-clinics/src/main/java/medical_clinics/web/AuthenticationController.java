@@ -48,7 +48,7 @@ public class AuthenticationController {
             ),
     })
     @PostMapping("/register")
-    public ResponseEntity<String> register ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
+    public ResponseEntity<Void> register ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "User creation account information", required = true,
             content = @Content(schema = @Schema(implementation = RegisterRequest.class),
                     examples = @ExampleObject(value =
