@@ -48,6 +48,9 @@ public class PhysicianController {
             @ApiResponse(responseCode = "403", description = "Unauthorized",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
+            @ApiResponse(responseCode = "404", description = "Clinic (workplace) not found",
+                    content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
             @ApiResponse(responseCode = "409", description = "Conflict with another user information",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )

@@ -66,8 +66,7 @@ public class AuthenticationController {
         String location = "http://localhost:8080/api/v1/auth/login";
 
         return ResponseEntity.status ( HttpStatus.CREATED )
-                .header ( HttpHeaders.LOCATION, location )
-                .body ( "Successfully registered" );
+                .header ( HttpHeaders.LOCATION, location ).build ();
     }
 
     @Operation(summary = "Login user in our system (send authorization token)")

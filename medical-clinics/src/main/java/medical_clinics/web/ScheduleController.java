@@ -104,7 +104,10 @@ public class ScheduleController {
         return ResponseEntity.ok ( dailyScheduleService.getPrivatePhysicianSchedules ( physicianId ) );
     }
 
-    @Operation(summary = "Get list of physician schedules")
+    @Operation(
+            summary = "Get list of physician schedules",
+            security = @SecurityRequirement(name = "Bearer token")
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200",
                     content = @Content(schema = @Schema(implementation = PhysicianDaySchedule[].class))
@@ -118,7 +121,10 @@ public class ScheduleController {
         return ResponseEntity.ok ( dailyScheduleService.getPublicPhysicianSchedules ( physicianId ) );
     }
 
-    @Operation(summary = "Reserve timeslot (make appointment)")
+    @Operation(
+            summary = "Reserve timeslot (make appointment)",
+            security = @SecurityRequirement(name = "Bearer token")
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Reservation successfully"),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
@@ -137,7 +143,10 @@ public class ScheduleController {
         return ResponseEntity.noContent ( ).build ( );
     }
 
-    @Operation(summary = "Release timeslot (remove appointment)")
+    @Operation(
+            summary = "Release timeslot (remove appointment)",
+            security = @SecurityRequirement(name = "Bearer token")
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Release successfully"),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
@@ -156,7 +165,10 @@ public class ScheduleController {
         return ResponseEntity.noContent ( ).build ( );
     }
 
-    @Operation(summary = "Get list of patient appointments")
+    @Operation(
+            summary = "Get list of patient appointments",
+            security = @SecurityRequirement(name = "Bearer token")
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200",
                     content = @Content(schema = @Schema(implementation = PatientAppointment[].class))
@@ -197,7 +209,7 @@ public class ScheduleController {
     }
 
     @Operation(
-            summary = "Block timeslot schedule",
+            summary = "Block timeslot",
             security = @SecurityRequirement(name = "Bearer token", scopes = {"ROLE_ADMIN", "ROLE_PHYSICIAN"})
     )
     @ApiResponses({

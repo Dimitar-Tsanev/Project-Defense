@@ -147,6 +147,6 @@ public class GlobalExceptionHandler {
     }
 
     private void logException ( Exception e ) {
-        log.error ( "Exception occur cause: {} message: {}", e.getCause ( ).toString ( ), e.getMessage ( ) );
+        log.error ( "Exception occur cause: {} message: {}", e.toString ( ), e.getMessage ( ) );
     }
 }

@@ -49,7 +49,6 @@ public class UserAccountController {
             )
     })
     @PutMapping("/{userId}")
-    @PreAuthorize("authentication.name == @userAccountService.getById(#userId).email")
     public ResponseEntity<Void> updateUserAccount ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for user data update ", required = true,
             content = @Content(schema = @Schema(implementation = UserAccountEditRequest.class)
@@ -64,7 +63,7 @@ public class UserAccountController {
             security = @SecurityRequirement(name = "Bearer token", scopes = "ROLE_ADMIN")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "User edited successfully"),
+            @ApiResponse(responseCode = "204", description = "User role changed successfully"),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
@@ -87,7 +86,7 @@ public class UserAccountController {
             security = @SecurityRequirement(name = "Bearer token", scopes = "ROLE_ADMIN")
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "User edited successfully"),
+            @ApiResponse(responseCode = "204", description = "User blocked"),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
@@ -122,21 +121,26 @@ public class UserAccountController {
             )
     })
     @DeleteMapping("/{userId}")
-    @PreAuthorize("authentication.name == @userAccountService.getById(#userId).email")
     public ResponseEntity<Void> deleteUserAccount ( @PathVariable UUID userId ) {
         userAccountService.deleteUserAccount ( userId );
         return ResponseEntity.noContent ( ).build ( );
     }
 
     @Operation(
-            summary = "Get all clinics short information",
+            summary = "Get all users information",
             security = @SecurityRequirement(name = "Bearer token", scopes = "ROLE_ADMIN")
     )
-    @ApiResponses(
+    @ApiResponses({
             @ApiResponse(responseCode = "200",
                     content = @Content(schema = @Schema(implementation = AccountInformation[].class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
+                    content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Unauthorized",
+                    content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
-    )
+    })
     @GetMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AccountInformation>> getAllUsersAccounts () {
