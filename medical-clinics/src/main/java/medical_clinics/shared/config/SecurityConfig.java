@@ -54,7 +54,7 @@ public class SecurityConfig {
                         authorizeRequests.requestMatchers (
                                         "/auth/**", "/api-docs*/**", "/swagger-ui/**"
                                 ).permitAll ( )
-                                .requestMatchers ( HttpMethod.GET, "/clinics*/**" ).permitAll ( )
+                                .requestMatchers ( HttpMethod.GET, "/clinics*/**", "/physicians" ).permitAll ( )
                                 .anyRequest ( )
                                 .authenticated ( )
                 )
@@ -66,7 +66,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource () {
         CorsConfiguration configuration = new CorsConfiguration ( );
         configuration.setAllowedOrigins ( List.of ( "*" ) );
-        configuration.setAllowedMethods ( List.of ( "GET", "POST" ) );
+        configuration.setAllowedMethods ( List.of ( "GET", "POST", "PUT","PATCH", "DELETE" ) );
         configuration.setAllowedHeaders ( List.of ( "*" ) );
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource ( );
         source.registerCorsConfiguration ( "/**", configuration );
