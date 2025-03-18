@@ -22,8 +22,8 @@ public class PasswordChangeValidator implements ConstraintValidator<PasswordChan
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private String message;
-    private boolean generateMessage;
+    private static String message;
+    private static boolean generateMessage;
 
     @Override
     public void initialize ( PasswordChange constraintAnnotation ) {
@@ -40,39 +40,51 @@ public class PasswordChangeValidator implements ConstraintValidator<PasswordChan
         String oldPassword = accountEdit.getOldPassword ( );
         String newPassword = accountEdit.getNewPassword ( );
 
-        if ( oldPassword == null && newPassword == null ) {
+        if ( (oldPassword == null || oldPassword.isBlank ()) && (newPassword == null || newPassword.isBlank ( ) )) {
             return true;
         }
 
-        if ( oldPassword == null ) {
-            return returnViolations ( context, BLANK_OLD_PASSWORD );
+        if ( oldPassword == null || oldPassword.isBlank () ) {
+            returnViolations ( context, BLANK_OLD_PASSWORD );
+            return false;
         }
 
         Optional<UserAccount> userAccountIfExist = userAccountRepository.findById ( accountEdit.getId ( ) );
 
         if ( userAccountIfExist.isEmpty ( ) ) {
-            return returnViolations ( context, INCORRECT_USER_ID );
+            returnViolations ( context, INCORRECT_USER_ID );
+            return false;
         }
 
         UserAccount userAccount = userAccountIfExist.get ( );
 
         if ( !passwordEncoder.matches ( oldPassword, userAccount.getPassword ( ) ) ) {
-            return returnViolations ( context, INCORRECT_PASSWORD );
+            returnViolations ( context, INCORRECT_PASSWORD );
+            return false;
         }
 
         return true;
     }
 
-    private boolean returnViolations ( ConstraintValidatorContext context, String message ) {
+    private void returnViolations ( ConstraintValidatorContext context, String messageBuilt ) {
         if ( generateMessage ) {
-            this.message = message;
+            message = messageBuilt;
+        }
+
+        if ( INCORRECT_USER_ID.equals ( messageBuilt ) ) {
+            context.unwrap ( HibernateConstraintValidatorContext.class )
+                    .buildConstraintViolationWithTemplate ( messageBuilt )
+                    .addPropertyNode ( "user" )
+                    .addConstraintViolation ( )
+                    .disableDefaultConstraintViolation ( );
+            return;
         }
 
         context.unwrap ( HibernateConstraintValidatorContext.class )
-                .buildConstraintViolationWithTemplate ( this.message )
+                .buildConstraintViolationWithTemplate ( message )
+                .addPropertyNode ( "password change" )
                 .addConstraintViolation ( )
                 .disableDefaultConstraintViolation ( );
 
-        return false;
     }
 }

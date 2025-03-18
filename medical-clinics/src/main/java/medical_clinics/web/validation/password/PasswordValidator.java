@@ -40,6 +40,10 @@ public class PasswordValidator implements ConstraintValidator<Password, CharSequ
 
     @Override
     public boolean isValid ( CharSequence value, ConstraintValidatorContext context ) {
+        if (value == null){
+            return true;
+        }
+
         if ( message.isBlank ( ) ) {
             isMessageEmpty = true;
             message = "Password must not contain white spaces. And must contain at least: %s";
@@ -47,6 +51,7 @@ public class PasswordValidator implements ConstraintValidator<Password, CharSequ
         } else {
             isMessageEmpty = false;
         }
+
         String pattern = getPatternBuilder ( ) + PATTERN_TEMPLATE;
 
         Pattern regex = Pattern.compile ( pattern );

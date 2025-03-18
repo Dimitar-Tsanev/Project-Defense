@@ -6,34 +6,36 @@ import lombok.AllArgsConstructor;
 import medical_clinics.patient.model.Patient;
 import medical_clinics.patient.service.PatientService;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @AllArgsConstructor
 
+@Component
 public class NewNoteConstrainPatientNecessaryInformationValidator
-        implements ConstraintValidator<NewNoteConstrainPatientNecessaryInformation, CharSequence> {
+        implements ConstraintValidator<NewNoteConstrainPatientNecessaryInformation, UUID> {
 
     private final PatientService patientService;
 
-    private String message;
-    private boolean isMessageEmpty;
+    private static String message;
+    private static boolean isMessageEmpty;
 
     @Override
     public void initialize ( NewNoteConstrainPatientNecessaryInformation constraint ) {
-        if ( message.isBlank ( ) ) {
+        if ( message == null || message.isBlank ( ) ) {
             isMessageEmpty = true;
-            this.message = "Edit patient first.";
+            message = "Edit patient first.";
 
         } else {
-            this.message = constraint.message ( );
+            message = constraint.message ( );
             isMessageEmpty = false;
         }
         ConstraintValidator.super.initialize ( constraint );
     }
 
     @Override
-    public boolean isValid ( CharSequence value, ConstraintValidatorContext context ) {
+    public boolean isValid ( UUID value, ConstraintValidatorContext context ) {
         Patient patient = patientService.getPatientById ( UUID.fromString ( value.toString ( ) ) );
 
         String country = patient.getCountry ( );
@@ -57,9 +59,9 @@ public class NewNoteConstrainPatientNecessaryInformationValidator
         return false;
     }
 
-    private void applyMessage ( String message, ConstraintValidatorContext context ) {
+    private void applyMessage ( String messageBuilder, ConstraintValidatorContext context ) {
         if ( isMessageEmpty ) {
-            this.message = this.message + " " + message;
+            message = message + " " + messageBuilder;
         }
 
         context.unwrap ( HibernateConstraintValidatorContext.class )
