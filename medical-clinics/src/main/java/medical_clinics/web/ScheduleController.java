@@ -14,15 +14,15 @@ import medical_clinics.schedule.services.DailyScheduleService;
 import medical_clinics.schedule.services.TimeSlotService;
 import medical_clinics.web.dto.NewDaySchedule;
 import medical_clinics.web.dto.response.PatientAppointment;
-import medical_clinics.web.dto.response.PhysicianDaySchedule;
+import medical_clinics.web.dto.response.schedule_private.PhysicianDaySchedulePrivate;
+import medical_clinics.web.dto.response.schedule_public.PhysicianDaySchedulePublic;
 import medical_clinics.web.exception_handler.ExceptionResponse;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -60,7 +60,7 @@ public class ScheduleController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PostMapping("/new/physician/{physicianId}")
+    @PostMapping("/new/physician/{accountId}")
     @PreAuthorize("hasAnyRole('ADMIN','PHYSICIAN')")
     public ResponseEntity<Void> generateSchedule (
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -68,19 +68,13 @@ public class ScheduleController {
                     content = @Content(schema = @Schema(implementation = NewDaySchedule[].class))
             )
             @RequestBody List<@Valid NewDaySchedule> newDaySchedule,
-            @PathVariable UUID physicianId ) {
+            @PathVariable UUID accountId ) {
 
-        physicianService.generateSchedule ( physicianId, newDaySchedule );
+        UUID id = physicianService.generateSchedule ( accountId, newDaySchedule );
 
-        URI location = ServletUriComponentsBuilder
-                .fromPath ( "http://localhost:8080/api/v1/schedules/physician/{physicianId}" )
-                .path ( "/{id}" )
-                .buildAndExpand (
-                        physicianId
-                )
-                .toUri ( );
+        String path = "http://localhost:8080/api/v1/schedules/physician/" + id.toString ( );
 
-        return ResponseEntity.created ( location ).build ( );
+        return ResponseEntity.status ( HttpStatus.CREATED ).header ( HttpHeaders.LOCATION, path ).build ( );
     }
 
     @Operation(
@@ -89,7 +83,7 @@ public class ScheduleController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200",
-                    content = @Content(schema = @Schema(implementation = PhysicianDaySchedule[].class))
+                    content = @Content(schema = @Schema(implementation = PhysicianDaySchedulePrivate[].class))
             ),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
@@ -100,7 +94,7 @@ public class ScheduleController {
     })
     @GetMapping("/physician/{physicianId}")
     @PreAuthorize("hasAnyRole('ADMIN','PHYSICIAN')")
-    public ResponseEntity<List<PhysicianDaySchedule>> getPhysicianSchedules ( @PathVariable UUID physicianId ) {
+    public ResponseEntity<List<PhysicianDaySchedulePrivate>> getPhysicianSchedules ( @PathVariable UUID physicianId ) {
         return ResponseEntity.ok ( dailyScheduleService.getPrivatePhysicianSchedules ( physicianId ) );
     }
 
@@ -110,14 +104,14 @@ public class ScheduleController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200",
-                    content = @Content(schema = @Schema(implementation = PhysicianDaySchedule[].class))
+                    content = @Content(schema = @Schema(implementation = PhysicianDaySchedulePublic[].class))
             ),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
     @GetMapping("/")
-    public ResponseEntity<List<PhysicianDaySchedule>> getPublicPhysicianSchedules ( @RequestParam UUID physicianId ) {
+    public ResponseEntity<List<PhysicianDaySchedulePublic>> getPublicPhysicianSchedules ( @RequestParam UUID physicianId ) {
         return ResponseEntity.ok ( dailyScheduleService.getPublicPhysicianSchedules ( physicianId ) );
     }
 
@@ -187,7 +181,7 @@ public class ScheduleController {
             security = @SecurityRequirement(name = "Bearer token", scopes = {"ROLE_ADMIN", "ROLE_PHYSICIAN"})
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Physician schedule blocked successfully" ),
+            @ApiResponse(responseCode = "204", description = "Physician schedule blocked successfully"),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
@@ -213,7 +207,7 @@ public class ScheduleController {
             security = @SecurityRequirement(name = "Bearer token", scopes = {"ROLE_ADMIN", "ROLE_PHYSICIAN"})
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Timeslot blocked successfully" ),
+            @ApiResponse(responseCode = "204", description = "Timeslot blocked successfully"),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
