@@ -1,10 +1,7 @@
 package medical_clinics.schedule.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import medical_clinics.patient.model.Patient;
 
 import java.time.LocalTime;
@@ -13,7 +10,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 
 @Entity
 public class TimeSlot {
