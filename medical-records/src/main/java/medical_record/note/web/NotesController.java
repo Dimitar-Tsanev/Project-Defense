@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
-@RestController("/api/v1/notes")
+
+@RestController
+@RequestMapping("/notes")
 public class NotesController {
     private final NoteService noteService;
 

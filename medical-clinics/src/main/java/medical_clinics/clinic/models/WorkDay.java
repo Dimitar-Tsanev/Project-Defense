@@ -1,10 +1,7 @@
 package medical_clinics.clinic.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalTime;
 import java.util.UUID;
@@ -12,7 +9,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 
 @Entity
 public class WorkDay {
@@ -30,4 +28,8 @@ public class WorkDay {
 
     @Basic(optional = false)
     private LocalTime endOfWorkingDay;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Clinic clinic;
 }

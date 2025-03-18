@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
@@ -31,7 +32,7 @@ public class OpenApiConfig {
                                 )
                 )
                 .servers (
-                        List.of ( new Server ( ).url ( "http://localhost:8080/api/v1/" ).description ( "Development" ) )
+                        List.of ( new Server ( ).url ( "http://localhost:8080/api/v0/" ).description ( "Development" ) )
                 )
                 .components (
                         new Components ( ).addSecuritySchemes ( "Bearer token",
@@ -40,6 +41,9 @@ public class OpenApiConfig {
                                         .in ( SecurityScheme.In.HEADER )
                                         .scheme ( "bearer" )
                                         .bearerFormat ( "JWT" ) )
+                )
+                .schema (
+                        "LocalTime", new Schema<> ( ).type ( "string" ).example ( "12:00:00" )
                 )
                 .security ( List.of ( new SecurityRequirement ( ).addList ( "Bearer token" ) ) );
     }

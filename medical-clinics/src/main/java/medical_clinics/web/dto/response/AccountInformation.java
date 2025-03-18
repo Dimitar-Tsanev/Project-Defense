@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import medical_clinics.user_account.model.Role;
+import medical_clinics.user_account.model.UserStatus;
+
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -17,7 +20,7 @@ public class AccountInformation {
 
     private String email;
 
-    private String role;
+    private Role role;
 
-    private String status;
+    private UserStatus status;
 }

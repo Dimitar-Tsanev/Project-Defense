@@ -1,5 +1,7 @@
-package medical_clinics.web.dto.response.apointmet;
+package medical_clinics.web.dto.response.schedule_public;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,10 +16,12 @@ import java.util.UUID;
 @Builder
 @Getter
 
-public class DayAppointmentPublic implements DayAppointment {
+public class DayAppointmentPublic {
     private UUID id;
 
     private Status status;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @Schema(type = "string", example = "17:00:00")
     private LocalTime startTime;
 }

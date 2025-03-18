@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 
 public class PhysicianInfo {
-    private UUID id;
+    private UUID physicianId;
 
     private String firstName;
 

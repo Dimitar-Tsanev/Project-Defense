@@ -1,10 +1,7 @@
 package medical_clinics.physician.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import medical_clinics.clinic.models.Clinic;
 import medical_clinics.schedule.models.DailySchedule;
 import medical_clinics.specialty.model.Specialty;
@@ -16,7 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 
 @Entity
 public class Physician {
@@ -53,7 +51,4 @@ public class Physician {
     @ManyToOne
     @JoinColumn(nullable = false)
     private Specialty specialty;
-
-    @OneToMany(mappedBy = "physician", targetEntity = DailySchedule.class, fetch = FetchType.EAGER)
-    private Collection<DailySchedule> schedules;
 }

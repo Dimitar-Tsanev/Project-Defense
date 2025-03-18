@@ -32,8 +32,11 @@ public class PatientMapper {
     }
 
     public static PatientInfo mapToPatientInfo ( Patient patient ) {
+        if ( patient == null ) {
+            return null;
+        }
         return PatientInfo.builder ( )
-                .id ( patient.getId ( ) )
+                .patientId ( patient.getId ( ) )
                 .firstName ( patient.getFirstName ( ) )
                 .lastName ( patient.getLastName ( ) )
                 .country ( patient.getCountry ( ) )

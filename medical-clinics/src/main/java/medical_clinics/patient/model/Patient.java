@@ -1,10 +1,7 @@
 package medical_clinics.patient.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.user_account.model.UserAccount;
 
@@ -14,7 +11,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 
 @Entity
 @Table(

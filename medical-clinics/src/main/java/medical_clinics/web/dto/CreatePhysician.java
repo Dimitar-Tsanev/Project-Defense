@@ -1,19 +1,19 @@
 package medical_clinics.web.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import medical_clinics.specialty.model.SpecialtyName;
 import org.hibernate.validator.constraints.URL;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 
 public class CreatePhysician {
 
@@ -40,6 +40,11 @@ public class CreatePhysician {
     private String description;
 
     @NotBlank(message = "{not.blank}")
+    @Schema(
+            type = "string",
+            pattern = "^[a-zA-Z0-9]+([._-][0-9a-zA-Z]+)*@[a-zA-Z0-9]+([.-][0-9a-zA-Z]+)*\\.[a-zA-Z]{2,}$",
+            example = "example@example.com"
+    )
     @Email(
             message = "{email.format.not.match}",
             regexp = "^[a-zA-Z0-9]+([._-][0-9a-zA-Z]+)*@[a-zA-Z0-9]+([.-][0-9a-zA-Z]+)*\\.[a-zA-Z]{2,}$"
@@ -53,5 +58,9 @@ public class CreatePhysician {
     private String workplaceAddress;
 
     @NotBlank(message = "{not.blank}")
+    @Schema(
+            type = "string",
+            description = "Case insensitive if word separator is space dot or hyphens will be change automatically",
+            implementation = SpecialtyName.class)
     private String specialty;
 }

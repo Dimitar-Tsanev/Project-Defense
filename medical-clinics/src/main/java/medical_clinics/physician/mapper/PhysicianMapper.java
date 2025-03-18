@@ -30,7 +30,7 @@ public class PhysicianMapper {
                 specialtyName.substring ( 1 ).toLowerCase ( );
 
         return PhysicianInfo.builder ( )
-                .id ( physician.getId ( ) )
+                .physicianId ( physician.getId ( ) )
                 .firstName ( physician.getFirstName ( ) )
                 .lastName ( physician.getLastName ( ) )
                 .abbreviation ( physician.getAbbreviation ( ) )

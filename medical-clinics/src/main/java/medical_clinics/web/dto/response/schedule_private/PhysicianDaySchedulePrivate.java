@@ -1,10 +1,9 @@
-package medical_clinics.web.dto.response;
+package medical_clinics.web.dto.response.schedule_private;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import medical_clinics.web.dto.response.apointmet.DayAppointment;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,10 +14,10 @@ import java.util.UUID;
 @Builder
 @Getter
 
-public class PhysicianDaySchedule {
+public class PhysicianDaySchedulePrivate {
     private UUID id;
 
     private LocalDate date;
 
-    private List<DayAppointment> schedule;
+    private List<DayAppointmentPrivate> schedule;
 }

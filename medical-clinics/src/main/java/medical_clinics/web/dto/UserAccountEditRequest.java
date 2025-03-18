@@ -1,5 +1,6 @@
 package medical_clinics.web.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +18,7 @@ import java.util.UUID;
 
 @PasswordChange
 public class UserAccountEditRequest {
-
     @NotNull(message = "{not.blank}")
-    @org.hibernate.validator.constraints.UUID(message = "{UUID.valid}")
     private UUID id;
 
     @NotBlank(message = "{not.blank}")
@@ -45,6 +44,11 @@ public class UserAccountEditRequest {
     private String phone;
 
     @NotBlank(message = "{not.blank}")
+    @Schema(
+            type = "string",
+            pattern = "^[a-zA-Z0-9]+([._-][0-9a-zA-Z]+)*@[a-zA-Z0-9]+([.-][0-9a-zA-Z]+)*\\.[a-zA-Z]{2,}$",
+            example = "example@example.com"
+    )
     @Email(
             message = "{email.format.not.match}",
             regexp = "^[a-zA-Z0-9]+([._-][0-9a-zA-Z]+)*@[a-zA-Z0-9]+([.-][0-9a-zA-Z]+)*\\.[a-zA-Z]{2,}$"
@@ -52,6 +56,11 @@ public class UserAccountEditRequest {
     private String email;
 
     @Size(min = 8, max = 20, message = "{password.length}")
+    @Schema(
+            type = "string",
+            pattern = "(?=\\S+$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[.!@#$%^&*()_+<>?])[A-Za-z\\d!@#$%%^&*()_+<>?.]*",
+            example = "1aA.....", minLength = 8, maxLength = 20
+    )
     @Password(
             constraintDigit = true,
             constraintLowercase = true,
@@ -62,6 +71,11 @@ public class UserAccountEditRequest {
     private String oldPassword;
 
     @Size(min = 8, max = 20, message = "{password.length}")
+    @Schema(
+            type = "string",
+            pattern = "(?=\\S+$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[.!@#$%^&*()_+<>?])[A-Za-z\\d!@#$%%^&*()_+<>?.]*",
+            example = "1aA....."
+    )
     @Password(
             constraintDigit = true,
             constraintLowercase = true,

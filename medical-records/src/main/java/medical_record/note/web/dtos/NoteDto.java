@@ -29,19 +29,23 @@ public class NoteDto {
     private String clinicIdentificationNumber;
 
     @NotNull
-    @org.hibernate.validator.constraints.UUID
     private UUID patientId;
 
     @NotNull
-    @org.hibernate.validator.constraints.UUID
     private UUID physicianId;
 
     @NotBlank
-    @Size(min = 5, max = 255)
-    @Pattern(regexp = "[A-Za-z0-9,.\\- _]")
+    @Size(min = 5, max = 255, message = "Diagnosis must be between 5 and 255 character long")
+    @Pattern(
+            regexp = "[A-Za-z0-9,.\\-_\\s]+",
+            message = "Diagnosis may contain: hyphens, commas, dots, digits, spaces, upper and lower case latin letters"
+    )
     private String diagnosis;
 
-    @Pattern(regexp = "^[A-Z]\\d{2}\\.\\d$")
+    @Pattern(
+            regexp = "^[A-Z]\\d{2}\\.\\d$",
+            message = "Diagnosis code must follow the pattern uppercase latin letter two digits dot digit. Example - F30.9"
+    )
     private String diagnosisCode;
 
     private String chiefComplaint;

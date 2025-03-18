@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Collection;
 import java.util.UUID;
 
-@FeignClient(name = "medical-records-notes", url = "http://localhost:8081/api/v1/notes")
+@FeignClient(name = "medical-records-notes", url = "http://localhost:8081/api/v0/notes")
 public interface MedicalRecordsClient {
 
     @PostMapping
@@ -23,6 +23,6 @@ public interface MedicalRecordsClient {
     @GetMapping("/patient/{patientId}")
     ResponseEntity<Collection<NoteDto>> getPatientRecord ( @PathVariable(value = "patientId") UUID patientId );
 
-    @GetMapping("/physician/{physicianID}")
-    ResponseEntity<Collection<NoteDto>> getPhysicianNotes ( @PathVariable(value = "physicianID") UUID physicianID );
+    @GetMapping("/physician/{physicianId}")
+    ResponseEntity<Collection<NoteDto>> getPhysicianNotes ( @PathVariable(value = "physicianId") UUID physicianID );
 }
