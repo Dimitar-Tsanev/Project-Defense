@@ -79,15 +79,17 @@ public class PhysicianService {
 
         UUID formerWorkplaceId = physician.getWorkplace ( ).getId ( );
         UUID specialtyId = physician.getSpecialty ( ).getId ( );
-        UUID accountID = physician.getUserAccount ( ).getId ( );
+
+        if ( physician.getUserAccount ( ) != null ) {
+            notifyUserAccount ( physician.getUserAccount ( ).getId ( ) );
+            physician.setUserAccount ( null );
+        }
 
         physician.setWorkplace ( null );
-        physician.setUserAccount ( null );
         dailyScheduleService.deletePhysicianFutureSchedules ( physician );
 
         physicianRepository.save ( physician );
 
-        notifyUserAccount ( accountID );
         notifyClinic ( formerWorkplaceId, specialtyId );
     }
 
@@ -126,7 +128,7 @@ public class PhysicianService {
     }
 
     @Transactional
-    public void generateSchedule ( UUID physicianAccountId, Collection<NewDaySchedule> dailySchedules ) {
+    public UUID generateSchedule ( UUID physicianAccountId, Collection<NewDaySchedule> dailySchedules ) {
         Optional<Physician> physicianOptional = physicianRepository.findByUserAccount_Id ( physicianAccountId );
 
         if ( physicianOptional.isEmpty ( ) ) {
@@ -138,6 +140,8 @@ public class PhysicianService {
         for ( NewDaySchedule newDaySchedule : dailySchedules ) {
             dailyScheduleService.generateDaySchedule ( physician, newDaySchedule );
         }
+
+        return physician.getId ( );
     }
 
     public List<PhysicianInfo> getPhysiciansByClinicAndSpeciality ( UUID clinicId, UUID specialityId ) {
