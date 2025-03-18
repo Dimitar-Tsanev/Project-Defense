@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +18,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -49,11 +50,15 @@ public class SecurityConfig {
                         session.sessionCreationPolicy ( STATELESS )
                 )
                 .oauth2ResourceServer ( config ->
-                        config.jwt ( Customizer.withDefaults ( ) ) )
+                        config.jwt ( jwtConfigurer ->
+                                jwtConfigurer.jwtAuthenticationConverter ( authoritiesConverter ( ) )
+                        )
+                )
                 .authorizeHttpRequests ( authorizeRequests ->
                         authorizeRequests.requestMatchers (
                                         "/auth/**", "/api-docs*/**", "/swagger-ui/**"
-                                ).permitAll ( )
+                                )
+                                .permitAll ( )
                                 .requestMatchers ( HttpMethod.GET, "/clinics*/**", "/physicians" ).permitAll ( )
                                 .anyRequest ( )
                                 .authenticated ( )
@@ -63,10 +68,19 @@ public class SecurityConfig {
     }
 
     @Bean
+    JwtAuthenticationConverter authoritiesConverter () {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter ( );
+        grantedAuthoritiesConverter.setAuthorityPrefix ( "ROLE_" );
+        JwtAuthenticationConverter authenticationConverter = new JwtAuthenticationConverter ( );
+        authenticationConverter.setJwtGrantedAuthoritiesConverter ( grantedAuthoritiesConverter );
+        return authenticationConverter;
+    }
+
+    @Bean
     CorsConfigurationSource corsConfigurationSource () {
         CorsConfiguration configuration = new CorsConfiguration ( );
         configuration.setAllowedOrigins ( List.of ( "*" ) );
-        configuration.setAllowedMethods ( List.of ( "GET", "POST", "PUT","PATCH", "DELETE" ) );
+        configuration.setAllowedMethods ( List.of ( "GET", "POST", "PUT", "PATCH", "DELETE" ) );
         configuration.setAllowedHeaders ( List.of ( "*" ) );
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource ( );
         source.registerCorsConfiguration ( "/**", configuration );
