@@ -14,7 +14,8 @@ import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.schedule.repositories.ArchivedSchedulesRepository;
 import medical_clinics.schedule.repositories.DailyScheduleRepository;
 import medical_clinics.web.dto.NewDaySchedule;
-import medical_clinics.web.dto.response.PhysicianDaySchedule;
+import medical_clinics.web.dto.response.schedule_private.PhysicianDaySchedulePrivate;
+import medical_clinics.web.dto.response.schedule_public.PhysicianDaySchedulePublic;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -35,28 +36,34 @@ public class DailyScheduleService {
 
     @Transactional
     public void generateDaySchedule ( Physician physician, NewDaySchedule newDaySchedule ) {
-        DailySchedule dailySchedule = DailyScheduleMapper.mapToDailySchedule ( newDaySchedule );
+        if ( !newDaySchedule.getStartTime ( ).isBefore ( newDaySchedule.getEndTime ( ) ) ) {
+            throw new ScheduleConflictException ( "Start time of schedule must be before end time" );
+        }
 
         Clinic physicianWorkplace = physician.getWorkplace ( );
 
         WorkDay workDay = getWorkDayOfClinic (
                 physicianWorkplace,
-                dailySchedule.getDate ( )
+                newDaySchedule.getDate ( )
         );
 
-        checkScheduleStartTimeIncorrect ( workDay, dailySchedule.getStartTime ( ) );
-        isScheduleEndTimeIncorrect ( workDay, dailySchedule.getEndTime ( ) );
+        checkScheduleStartTimeIncorrect ( workDay, newDaySchedule.getStartTime ( ) );
+        isScheduleEndTimeIncorrect ( workDay, newDaySchedule.getEndTime ( ) );
 
-        Collection<TimeSlot> timeSlots = timeSlotService.generateTimeSlots (
-                dailySchedule.getStartTime ( ),
-                dailySchedule.getEndTime ( ),
-                newDaySchedule.getTimeSlotInterval ( )
+        Optional<DailySchedule> existingDayScheduleOptional = dailyScheduleRepository.findByPhysicianIdAndDate (
+                physician.getId ( ), newDaySchedule.getDate ( )
         );
 
-        dailySchedule.setTimeSlots ( timeSlots );
-        dailySchedule.setPhysician ( physician );
+        if ( existingDayScheduleOptional.isEmpty ( ) ) {
+            createSchedule ( physician, newDaySchedule );
+            return;
+        }
 
-        dailyScheduleRepository.save ( dailySchedule );
+        DailySchedule existingDaySchedule = existingDayScheduleOptional.get ( );
+
+        if ( checkIsForUpdate ( existingDaySchedule, newDaySchedule ) ) {
+            updateSchedule ( existingDaySchedule, newDaySchedule );
+        }
     }
 
     @Transactional
@@ -71,18 +78,18 @@ public class DailyScheduleService {
         schedule.get ( ).getTimeSlots ( ).forEach ( t -> timeSlotService.inactivate ( t.getId ( ) ) );
     }
 
-    public List<PhysicianDaySchedule> getPublicPhysicianSchedules ( UUID physicianId ) {
-        List<DailySchedule> dailySchedules = dailyScheduleRepository.findAllByPhysicianId ( physicianId );
+    public List<PhysicianDaySchedulePublic> getPublicPhysicianSchedules ( UUID physicianId ) {
+        List<DailySchedule> dailySchedules = dailyScheduleRepository.findAllByPhysicianIdOrderByDateAsc ( physicianId );
         return dailySchedules.stream ( ).map ( DailyScheduleMapper::mapToPublicResponse ).toList ( );
     }
 
-    public List<PhysicianDaySchedule> getPrivatePhysicianSchedules ( UUID physicianId ) {
-        List<DailySchedule> dailySchedules = dailyScheduleRepository.findAllByPhysicianId ( physicianId );
+    public List<PhysicianDaySchedulePrivate> getPrivatePhysicianSchedules ( UUID physicianId ) {
+        List<DailySchedule> dailySchedules = dailyScheduleRepository.findAllByPhysicianIdOrderByDateAsc ( physicianId );
         return dailySchedules.stream ( ).map ( DailyScheduleMapper::mapToPrivateResponse ).toList ( );
     }
 
     public void deletePhysicianFutureSchedules ( Physician physician ) {
-        List<DailySchedule> schedules = dailyScheduleRepository.findAllByPhysicianIdAndDateAfter (
+        List<DailySchedule> schedules = dailyScheduleRepository.findAllByPhysician_IdAndDateAfter (
                 physician.getId ( ), LocalDate.now ( )
         );
 
@@ -106,6 +113,81 @@ public class DailyScheduleService {
                 timeSlotService.delete ( timeSlot );
             } );
             dailyScheduleRepository.delete ( dailySchedule );
+        }
+    }
+
+    private void createSchedule ( Physician physician, NewDaySchedule newDaySchedule ) {
+        DailySchedule dailySchedule = DailyScheduleMapper.mapToDailySchedule ( newDaySchedule );
+
+        dailySchedule.setPhysician ( physician );
+
+        DailySchedule schedule = dailyScheduleRepository.save ( dailySchedule );
+
+        Collection<TimeSlot> timeSlots = timeSlotService.generateTimeSlots (
+                dailySchedule.getStartTime ( ),
+                dailySchedule.getEndTime ( ),
+                newDaySchedule.getTimeSlotInterval ( ),
+                schedule
+        );
+
+        schedule.setTimeSlots ( timeSlots );
+    }
+
+    private boolean checkIsForUpdate ( DailySchedule existingDaySchedule, NewDaySchedule newDaySchedule ) {
+        LocalTime existingScheduleStartTime = existingDaySchedule.getStartTime ( );
+        LocalTime existingScheduleEndTime = existingDaySchedule.getEndTime ( );
+        LocalTime newScheduleStartTime = newDaySchedule.getStartTime ( );
+        LocalTime newScheduleEndTime = newDaySchedule.getEndTime ( );
+
+        boolean isMatchExistingSchedule = existingScheduleStartTime.equals ( newScheduleStartTime ) &&
+                existingScheduleEndTime.equals ( newScheduleEndTime );
+
+        boolean isInExistingSchedule = existingScheduleStartTime.isBefore ( newScheduleStartTime ) &&
+                existingScheduleEndTime.isAfter ( newScheduleEndTime );
+
+        return !isMatchExistingSchedule && !isInExistingSchedule;
+    }
+
+    private void updateSchedule ( DailySchedule dailySchedule, NewDaySchedule newDaySchedule ) {
+        int interval = newDaySchedule.getTimeSlotInterval ( );
+
+        LocalTime existingScheduleStartTime = dailySchedule.getStartTime ( );
+        LocalTime existingScheduleEndTime = dailySchedule.getEndTime ( );
+
+        LocalTime newScheduleStartTime = newDaySchedule.getStartTime ( );
+        LocalTime newScheduleEndTime = newDaySchedule.getEndTime ( );
+
+        boolean isAfterExistingSchedule = !existingScheduleEndTime.isAfter ( newScheduleStartTime );
+        boolean isBeforeExistingSchedule = !existingScheduleStartTime.isBefore ( newScheduleEndTime );
+
+        boolean isStartInBetweenExistingSchedule = !existingScheduleStartTime.isAfter ( newScheduleStartTime ) &&
+                existingScheduleEndTime.isAfter ( newScheduleStartTime );
+
+        boolean isEndInBetweenExistingSchedule = existingScheduleStartTime.isBefore ( newScheduleEndTime ) &&
+                !existingScheduleEndTime.isBefore ( newScheduleEndTime );
+
+        boolean isNewScheduleLarger = existingScheduleStartTime.isAfter ( newScheduleStartTime ) &&
+                existingScheduleEndTime.isBefore ( newScheduleEndTime );
+
+        if ( isAfterExistingSchedule ) {
+            dailySchedule.setEndTime ( newScheduleEndTime );
+
+            timeSlotService.generateTimeSlots ( newScheduleStartTime, newScheduleEndTime, interval, dailySchedule );
+        }
+
+        if ( isBeforeExistingSchedule ) {
+            dailySchedule.setStartTime ( newScheduleStartTime );
+            timeSlotService.generateTimeSlots ( newScheduleStartTime, newScheduleEndTime, interval, dailySchedule );
+        }
+
+        if ( isStartInBetweenExistingSchedule || isNewScheduleLarger ) {
+            dailySchedule.setEndTime ( newScheduleEndTime );
+            timeSlotService.generateTimeSlots ( existingScheduleEndTime, newScheduleEndTime, interval, dailySchedule );
+        }
+
+        if ( isEndInBetweenExistingSchedule || isNewScheduleLarger ) {
+            dailySchedule.setStartTime ( newScheduleStartTime );
+            timeSlotService.generateTimeSlots ( newScheduleStartTime, existingScheduleStartTime, interval, dailySchedule );
         }
     }
 

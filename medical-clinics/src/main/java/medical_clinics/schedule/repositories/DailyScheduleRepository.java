@@ -11,11 +11,11 @@ import java.util.UUID;
 
 @Repository
 public interface DailyScheduleRepository extends JpaRepository<DailySchedule, UUID> {
-    List<DailySchedule> findAllByPhysicianId ( UUID physicianId );
+    List<DailySchedule> findAllByPhysicianIdOrderByDateAsc ( UUID physicianId );
 
     Optional<DailySchedule> findByPhysicianIdAndDate ( UUID physicianId, LocalDate date );
 
     List<DailySchedule> findAllByDateBefore ( LocalDate dateBefore );
 
-    List<DailySchedule> findAllByPhysicianIdAndDateAfter ( UUID id, LocalDate now );
+    List<DailySchedule> findAllByPhysician_IdAndDateAfter ( UUID id, LocalDate now );
 }

@@ -7,10 +7,10 @@ import medical_clinics.schedule.models.DailySchedule;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.web.dto.NewDaySchedule;
 import medical_clinics.web.dto.response.PatientAppointment;
-import medical_clinics.web.dto.response.PhysicianDaySchedule;
-import medical_clinics.web.dto.response.apointmet.DayAppointment;
-import medical_clinics.web.dto.response.apointmet.DayAppointmentPrivate;
-import medical_clinics.web.dto.response.apointmet.DayAppointmentPublic;
+import medical_clinics.web.dto.response.schedule_private.PhysicianDaySchedulePrivate;
+import medical_clinics.web.dto.response.schedule_public.PhysicianDaySchedulePublic;
+import medical_clinics.web.dto.response.schedule_private.DayAppointmentPrivate;
+import medical_clinics.web.dto.response.schedule_public.DayAppointmentPublic;
 
 import java.util.UUID;
 
@@ -26,8 +26,8 @@ public class DailyScheduleMapper {
                 .build ( );
     }
 
-    public static PhysicianDaySchedule mapToPublicResponse ( DailySchedule schedule ) {
-        return PhysicianDaySchedule.builder ( )
+    public static PhysicianDaySchedulePublic mapToPublicResponse ( DailySchedule schedule ) {
+        return PhysicianDaySchedulePublic.builder ( )
                 .id ( schedule.getId ( ) )
                 .date ( schedule.getDate ( ) )
                 .schedule (
@@ -38,8 +38,8 @@ public class DailyScheduleMapper {
                 .build ( );
     }
 
-    public static PhysicianDaySchedule mapToPrivateResponse ( DailySchedule schedule ) {
-        return PhysicianDaySchedule.builder ( )
+    public static PhysicianDaySchedulePrivate mapToPrivateResponse ( DailySchedule schedule ) {
+        return PhysicianDaySchedulePrivate.builder ( )
                 .id ( schedule.getId ( ) )
                 .date ( schedule.getDate ( ) )
                 .schedule (
@@ -72,7 +72,7 @@ public class DailyScheduleMapper {
                 .build ( );
     }
 
-    private static DayAppointment mapToAppointmentPublic ( TimeSlot interval ) {
+    private static DayAppointmentPublic mapToAppointmentPublic ( TimeSlot interval ) {
         return DayAppointmentPublic.builder ( )
                 .id ( interval.getId ( ) )
                 .startTime ( interval.getStartTime ( ) )
@@ -80,7 +80,7 @@ public class DailyScheduleMapper {
                 .build ( );
     }
 
-    private static DayAppointment mapToAppointmentPrivate ( TimeSlot interval ) {
+    private static DayAppointmentPrivate mapToAppointmentPrivate ( TimeSlot interval ) {
         return DayAppointmentPrivate.builder ( )
                 .id ( interval.getId ( ) )
                 .startTime ( interval.getStartTime ( ) )
