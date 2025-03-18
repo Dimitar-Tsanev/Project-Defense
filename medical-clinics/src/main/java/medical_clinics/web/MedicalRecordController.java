@@ -123,7 +123,7 @@ public class MedicalRecordController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PreAuthorize("hasRole('PHYSICIAN')")
+    @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
     @PostMapping("/physicians/{physicianId}")
     public ResponseEntity<Void> addNewNote (
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -132,6 +132,7 @@ public class MedicalRecordController {
             )
             @PathVariable UUID physicianId, @RequestBody @Valid NewNoteRequest note,
             @RequestParam @Valid @NewNoteConstrainPatientNecessaryInformation UUID patientId ) {
+
 
         URI location = ServletUriComponentsBuilder
                 .fromPath ( "http://localhost:8080/api/v1/medical-records/" )
