@@ -19,6 +19,8 @@ import medical_clinics.user_account.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -83,6 +85,11 @@ public class GlobalExceptionHandler {
         return buildResponseError ( HttpStatus.UNAUTHORIZED, ex );
     }
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleException ( AuthorizationDeniedException e ) {
+        return buildResponseError ( HttpStatus.FORBIDDEN, e );
+    }
+
     @ExceptionHandler(NoteException.class)
     public ResponseEntity<ExceptionResponse> handleNoteException ( NoteException e ) {
         logException ( e );
@@ -114,6 +121,7 @@ public class GlobalExceptionHandler {
             SpecialityException.class,
             UserAccountNotFoundException.class,
             ScheduleNotFoundException.class,
+            UsernameNotFoundException.class,
     })
     public ResponseEntity<ExceptionResponse> handleNoSuchElementException ( NoSuchElementException e ) {
         return buildResponseError ( HttpStatus.NOT_FOUND, e );
@@ -147,6 +155,6 @@ public class GlobalExceptionHandler {
     }
 
     private void logException ( Exception e ) {
-        log.error ( "Exception occur message: {}",  e.getMessage ( ) );
+        log.error ( "Exception occur message: {}", e.getMessage ( ) );
     }
 }
