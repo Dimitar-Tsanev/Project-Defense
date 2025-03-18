@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,5 +16,5 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, UUID> {
 
     List<TimeSlot> findAllByStatusEqualsAndStartTimeBeforeAndDailySchedule_Date ( Status status, LocalTime time, LocalDate date );
 
-    List<TimeSlot> findAllByPatientId ( UUID patientId );
+    Collection<TimeSlot> findAllByPatient_Id ( UUID patientId );
 }

@@ -1,12 +1,12 @@
 package medical_clinics.schedule.services;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import medical_clinics.patient.model.Patient;
 import medical_clinics.patient.service.PatientService;
 import medical_clinics.schedule.exceptions.ScheduleConflictException;
 import medical_clinics.schedule.exceptions.ScheduleNotFoundException;
 import medical_clinics.schedule.mapper.DailyScheduleMapper;
+import medical_clinics.schedule.models.DailySchedule;
 import medical_clinics.schedule.models.Status;
 import medical_clinics.schedule.models.TimeSlot;
 import medical_clinics.schedule.repositories.TimeSlotRepository;
@@ -28,22 +28,23 @@ public class TimeSlotService {
     Collection<TimeSlot> generateTimeSlots (
             LocalTime scheduleStartTime,
             LocalTime scheduleEndTime,
-            Integer timeSlotInterval ) {
+            Integer timeSlotInterval, DailySchedule schedule ) {
 
         List<TimeSlot> timeSlots = new ArrayList<> ( );
         LocalTime startTime = scheduleStartTime;
 
-        while (!startTime.isAfter ( scheduleEndTime )) {
+        while (startTime.isBefore ( scheduleEndTime )) {
             TimeSlot timeSlot = TimeSlot.builder ( )
                     .startTime ( startTime )
                     .durationInMinutes ( timeSlotInterval )
                     .status ( Status.FREE )
+                    .dailySchedule ( schedule )
                     .build ( );
 
-            timeSlots.add ( timeSlot );
+            timeSlots.add ( timeSlotRepository.save ( timeSlot ) );
             startTime = startTime.plusMinutes ( timeSlotInterval );
         }
-        return timeSlotRepository.saveAll ( timeSlots );
+        return timeSlots;
     }
 
     public void inactivate ( UUID timeSlotId ) {
@@ -79,7 +80,6 @@ public class TimeSlotService {
         timeSlotRepository.delete ( timeSlot );
     }
 
-    @Transactional
     public void makeAppointment ( UUID accountId, UUID timeSlotId ) {
         TimeSlot timeSlot = getIfExist ( timeSlotId );
 
@@ -108,7 +108,10 @@ public class TimeSlotService {
     }
 
     public List<PatientAppointment> getPatientAppointments ( UUID patientId ) {
-        return timeSlotRepository.findAllByPatientId ( patientId ).stream ( ).map ( DailyScheduleMapper::mapToAppointment ).toList ( );
+        return timeSlotRepository.findAllByPatient_Id ( patientId )
+                .stream ( )
+                .map ( DailyScheduleMapper::mapToAppointment )
+                .toList ( );
     }
 
     public void releaseAppointment ( UUID accountId, UUID appointmentId ) {
@@ -156,10 +159,10 @@ public class TimeSlotService {
         LocalDate appointmentDate = timeSlot.getDailySchedule ( ).getDate ( );
         LocalTime appointmentStartTime = timeSlot.getStartTime ( );
 
-        if ( !currentDate.isAfter ( appointmentDate ) ) {
-            return true;
+        if ( currentDate.equals ( appointmentDate ) ) {
+            return !currentTime.isBefore ( appointmentStartTime );
         }
 
-        return !currentTime.isAfter ( appointmentStartTime );
+        return !currentDate.isAfter ( appointmentDate );
     }
 }
