@@ -1,3 +1,7 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /api/v0/
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -7,7 +11,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.MySQLDialect
     defer-datasource-initialization: true
-server:
-  port: 8081
+  application:
+    name: medical-records-notes
