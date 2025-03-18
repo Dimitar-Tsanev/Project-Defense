@@ -22,7 +22,7 @@ public class UserAccountMapper {
         return UserAccount.builder ( ).
                 email ( registerRequest.getEmail ( ) ).
                 password ( passwordEncoder.encode ( registerRequest.getPassword ( ) ) ).
-                role ( userProperty.getRole ( ) ).
+                role ( userProperty.getDefaultRole ( ) ).
                 status ( userProperty.getStatus ( ) ).
                 build ( );
     }
@@ -64,8 +64,8 @@ public class UserAccountMapper {
         return AccountInformation.builder ( )
                 .id ( userAccount.getId ( ) )
                 .email ( userAccount.getEmail ( ) )
-                .status ( userAccount.getStatus ( ).name ( ) )
-                .role ( userAccount.getRole ( ).name ( ) )
+                .status ( userAccount.getStatus ( ) )
+                .role ( userAccount.getRole ( ) )
                 .build ( );
     }
 }

@@ -11,10 +11,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Builder
 @Setter
 
-@ConfigurationProperties("user.account.default")
+@ConfigurationProperties("user.account")
 public class UserProperty {
 
-    private Role role;
+    private Role defaultRole;
 
     private UserStatus status;
+
+    private String adminMail;
+
+    private String adminPassword;
 }

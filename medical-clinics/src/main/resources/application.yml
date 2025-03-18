@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /api/v1/
+    context-path: /api/v0/
 
 spring:
   datasource:
@@ -8,7 +8,9 @@ spring:
     url: "jdbc:mysql://localhost:${PORT}/medical_clinics?createDatabaseIfNotExist=true"
     username: ${USERNAME}
     password: ${PASSWORD}
-
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,13 +18,14 @@ spring:
     open-in-view: true
 
 user.account:
-  default:
-    role: PATIENT
+    defaultRole: PATIENT
     status: ACTIVE
+    adminMail: admin@admin.com
+    adminPassword: 1Ae#92cO.gK
 
 app:
   jwt:
-    secret: ${JWT_SECRET}
+    secret: AAWEEE2VjZHNhLXNoYTItbmlzdHAyNTYA7564AIbmlzdHAyNTYAGHtwBN5lf15QnqbwSxIS5HSPWGmGqRcONU4Nn1swj6OBFC0SjnsRe2NSa0z1CK21j7VJu730X3T4G1RfJnugRyLJfs
 
 springdoc:
   api-docs:

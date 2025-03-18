@@ -1,5 +1,6 @@
 package medical_clinics.user_account.service;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import medical_clinics.user_account.exceptions.UserAccountNotFoundException;
@@ -34,6 +35,20 @@ public class UserAccountService implements UserDetailsService {
     private final ApplicationEventPublisher eventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final UserProperty userProperty;
+
+    @PostConstruct
+    private void initAdmin () {
+        if ( !userAccountRepository.existsByRole ( Role.ADMIN ) ) {
+            UserAccount admin = UserAccount.builder ( )
+                    .role ( Role.ADMIN )
+                    .email ( userProperty.getAdminMail ( ) )
+                    .password ( passwordEncoder.encode ( userProperty.getAdminPassword ( ) ) )
+                    .status ( UserStatus.ACTIVE )
+                    .build ( );
+
+            userAccountRepository.save ( admin );
+        }
+    }
 
     @Override
     public UserDetails loadUserByUsername ( String email ) throws UsernameNotFoundException {
@@ -73,7 +88,7 @@ public class UserAccountService implements UserDetailsService {
                 () -> new UserAccountNotFoundException ( "User with this email does not exist" )
         );
 
-        UserDataResponse userData =  new UserDataResponse( );
+        UserDataResponse userData = new UserDataResponse ( );
         userData.setAccountId ( account.getId ( ) );
         userData.setRole ( account.getRole ( ) );
 
@@ -110,7 +125,7 @@ public class UserAccountService implements UserDetailsService {
             changeAccountEmail ( userAccount, newEmail );
         }
 
-        if ( accountEdit.getNewPassword ( ) != null ) {
+        if ( accountEdit.getNewPassword ( ) != null && !accountEdit.getNewPassword ( ).isBlank ( ) ) {
             userAccount.setPassword ( passwordEncoder.encode ( accountEdit.getNewPassword ( ) ) );
             userAccountRepository.save ( userAccount );
         }
@@ -151,10 +166,10 @@ public class UserAccountService implements UserDetailsService {
 
     @Transactional
     void demoteAccount ( UserAccount userAccount ) {
-        Role role = userProperty.getRole ( );
+        Role role = userProperty.getDefaultRole ( );
 
-        eventPublisher.publishEvent ( new DemoteAccountEvent ( userAccount.getId ( ), role ) );
         userAccount.setRole ( role );
+        eventPublisher.publishEvent ( new DemoteAccountEvent ( userAccount.getId ( ), role ) );
 
         userAccountRepository.save ( userAccount );
     }
