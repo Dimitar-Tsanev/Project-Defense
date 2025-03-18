@@ -46,9 +46,6 @@ public class ClinicMapper {
                 .phoneNumber ( clinic.getPhoneNumber ( ) )
                 .description ( clinic.getDescription ( ) )
                 .identificationNumber ( clinic.getIdentificationNumber ( ) )
-                .workingDays (
-                        clinic.getWorkingDays ( ).stream ( ).map ( WorkDayMapper::mapToModel ).collect ( Collectors.toSet ( ) )
-                )
                 .build ( );
     }
 }

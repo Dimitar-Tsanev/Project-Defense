@@ -41,15 +41,21 @@ public class ClinicService {
 
     @Transactional
     public UUID addClinic ( CreateEditClinicRequest clinic ) {
-        Clinic newClinic = ClinicMapper.mapToClinic ( clinic );
-
         Optional<Clinic> exists = clinicRepository.findByCityAndAddress ( clinic.getCity ( ), clinic.getAddress ( ) );
 
         if ( exists.isPresent ( ) ) {
             throw new ExistingClinicException ( "Clinic in same city and address already exists" );
         }
 
-        return clinicRepository.save ( newClinic ).getId ( );
+        Clinic newClinic = ClinicMapper.mapToClinic ( clinic );
+
+        Clinic savedClinic = clinicRepository.save ( newClinic );
+
+        Collection<WorkDay> workDaysSaved = workDayService.addWorkdays ( clinic.getWorkingDays ( ), savedClinic );
+
+        savedClinic.setWorkingDays ( workDaysSaved );
+
+        return savedClinic.getId ( );
     }
 
     @Transactional
@@ -77,16 +83,16 @@ public class ClinicService {
             }
         }
 
-        Collection<WorkDay> workDays = workDayService.updateWorkDays (
-                oldClinicInfo.getWorkingDays ( ), clinic.getWorkingDays ( )
-        );
-
         Clinic newClinicInfo = ClinicMapper.mapToClinic ( clinic );
+
         newClinicInfo.setId ( oldClinicInfo.getId ( ) );
-        newClinicInfo.setWorkingDays ( workDays );
-        newClinicInfo.setSpecialties ( oldClinicInfo.getSpecialties ( ) );
 
         clinicRepository.save ( newClinicInfo );
+
+        newClinicInfo.setWorkingDays (
+                workDayService.updateWorkDays ( oldClinicInfo, clinic.getWorkingDays ( ) )
+        );
+        newClinicInfo.setSpecialties ( oldClinicInfo.getSpecialties ( ) );
     }
 
     @Transactional
