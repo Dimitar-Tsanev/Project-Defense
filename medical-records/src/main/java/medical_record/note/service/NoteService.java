@@ -9,6 +9,7 @@ import medical_record.note.util.NoteNotFound;
 import medical_record.note.web.dtos.NoteDto;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,18 +20,18 @@ import java.util.UUID;
 public class NoteService {
     private final NoteRepository noteRepository;
 
-    public NoteDto addNote ( @Valid NoteDto noteDto ) {
+    public UUID addNote ( @Valid NoteDto noteDto ) {
         Note note = noteRepository.save ( NoteMapper.mapFromDto ( noteDto ) );
 
-        return NoteMapper.mapToDto ( note );
+        return NoteMapper.mapToDto ( note ).getNoteId ( );
     }
 
     public List<NoteDto> getPatientMedicalRecord ( UUID patientId ) {
-        return noteRepository.findAllByPatientId ( patientId ).stream ( ).map ( NoteMapper::mapToDto ).toList ( );
+        return mapToDto ( noteRepository.findAllByPatientId ( patientId ) );
     }
 
     public List<NoteDto> getPhysicianNotes ( UUID physicianID ) {
-        return noteRepository.findAllByPhysicianId ( physicianID ).stream ( ).map ( NoteMapper::mapToDto ).toList ( );
+        return mapToDto ( noteRepository.findAllByPhysicianId ( physicianID ) );
     }
 
     public NoteDto getNoteById ( UUID noteId ) {
@@ -41,5 +42,13 @@ public class NoteService {
         }
 
         throw new NoteNotFound ( "Note not found" );
+    }
+
+    private List<NoteDto> mapToDto ( List<Note> notes ) {
+        if ( notes.isEmpty ( ) ) {
+            return new ArrayList<> ( );
+        }
+
+        return notes.stream ( ).map ( NoteMapper::mapToDto ).toList ( );
     }
 }
