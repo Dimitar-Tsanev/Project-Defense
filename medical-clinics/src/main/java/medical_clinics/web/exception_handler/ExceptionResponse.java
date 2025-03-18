@@ -1,7 +1,6 @@
 package medical_clinics.web.exception_handler;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
