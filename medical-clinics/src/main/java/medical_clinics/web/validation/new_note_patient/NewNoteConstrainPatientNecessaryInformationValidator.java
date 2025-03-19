@@ -66,8 +66,8 @@ public class NewNoteConstrainPatientNecessaryInformationValidator
 
         context.unwrap ( HibernateConstraintValidatorContext.class )
                 .buildConstraintViolationWithTemplate ( message )
+                .addPropertyNode ( "patient" )
                 .addConstraintViolation ( )
                 .disableDefaultConstraintViolation ( );
-
     }
 }
