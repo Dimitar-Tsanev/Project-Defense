@@ -38,7 +38,8 @@ public class RecordsService {
     private static int counter;
 
     @Transactional
-    public UUID createNote ( UUID physicianId, UUID patientId, NewNoteRequest noteDto ) {
+    public UUID createNote ( UUID physicianAccountId, UUID patientId, NewNoteRequest noteDto ) {
+        UUID physicianId = physicianService.getPhysicianIdByUserAccountId ( physicianAccountId );
         Physician physician = physicianService.getPhysicianById ( physicianId );
 
         counter++;
@@ -93,17 +94,17 @@ public class RecordsService {
     }
 
     @Transactional
-    public List<NoteResponse> getPhysicianNotes ( UUID physicianId ) {
-        Physician physician = physicianService.getPhysicianById ( physicianId );
+    public List<NoteResponse> getPhysicianNotes ( UUID physicianAccountId ) {
+        UUID physicianId = physicianService.getPhysicianIdByUserAccountId ( physicianAccountId );
 
         ResponseEntity<Collection<NoteDto>> recordResponse =
-                medicalRecordsClient.getPhysicianNotes ( physician.getId ( ) );
+                medicalRecordsClient.getPhysicianNotes ( physicianId );
 
         if ( recordResponse.getStatusCode ( ).is2xxSuccessful ( ) ) {
             return recordResponse.getBody ( ).stream ( ).map ( this::mapToResponse ).toList ( );
         }
 
-        log.error ( "Feign call failed. Error getting physician notes for physician id: {}", physician.getId ( ) );
+        log.error ( "Feign call failed. Error getting physician notes for physician id: {}", physicianId );
         throw new NoteException ( "Cant load physician notes" );
     }
 

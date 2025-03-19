@@ -128,7 +128,7 @@ public class PhysicianService {
     }
 
     @Transactional
-    public UUID generateSchedule ( UUID physicianAccountId, Collection<NewDaySchedule> dailySchedules ) {
+    public void generateSchedule ( UUID physicianAccountId, Collection<NewDaySchedule> dailySchedules ) {
         Optional<Physician> physicianOptional = physicianRepository.findByUserAccount_Id ( physicianAccountId );
 
         if ( physicianOptional.isEmpty ( ) ) {
@@ -140,8 +140,6 @@ public class PhysicianService {
         for ( NewDaySchedule newDaySchedule : dailySchedules ) {
             dailyScheduleService.generateDaySchedule ( physician, newDaySchedule );
         }
-
-        return physician.getId ( );
     }
 
     public List<PhysicianInfo> getPhysiciansByClinicAndSpeciality ( UUID clinicId, UUID specialityId ) {
@@ -156,6 +154,12 @@ public class PhysicianService {
         return physicianRepository.findById ( physicianId ).orElseThrow ( () ->
                 new PhysicianNotFoundException ( "Physician id not found" )
         );
+    }
+
+    public UUID getPhysicianIdByUserAccountId ( UUID physicianAccountId ) {
+        return physicianRepository.findByUserAccount_Id ( physicianAccountId ).orElseThrow (
+                () -> new PhysicianNotFoundException ( "Physician not found" )
+        ).getId ();
     }
 
     public PhysicianInfo getPhysicianInfo ( UUID physicianId ) {
@@ -239,6 +243,7 @@ public class PhysicianService {
             physician.setUserAccount ( newUserAccount.getUserAccount ( ) );
             physicianRepository.save ( physician );
         }
+        eventPublisher.publishEvent ( new PhysicianAccountEvent ( newAccountEmail ) );
     }
 
     @EventListener
