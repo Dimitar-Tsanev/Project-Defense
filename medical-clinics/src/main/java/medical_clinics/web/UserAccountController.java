@@ -48,13 +48,13 @@ public class UserAccountController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PutMapping("/{userId}")
+    @PutMapping("/user/{accountId}")
     public ResponseEntity<Void> updateUserAccount ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for user data update ", required = true,
             content = @Content(schema = @Schema(implementation = UserAccountEditRequest.class)
-            )) @PathVariable UUID userId, @RequestBody @Valid UserAccountEditRequest request ) {
+            )) @PathVariable UUID accountId, @RequestBody @Valid UserAccountEditRequest request ) {
 
-        userAccountService.editUserAccount ( userId, request );
+        userAccountService.editUserAccount ( accountId, request );
         return ResponseEntity.noContent ( ).build ( );
     }
 
@@ -74,10 +74,10 @@ public class UserAccountController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PatchMapping("/{userId}")
+    @PatchMapping("/user/{accountId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> switchRole ( @PathVariable UUID userId ) {
-        userAccountService.switchUserAccountRole ( userId );
+    public ResponseEntity<Void> switchRole ( @PathVariable UUID accountId ) {
+        userAccountService.switchUserAccountRole ( accountId );
         return ResponseEntity.noContent ( ).build ( );
     }
 
@@ -97,10 +97,10 @@ public class UserAccountController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PatchMapping("/ban/{userId}")
+    @PatchMapping("/user/ban/{accountId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> promoteToAdmin ( @PathVariable UUID userId ) {
-        userAccountService.blockUserAccount ( userId );
+    public ResponseEntity<Void> promoteToAdmin ( @PathVariable UUID accountId ) {
+        userAccountService.blockUserAccount ( accountId );
         return ResponseEntity.noContent ( ).build ( );
     }
 
@@ -120,9 +120,9 @@ public class UserAccountController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUserAccount ( @PathVariable UUID userId ) {
-        userAccountService.deleteUserAccount ( userId );
+    @DeleteMapping("/user/{accountId}")
+    public ResponseEntity<Void> deleteUserAccount ( @PathVariable UUID accountId ) {
+        userAccountService.deleteUserAccount ( accountId );
         return ResponseEntity.noContent ( ).build ( );
     }
 

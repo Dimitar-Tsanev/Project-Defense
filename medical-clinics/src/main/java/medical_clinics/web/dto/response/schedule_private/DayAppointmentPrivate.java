@@ -18,7 +18,7 @@ import java.util.UUID;
 @Getter
 
 public class DayAppointmentPrivate {
-    private UUID id;
+    private UUID timeslotId;
 
     private Status status;
 

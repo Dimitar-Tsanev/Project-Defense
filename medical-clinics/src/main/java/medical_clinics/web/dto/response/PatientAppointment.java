@@ -17,7 +17,7 @@ import java.util.UUID;
 @Builder
 
 public class PatientAppointment {
-    private UUID id;
+    private UUID timeslotId;
 
     private LocalDate appointmentDate;
 

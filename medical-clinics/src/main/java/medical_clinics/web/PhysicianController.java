@@ -55,7 +55,7 @@ public class PhysicianController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PostMapping("/")
+    @PostMapping("/physician/new")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> addPhysician ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for physician creation", required = true,
@@ -95,7 +95,7 @@ public class PhysicianController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PutMapping("/{physicianId}")
+    @PutMapping("/physician/{physicianId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> updatePhysician ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for physician update", required = true,
@@ -122,7 +122,7 @@ public class PhysicianController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
     })
-    @DeleteMapping("/{physicianId}")
+    @DeleteMapping("/physician/{physicianId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> dismissPhysician ( @PathVariable UUID physicianId ) {
 
@@ -152,7 +152,7 @@ public class PhysicianController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @GetMapping("/{physicianId}")
+    @GetMapping("/physician/{physicianId}")
     public ResponseEntity<PhysicianInfo> getPhysicianInfo ( @PathVariable UUID physicianId ) {
         return ResponseEntity.ok ( physicianService.getPhysicianInfo ( physicianId ) );
     }

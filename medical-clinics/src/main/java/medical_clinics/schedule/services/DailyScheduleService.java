@@ -68,7 +68,9 @@ public class DailyScheduleService {
 
     @Transactional
     public void inactivateDaySchedule ( UUID physicianId, LocalDate localDate ) {
-        Optional<DailySchedule> schedule = dailyScheduleRepository.findByPhysicianIdAndDate ( physicianId, localDate );
+        Optional<DailySchedule> schedule = dailyScheduleRepository.findAllByPhysician_UserAccount_IdAndDate (
+                physicianId, localDate
+        );
 
         if ( schedule.isEmpty ( ) ) {
             throw new ScheduleNotFoundException ( "Cant find schedule on date [%s] for physician [%s]".formatted (
@@ -84,7 +86,9 @@ public class DailyScheduleService {
     }
 
     public List<PhysicianDaySchedulePrivate> getPrivatePhysicianSchedules ( UUID physicianId ) {
-        List<DailySchedule> dailySchedules = dailyScheduleRepository.findAllByPhysicianIdOrderByDateAsc ( physicianId );
+        List<DailySchedule> dailySchedules =
+                dailyScheduleRepository.findAllByPhysician_UserAccount_IdOrderByDateAsc ( physicianId );
+
         return dailySchedules.stream ( ).map ( DailyScheduleMapper::mapToPrivateResponse ).toList ( );
     }
 

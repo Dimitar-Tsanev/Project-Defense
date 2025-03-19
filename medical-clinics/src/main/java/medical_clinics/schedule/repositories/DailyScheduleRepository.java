@@ -15,7 +15,11 @@ public interface DailyScheduleRepository extends JpaRepository<DailySchedule, UU
 
     Optional<DailySchedule> findByPhysicianIdAndDate ( UUID physicianId, LocalDate date );
 
+    Optional<DailySchedule> findAllByPhysician_UserAccount_IdAndDate ( UUID userAccountId, LocalDate date );
+
     List<DailySchedule> findAllByDateBefore ( LocalDate dateBefore );
 
     List<DailySchedule> findAllByPhysician_IdAndDateAfter ( UUID id, LocalDate now );
+
+    List<DailySchedule> findAllByPhysician_UserAccount_IdOrderByDateAsc ( UUID userAccountId );
 }

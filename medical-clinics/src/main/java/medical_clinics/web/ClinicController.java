@@ -63,7 +63,7 @@ public class ClinicController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PostMapping("/")
+    @PostMapping("/clinic/new")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> addNewClinic ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for clinic creation ", required = true,
@@ -90,7 +90,7 @@ public class ClinicController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @GetMapping("/{clinicId}")
+    @GetMapping("/clinic/{clinicId}")
     public ResponseEntity<ClinicDetails> getClinicInfo ( @PathVariable UUID clinicId ) {
         return ResponseEntity.ok ( clinicService.getClinicById ( clinicId ) );
     }
@@ -117,7 +117,7 @@ public class ClinicController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PutMapping("/{clinicId}")
+    @PutMapping("/clinic/{clinicId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> editClinic ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for clinic update ", required = true,
@@ -144,7 +144,7 @@ public class ClinicController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
     })
-    @DeleteMapping("/{clinicId}")
+    @DeleteMapping("/clinic/{clinicId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteClinic ( @PathVariable UUID clinicId ) {
         clinicService.deleteClinic ( clinicId );

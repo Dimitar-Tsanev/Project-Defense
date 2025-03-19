@@ -50,7 +50,7 @@ public class MedicalRecordController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @GetMapping("/{noteId}")
+    @GetMapping("/note/{noteId}")
     public ResponseEntity<NoteResponse> getNote ( @PathVariable UUID noteId ) {
         return ResponseEntity.ok ( recordsService.getNoteById ( noteId ) );
     }
@@ -73,7 +73,7 @@ public class MedicalRecordController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @GetMapping("patients/{patientId}")
+    @GetMapping("/patient/{patientId}")
     public ResponseEntity<List<NoteResponse>> getPatientRecord ( @PathVariable UUID patientId ) {
         return ResponseEntity.ok ( recordsService.getPatientRecord ( patientId ) );
     }
@@ -96,8 +96,8 @@ public class MedicalRecordController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PreAuthorize("hasRole('PHYSICIAN')")
-    @GetMapping("/physicians/{physicianId}")
+    @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
+    @GetMapping("/physician/{physicianId}")
     public ResponseEntity<List<NoteResponse>> getPhysicianNotes ( @PathVariable UUID physicianId ) {
         return ResponseEntity.ok ( recordsService.getPhysicianNotes ( physicianId ) );
     }
@@ -124,7 +124,7 @@ public class MedicalRecordController {
             )
     })
     @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
-    @PostMapping("/physicians/{physicianId}")
+    @PostMapping("/note/new/physician/{physicianId}")
     public ResponseEntity<Void> addNewNote (
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Information for note creation", required = true,

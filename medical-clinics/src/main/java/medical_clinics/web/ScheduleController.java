@@ -92,10 +92,10 @@ public class ScheduleController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @GetMapping("/physician/{physicianId}")
+    @GetMapping("/physician/{accountId}")
     @PreAuthorize("hasAnyRole('ADMIN','PHYSICIAN')")
-    public ResponseEntity<List<PhysicianDaySchedulePrivate>> getPhysicianSchedules ( @PathVariable UUID physicianId ) {
-        return ResponseEntity.ok ( dailyScheduleService.getPrivatePhysicianSchedules ( physicianId ) );
+    public ResponseEntity<List<PhysicianDaySchedulePrivate>> getPhysicianSchedules ( @PathVariable UUID accountId ) {
+        return ResponseEntity.ok ( dailyScheduleService.getPrivatePhysicianSchedules ( accountId ) );
     }
 
     @Operation(
@@ -131,9 +131,9 @@ public class ScheduleController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PatchMapping("/appointments/{appointmentId}")
-    public ResponseEntity<Void> makeAppointment ( @RequestParam UUID accountId, @PathVariable UUID appointmentId ) {
-        timeSlotService.makeAppointment ( accountId, appointmentId );
+    @PatchMapping("/appointments/{timeslotId}")
+    public ResponseEntity<Void> makeAppointment ( @RequestParam UUID accountId, @PathVariable UUID timeslotId ) {
+        timeSlotService.makeAppointment ( accountId, timeslotId );
         return ResponseEntity.noContent ( ).build ( );
     }
 
@@ -153,9 +153,9 @@ public class ScheduleController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @DeleteMapping("/appointments/{appointmentId}")
-    public ResponseEntity<Void> releaseAppointment ( @RequestParam UUID accountId, @PathVariable UUID appointmentId ) {
-        timeSlotService.releaseAppointment ( accountId, appointmentId );
+    @DeleteMapping("/appointments/{timeslotId}")
+    public ResponseEntity<Void> releaseAppointment ( @RequestParam UUID accountId, @PathVariable UUID timeslotId ) {
+        timeSlotService.releaseAppointment ( accountId, timeslotId );
         return ResponseEntity.noContent ( ).build ( );
     }
 
@@ -195,10 +195,10 @@ public class ScheduleController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PatchMapping("/physician/{physicianId}")
+    @PatchMapping("/physician/{accountId}")
     @PreAuthorize("hasAnyRole('ADMIN','PHYSICIAN')")
-    public ResponseEntity<Void> inactivateSchedule ( @PathVariable UUID physicianId, @RequestParam LocalDate localDate ) {
-        dailyScheduleService.inactivateDaySchedule ( physicianId, localDate );
+    public ResponseEntity<Void> inactivateSchedule ( @PathVariable UUID accountId, @RequestParam LocalDate localDate ) {
+        dailyScheduleService.inactivateDaySchedule ( accountId, localDate );
         return ResponseEntity.noContent ( ).build ( );
     }
 

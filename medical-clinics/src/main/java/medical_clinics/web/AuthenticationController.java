@@ -103,7 +103,6 @@ public class AuthenticationController {
 
         userData.setPatientInfo ( patientService.getPatientInfoByUserAccountId ( userData.getAccountId () ) );
 
-
         return ResponseEntity.ok ( ).header ( HttpHeaders.AUTHORIZATION, token ).body ( userData );
     }
 }

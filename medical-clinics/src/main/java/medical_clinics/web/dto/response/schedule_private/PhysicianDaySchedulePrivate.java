@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter
 
 public class PhysicianDaySchedulePrivate {
-    private UUID id;
+    private UUID scheduleId;
 
     private LocalDate date;
 

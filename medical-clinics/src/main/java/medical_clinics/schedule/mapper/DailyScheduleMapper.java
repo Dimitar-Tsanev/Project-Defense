@@ -28,7 +28,7 @@ public class DailyScheduleMapper {
 
     public static PhysicianDaySchedulePublic mapToPublicResponse ( DailySchedule schedule ) {
         return PhysicianDaySchedulePublic.builder ( )
-                .id ( schedule.getId ( ) )
+                .scheduleId ( schedule.getId ( ) )
                 .date ( schedule.getDate ( ) )
                 .schedule (
                         schedule.getTimeSlots ( ).stream ( )
@@ -40,7 +40,7 @@ public class DailyScheduleMapper {
 
     public static PhysicianDaySchedulePrivate mapToPrivateResponse ( DailySchedule schedule ) {
         return PhysicianDaySchedulePrivate.builder ( )
-                .id ( schedule.getId ( ) )
+                .scheduleId ( schedule.getId ( ) )
                 .date ( schedule.getDate ( ) )
                 .schedule (
                         schedule.getTimeSlots ( ).stream ( )
@@ -59,7 +59,7 @@ public class DailyScheduleMapper {
                 physician.getSpecialty ( ).getName ( );
 
         return PatientAppointment.builder ( )
-                .id ( timeSlot.getId ( ) )
+                .timeslotId ( timeSlot.getId ( ) )
                 .startTime ( timeSlot.getStartTime ( ) )
                 .appointmentDate ( timeSlot.getDailySchedule ( ).getDate ( ) )
                 .physician (
@@ -74,7 +74,7 @@ public class DailyScheduleMapper {
 
     private static DayAppointmentPublic mapToAppointmentPublic ( TimeSlot interval ) {
         return DayAppointmentPublic.builder ( )
-                .id ( interval.getId ( ) )
+                .timeslotId ( interval.getId ( ) )
                 .startTime ( interval.getStartTime ( ) )
                 .status ( interval.getStatus ( ) )
                 .build ( );
@@ -82,7 +82,7 @@ public class DailyScheduleMapper {
 
     private static DayAppointmentPrivate mapToAppointmentPrivate ( TimeSlot interval ) {
         return DayAppointmentPrivate.builder ( )
-                .id ( interval.getId ( ) )
+                .timeslotId ( interval.getId ( ) )
                 .startTime ( interval.getStartTime ( ) )
                 .status ( interval.getStatus ( ) )
                 .patientInfo ( PatientMapper.mapToPatientInfo ( interval.getPatient ( ) ) )

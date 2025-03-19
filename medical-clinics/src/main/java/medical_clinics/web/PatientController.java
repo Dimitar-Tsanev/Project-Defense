@@ -54,8 +54,8 @@ public class PatientController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PostMapping("/")
-    @PreAuthorize("hasRole('PHYSICIAN')")
+    @PostMapping("/patient/new")
+    @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
     public ResponseEntity<Void> addPatient ( @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Information for physician creation", required = true,
             content = @Content(schema = @Schema(implementation = CreatePatient.class)
@@ -89,8 +89,8 @@ public class PatientController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @GetMapping("/{patientId}")
-    @PreAuthorize("hasRole('PHYSICIAN')")
+    @GetMapping("/patient/{patientId}")
+    @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
     public ResponseEntity<PatientInfo> getPatient ( @PathVariable UUID patientId ) {
         return ResponseEntity.ok ( patientService.getPatientInfoById ( patientId ) );
     }
@@ -118,8 +118,8 @@ public class PatientController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @GetMapping("/filter/")
-    @PreAuthorize("hasRole('PHYSICIAN')")
+    @GetMapping("/filter")
+    @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
     public ResponseEntity<List<PatientInfo>> findPatient (
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) String email,
@@ -152,8 +152,8 @@ public class PatientController {
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
     })
-    @PutMapping("/{patientId}")
-    @PreAuthorize("hasRole('PHYSICIAN')")
+    @PutMapping("/patient/{patientId}")
+    @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
     public ResponseEntity<Void> setPatientCountryAndIdentificationCode (
             @PathVariable UUID patientId,
             @RequestParam @Valid @Pattern(
