@@ -70,9 +70,9 @@ public class ScheduleController {
             @RequestBody List<@Valid NewDaySchedule> newDaySchedule,
             @PathVariable UUID accountId ) {
 
-        UUID id = physicianService.generateSchedule ( accountId, newDaySchedule );
+        physicianService.generateSchedule ( accountId, newDaySchedule );
 
-        String path = "http://localhost:8080/api/v1/schedules/physician/" + id.toString ( );
+        String path = "http://localhost:8080/api/v0/schedules/physician/" + accountId;
 
         return ResponseEntity.status ( HttpStatus.CREATED ).header ( HttpHeaders.LOCATION, path ).build ( );
     }

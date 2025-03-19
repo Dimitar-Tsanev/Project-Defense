@@ -97,9 +97,9 @@ public class MedicalRecordController {
             )
     })
     @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
-    @GetMapping("/physician/{physicianId}")
-    public ResponseEntity<List<NoteResponse>> getPhysicianNotes ( @PathVariable UUID physicianId ) {
-        return ResponseEntity.ok ( recordsService.getPhysicianNotes ( physicianId ) );
+    @GetMapping("/physician/{accountId}")
+    public ResponseEntity<List<NoteResponse>> getPhysicianNotes ( @PathVariable UUID accountId ) {
+        return ResponseEntity.ok ( recordsService.getPhysicianNotes ( accountId ) );
     }
 
     @Operation(
@@ -124,21 +124,21 @@ public class MedicalRecordController {
             )
     })
     @PreAuthorize("hasAnyRole('PHYSICIAN','ADMIN')")
-    @PostMapping("/note/new/physician/{physicianId}")
+    @PostMapping("/note/new/physician/{accountId}")
     public ResponseEntity<Void> addNewNote (
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Information for note creation", required = true,
                     content = @Content(schema = @Schema(implementation = NewNoteRequest.class))
             )
-            @PathVariable UUID physicianId, @RequestBody @Valid NewNoteRequest note,
+            @PathVariable UUID accountId, @RequestBody @Valid NewNoteRequest note,
             @RequestParam @Valid @NewNoteConstrainPatientNecessaryInformation UUID patientId ) {
 
 
         URI location = ServletUriComponentsBuilder
-                .fromPath ( "http://localhost:8080/api/v1/medical-records/" )
-                .path ( "/{id}" )
+                .fromPath ( "http://localhost:8080/api/v0/medical-records/note/" )
+                .path ( "{id}" )
                 .buildAndExpand (
-                        recordsService.createNote ( physicianId, patientId, note )
+                        recordsService.createNote ( accountId, patientId, note )
                 )
                 .toUri ( );
 

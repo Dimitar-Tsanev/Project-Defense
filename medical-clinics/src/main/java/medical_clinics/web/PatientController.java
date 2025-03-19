@@ -62,8 +62,8 @@ public class PatientController {
             )) @RequestBody @Valid CreatePatient patient ) {
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest ( )
-                .path ( "/{id}" )
+                .fromPath ( "http://localhost:8080/api/v0/patients/patient/" )
+                .path ( "{id}" )
                 .buildAndExpand (
                         patientService.addPatient ( patient )
                 )
