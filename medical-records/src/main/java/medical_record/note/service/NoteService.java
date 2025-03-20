@@ -1,6 +1,5 @@
 package medical_record.note.service;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import medical_record.note.model.Note;
 import medical_record.note.repository.NoteRepository;
@@ -20,10 +19,8 @@ import java.util.UUID;
 public class NoteService {
     private final NoteRepository noteRepository;
 
-    public UUID addNote ( @Valid NoteDto noteDto ) {
-        Note note = noteRepository.save ( NoteMapper.mapFromDto ( noteDto ) );
-
-        return NoteMapper.mapToDto ( note ).getNoteId ( );
+    public UUID addNote ( NoteDto noteDto ) {
+        return noteRepository.save ( NoteMapper.mapFromDto ( noteDto ) ).getId ( );
     }
 
     public List<NoteDto> getPatientMedicalRecord ( UUID patientId ) {
