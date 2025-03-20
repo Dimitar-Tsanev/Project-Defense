@@ -61,13 +61,7 @@ public class ClinicService {
     @Transactional
     @Modifying
     public void updateClinic ( UUID clinicId, CreateEditClinicRequest clinic ) {
-        Optional<Clinic> exists = clinicRepository.findById ( clinicId );
-
-        if ( exists.isEmpty ( ) ) {
-            throw new NoSuchClinicException ( "Clinic with provided id does not exist" );
-        }
-
-        Clinic oldClinicInfo = exists.get ( );
+        Clinic oldClinicInfo = getById ( clinicId );
 
         if ( !oldClinicInfo.getCity ( ).equals ( clinic.getCity ( ) ) ||
                 !oldClinicInfo.getAddress ( ).equals ( clinic.getAddress ( ) ) ) {
@@ -112,6 +106,21 @@ public class ClinicService {
                 );
     }
 
+    public void addPhysicianSpeciality ( Physician newPhysician ) {
+        Clinic clinic = newPhysician.getWorkplace ( );
+
+        Specialty specialty = newPhysician.getSpecialty ( );
+
+        boolean containsSpeciality = clinic
+                .getSpecialties ( )
+                .contains ( specialty );
+
+        if ( !containsSpeciality ) {
+            clinic.addSpeciality ( specialty );
+            clinicRepository.save ( clinic );
+        }
+    }
+
     @EventListener
     void removeSpecialityIfNoPhysicianEmployed ( NoSpecialistsLeftEvent noSpecialists ) {
         Clinic clinic = getById ( noSpecialists.getClinicId ( ) );
@@ -124,21 +133,6 @@ public class ClinicService {
                 .collect ( Collectors.toSet ( ) );
 
         clinic.setSpecialties ( specialitiesLeft );
-        clinicRepository.save ( clinic );
-    }
-
-    public void addPhysicianSpeciality ( Physician newPhysician ) {
-        Clinic clinic = newPhysician.getWorkplace ( );
-
-        Specialty specialty = newPhysician.getSpecialty ( );
-
-        boolean containsSpeciality = clinic
-                .getSpecialties ( )
-                .contains ( specialty );
-
-        if ( !containsSpeciality ) {
-            clinic.addSpeciality ( specialty );
-        }
         clinicRepository.save ( clinic );
     }
 
