@@ -63,7 +63,7 @@ public class AuthenticationController {
             )) @RequestBody @Valid RegisterRequest request ) {
 
         userAccountService.register ( request );
-        String location = "http://localhost:8080/api/v1/auth/login";
+        String location = "http://localhost:8080/api/v0/auth/login";
 
         return ResponseEntity.status ( HttpStatus.CREATED )
                 .header ( HttpHeaders.LOCATION, location ).build ();
