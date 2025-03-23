@@ -17,7 +17,8 @@ spring:
     defer-datasource-initialization: true
     open-in-view: true
 
-user.account:
+user:
+  account:
     defaultRole: PATIENT
     status: ACTIVE
     adminMail: admin@admin.com
