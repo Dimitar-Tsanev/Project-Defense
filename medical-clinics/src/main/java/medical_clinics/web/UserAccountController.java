@@ -99,7 +99,7 @@ public class UserAccountController {
     })
     @PatchMapping("/user/ban/{accountId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> promoteToAdmin ( @PathVariable UUID accountId ) {
+    public ResponseEntity<Void> blockUserAccount ( @PathVariable UUID accountId ) {
         userAccountService.blockUserAccount ( accountId );
         return ResponseEntity.noContent ( ).build ( );
     }
