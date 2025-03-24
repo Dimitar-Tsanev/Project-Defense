@@ -1,6 +1,9 @@
 package medical_clinics.shared.config;
 
 import com.nimbusds.jose.JWSAlgorithm;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.core.convert.converter.Converter;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
@@ -42,7 +45,7 @@ public class SecurityConfig {
     private String jwtSecret;
 
     @Bean
-    public SecurityFilterChain filterChain ( HttpSecurity httpSecurity ) throws Exception {
+    public SecurityFilterChain filterChain ( HttpSecurity httpSecurity, Converter<Jwt, AbstractAuthenticationToken> authenticationConverter) throws Exception {
         return httpSecurity
                 .cors ( cors -> corsConfigurationSource () )
                 .csrf ( AbstractHttpConfigurer::disable )
@@ -51,7 +54,7 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer ( config ->
                         config.jwt ( jwtConfigurer ->
-                                jwtConfigurer.jwtAuthenticationConverter ( authoritiesConverter ( ) )
+                                jwtConfigurer.jwtAuthenticationConverter ( authenticationConverter )
                         )
                 )
                 .authorizeHttpRequests ( authorizeRequests ->
