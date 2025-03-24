@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -307,5 +308,29 @@ public class AuthenticationControllerATest {
         verify ( authenticationService, times ( 1 ) ).authenticate ( any () );
         verify ( userAccountService, times ( 1 )).getAccountData ( any ( ) );
         verify ( patientService, times ( 1 ) ).getPatientInfoByUserAccountId ( any ( ) );
+    }
+
+    @Test
+    void when_login_WithAuthenticationFailed_thenShouldReturnUnauthorized401 () throws Exception {
+        LoginRequest loginRequest = LoginRequest.builder ( )
+                .email ( "example@example.com" )
+                .password ( "!1Aaaaaa" )
+                .build ( );
+
+        MockHttpServletRequestBuilder request = post ( "/auth/login" )
+                .contentType ( MediaType.APPLICATION_JSON )
+                .content ( new ObjectMapper ( ).writeValueAsBytes ( loginRequest ) )
+                .with ( jwt ( ) );
+
+        when ( authenticationService.authenticate ( any ( ) ) ).thenThrow ( new BadCredentialsException ( "" ) );
+
+        mockMvc.perform ( request )
+                .andExpect ( status ( ).isUnauthorized () )
+                .andExpect ( jsonPath ( "errorCode" ).value ( "401" ) )
+                .andExpect ( jsonPath ( "messages" ).value ( "Invalid email or password" ) );
+
+        verify ( authenticationService, times ( 1 ) ).authenticate ( any () );
+        verify ( userAccountService, never ()).getAccountData ( any ( ) );
+        verify ( patientService, never () ).getPatientInfoByUserAccountId ( any ( ) );
     }
 }
