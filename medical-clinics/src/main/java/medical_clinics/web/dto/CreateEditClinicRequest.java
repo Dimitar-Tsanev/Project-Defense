@@ -1,6 +1,7 @@
 package medical_clinics.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -40,5 +41,5 @@ public class CreateEditClinicRequest {
     private String pictureUrl;
 
     @NotEmpty(message = "{clinic.workdays.empty}")
-    private List<WorkDayDto> workingDays;
+    private List<@Valid WorkDayDto> workingDays;
 }
