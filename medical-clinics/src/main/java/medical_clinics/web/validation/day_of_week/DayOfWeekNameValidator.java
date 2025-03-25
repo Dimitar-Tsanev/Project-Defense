@@ -17,13 +17,11 @@ public class DayOfWeekNameValidator implements ConstraintValidator<DayOfWeekName
 
     @Override
     public void initialize ( DayOfWeekName constraint ) {
-        if ( message.isBlank ( ) ) {
+        if ( constraint.message ( ).isEmpty ( ) ) {
             isMessageEmpty = true;
-
-        } else {
-            this.message = constraint.message ( );
-            isMessageEmpty = false;
         }
+        message = constraint.message ( );
+
         ConstraintValidator.super.initialize ( constraint );
     }
 
