@@ -8,7 +8,6 @@ import medical_clinics.web.dto.CreateEditClinicRequest;
 import medical_clinics.web.dto.WorkDayDto;
 import medical_clinics.web.dto.response.ClinicDetails;
 import medical_clinics.web.dto.response.ClinicShortInfo;
-import medical_clinics.web.validation.day_of_week.DayOfWeekNameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Import({SecurityConfig.class, DayOfWeekNameValidator.class})
+@Import(SecurityConfig.class)
 @WebMvcTest(ClinicController.class)
 public class ClinicControllerATests {
     private static final String PICTURE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Test.svg/1200px-Test.svg.png";
@@ -338,14 +337,14 @@ public class ClinicControllerATests {
                 );
 
         mockMvc.perform ( request )
-                .andExpect ( status ( ).isNoContent () );
+                .andExpect ( status ( ).isNoContent ( ) );
 
         verify ( clinicService, times ( 1 ) ).deleteClinic ( any ( ) );
     }
 
     @Test
     void when_deleteClinic_withNotAdmin_thenReturnNotFound404 () throws Exception {
-        doThrow ( new NoSuchClinicException ("")).when ( clinicService ).deleteClinic ( any ( ) );
+        doThrow ( new NoSuchClinicException ( "" ) ).when ( clinicService ).deleteClinic ( any ( ) );
 
         MockHttpServletRequestBuilder request = delete ( "/clinics/clinic/{id}", UUID.randomUUID ( ) )
                 .with (
@@ -353,7 +352,7 @@ public class ClinicControllerATests {
                 );
 
         mockMvc.perform ( request )
-                .andExpect ( status ( ).isNotFound () )
+                .andExpect ( status ( ).isNotFound ( ) )
                 .andExpect ( jsonPath ( "errorCode" ).isNotEmpty ( ) )
                 .andExpect ( jsonPath ( "messages" ).isNotEmpty ( ) );
 
