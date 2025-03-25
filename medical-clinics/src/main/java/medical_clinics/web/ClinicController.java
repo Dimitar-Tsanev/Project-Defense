@@ -71,7 +71,8 @@ public class ClinicController {
             )) @RequestBody @Valid CreateEditClinicRequest newClinic ) {
 
         URI location = ServletUriComponentsBuilder
-                .fromPath ( "http://localhost:8080/api/v0/clinics/clinic/" )
+                .fromCurrentRequestUri ().replacePath ( "/api/v0/clinics/clinic/" )
+                .port ( 8080 )
                 .path ( "{id}" )
                 .buildAndExpand (
                         clinicService.addClinic ( newClinic )
