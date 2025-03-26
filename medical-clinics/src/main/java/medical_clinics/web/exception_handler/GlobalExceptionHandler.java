@@ -25,6 +25,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -94,6 +95,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleNoteException ( NoteException e ) {
         logException ( e );
 
+        if ( e.getStatusCode ( ) < 400 ) {
+            return handleUndefinedException ( e );
+        }
+
         return ResponseEntity.status ( HttpStatus.valueOf ( e.getStatusCode ( ) ) ).body (
                 ExceptionResponse.builder ( )
                         .errorCode ( e.getStatusCode ( ) )
@@ -114,6 +119,20 @@ public class GlobalExceptionHandler {
         return buildResponseError ( HttpStatus.CONFLICT, e );
     }
 
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ExceptionResponse> handleException ( HandlerMethodValidationException e ) {
+        logException ( e );
+
+        return ResponseEntity.status ( e.getStatusCode ( ) ).body (
+                ExceptionResponse.builder ( )
+                        .errorCode ( HttpStatus.BAD_REQUEST.value ( ) )
+                        .messages (
+                                Arrays.stream ( e.getDetailMessageArguments ( ) ).map ( Object::toString ).toList ( )
+                        )
+                        .build ( )
+        );
+    }
+
     @ExceptionHandler({
             NoSuchClinicException.class,
             PatientNotFoundException.class,
@@ -130,14 +149,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleUndefinedException ( Exception e ) {
         log.error ( "Internal server error caused by: {} and message {}",
-                e.getClass ( ).getName ( ), e.getMessage ( ) );
+                e.getClass ( ).getSimpleName ( ), e.getMessage ( ) );
 
         return ResponseEntity.status ( HttpStatus.INTERNAL_SERVER_ERROR ).body (
                 ExceptionResponse.builder ( )
                         .errorCode ( HttpStatus.INTERNAL_SERVER_ERROR.value ( ) )
                         .messages (
-                                List.of ( "Internal server error caused by: {} and message {}",
-                                        e.getClass ( ).getName ( ), e.getMessage ( ) )
+                                List.of ( "Internal server error caused by: %s and message: %s".formatted (
+                                        e.getClass ( ).getSimpleName ( ), e.getMessage ( ) ) )
                         )
                         .build ( )
         );
