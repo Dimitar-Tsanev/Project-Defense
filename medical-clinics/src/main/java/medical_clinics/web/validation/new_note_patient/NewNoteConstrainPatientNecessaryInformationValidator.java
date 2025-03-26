@@ -23,7 +23,7 @@ public class NewNoteConstrainPatientNecessaryInformationValidator
 
     @Override
     public void initialize ( NewNoteConstrainPatientNecessaryInformation constraint ) {
-        if ( message == null || message.isBlank ( ) ) {
+        if ( constraint.message ( ) == null || constraint.message ( ).isBlank ( ) ) {
             isMessageEmpty = true;
             message = "Edit patient first.";
 
@@ -70,4 +70,6 @@ public class NewNoteConstrainPatientNecessaryInformationValidator
                 .addConstraintViolation ( )
                 .disableDefaultConstraintViolation ( );
     }
+
+
 }
