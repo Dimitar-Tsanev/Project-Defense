@@ -43,9 +43,6 @@ public class MedicalRecordController {
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
-            @ApiResponse(responseCode = "403", description = "Unauthorized",
-                    content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-            ),
             @ApiResponse(responseCode = "404", description = "Note not found",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             )
@@ -64,9 +61,6 @@ public class MedicalRecordController {
                     content = @Content(schema = @Schema(implementation = NoteResponse[].class))
             ),
             @ApiResponse(responseCode = "401", description = "Bearer token not found or invalid",
-                    content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-            ),
-            @ApiResponse(responseCode = "403", description = "Unauthorized",
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "404", description = "Patient not found",
