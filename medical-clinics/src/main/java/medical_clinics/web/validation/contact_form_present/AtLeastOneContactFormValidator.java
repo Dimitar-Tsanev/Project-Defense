@@ -13,7 +13,6 @@ public class AtLeastOneContactFormValidator implements ConstraintValidator<AtLea
     public void initialize ( AtLeastOneContactForm constraintAnnotation ) {
         message = constraintAnnotation.message ( );
 
-
         ConstraintValidator.super.initialize ( constraintAnnotation );
     }
 
@@ -25,6 +24,7 @@ public class AtLeastOneContactFormValidator implements ConstraintValidator<AtLea
         if ( email == null && phone == null ) {
             context.unwrap ( HibernateConstraintValidatorContext.class )
                     .buildConstraintViolationWithTemplate ( message )
+                    .addPropertyNode ( "contact form" )
                     .addConstraintViolation ( )
                     .disableDefaultConstraintViolation ( );
 
