@@ -3,6 +3,7 @@ package medical_clinics.user_account.service;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import medical_clinics.shared.exception.PersonalInformationDontMatchException;
 import medical_clinics.user_account.exceptions.UserAccountNotFoundException;
 import medical_clinics.user_account.exceptions.UserAlreadyExistsException;
 import medical_clinics.user_account.mapper.UserAccountMapper;
@@ -56,7 +57,6 @@ public class UserAccountService implements UserDetailsService {
                 .findByEmail ( email )
                 .map ( UserAccountMapper::mapToUserDetails )
                 .orElseThrow ( () ->
-
                         new UsernameNotFoundException (
                                 "User with [%s] email not found".formatted ( email )
                         )
@@ -104,7 +104,7 @@ public class UserAccountService implements UserDetailsService {
     @Transactional
     public void editUserAccount ( UUID pathId, UserAccountEditRequest accountEdit ) {
         if ( !pathId.equals ( accountEdit.getId ( ) ) ) {
-            throw new UserAlreadyExistsException ( "Id provided with the form is differ from request parameter" );
+            throw new PersonalInformationDontMatchException ( "Id provided with the form is differ from request parameter" );
         }
 
         Optional<UserAccount> userAccountIfExist = userAccountRepository.findById ( accountEdit.getId ( ) );
