@@ -69,4 +69,85 @@ public class ClinicServiceITests {
         assertEquals ( 1, specialties.size ( ) );
         assertTrue ( specialties.contains ( specialty ) );
     }
+
+    @Test
+    @Transactional
+    void when_addPhysicianSpeciality_SpecialityNotInTheListAndNotInitialized_thenExpectClinicAddSpeciality () {
+        Clinic clinic = Clinic.builder ( )
+                .city ( STRING )
+                .address ( STRING )
+                .workingDays ( new ArrayList<> ( ) )
+                .pictureUrl ( PICTURE_URL )
+                .description ( STRING )
+                .phoneNumber ( "+1234567890" )
+                .identificationNumber ( "AA123456789" )
+                .build ( );
+
+        Clinic savedClinic = clinicRepository.save ( clinic );
+
+        Specialty specialty = specialtyService.getSpecialtyByName ( SpecialtyName.ALLERGIST.name ( ) );
+
+        Physician physician = Physician.builder ( )
+                .firstName ( STRING )
+                .lastName ( STRING )
+                .identificationNumber ( "AA111111111" )
+                .email ( "test@test.com" )
+                .specialty ( specialty )
+                .workplace ( savedClinic )
+                .build ( );
+
+        clinicService.addPhysicianSpeciality ( physician );
+
+        List<Specialty> specialties = clinicRepository.findById ( savedClinic.getId ( ) )
+                .get ( )
+                .getSpecialties ( )
+                .stream ( )
+                .toList ( );
+
+        assertEquals ( 1, specialties.size ( ) );
+        assertTrue ( specialties.contains ( specialty ) );
+    }
+
+    @Test
+    @Transactional
+    void when_addPhysicianSpeciality_SpecialityInTheList_thenExpectClinicAddSpeciality () {
+        Specialty specialty = specialtyService.getSpecialtyByName ( SpecialtyName.ALLERGIST.name ( ) );
+
+        Clinic clinic = Clinic.builder ( )
+                .city ( STRING )
+                .address ( STRING )
+                .workingDays ( new ArrayList<> ( ) )
+                .specialties ( new ArrayList<> ( ) )
+                .pictureUrl ( PICTURE_URL )
+                .description ( STRING )
+                .phoneNumber ( "+1234567890" )
+                .identificationNumber ( "AA123456789" )
+                .specialties ( List.of ( specialty ) )
+                .build ( );
+
+        Clinic savedClinic = clinicRepository.save ( clinic );
+
+        List<Specialty> specialties = (List<Specialty>) clinicRepository.findById ( savedClinic.getId ( ) ).get ( ).getSpecialties ( );
+
+
+        Physician physician = Physician.builder ( )
+                .firstName ( STRING )
+                .lastName ( STRING )
+                .identificationNumber ( "AA111111111" )
+                .email ( "test@test.com" )
+                .specialty ( specialty )
+                .workplace ( savedClinic )
+                .build ( );
+
+        clinicService.addPhysicianSpeciality ( physician );
+
+        List<Specialty> specialtiesAfterAdd = (List<Specialty>) clinicRepository.findById ( savedClinic.getId ( ) ).get ( ).getSpecialties ( );
+
+        assertEquals ( 1, specialties.size ( ) );
+        assertTrue ( specialties.contains ( specialty ) );
+
+        assertEquals ( 1, specialtiesAfterAdd.size ( ) );
+        assertTrue ( specialtiesAfterAdd.contains ( specialty ) );
+    }
+
 }
