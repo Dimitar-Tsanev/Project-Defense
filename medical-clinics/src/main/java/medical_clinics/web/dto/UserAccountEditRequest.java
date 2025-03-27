@@ -2,10 +2,7 @@ package medical_clinics.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import medical_clinics.web.validation.password_change.PasswordChange;
 import medical_clinics.web.validation.password.Password;
 
@@ -13,6 +10,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Getter
 @Setter
 
