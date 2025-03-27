@@ -111,9 +111,16 @@ public class ClinicService {
 
         Specialty specialty = newPhysician.getSpecialty ( );
 
-        boolean containsSpeciality = clinic
-                .getSpecialties ( )
-                .contains ( specialty );
+        boolean containsSpeciality;
+
+        if ( clinic.getSpecialties ( ) == null ) {
+            containsSpeciality = false;
+
+        } else {
+            containsSpeciality = clinic
+                    .getSpecialties ( )
+                    .contains ( specialty );
+        }
 
         if ( !containsSpeciality ) {
             clinic.addSpeciality ( specialty );
