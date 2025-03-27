@@ -582,9 +582,9 @@ public class UserAccountServiceITests {
                 Patient.builder ( ).email ( newEmail ).firstName ( "Some" ).lastName ( "Else" ).phone ( newPhone ).build ( )
         );
 
-        UUID patientId = patientRepository.save (
+        patientRepository.save (
                 Patient.builder ( ).email ( EMAIL ).firstName ( FIRSTNAME ).lastName ( LASTNAME ).build ( )
-        ).getId ( );
+        );
 
         UserAccount userAccount = UserAccount.builder ( )
                 .email ( EMAIL )
