@@ -178,12 +178,6 @@ public class PatientService {
             if ( patientByPhone.isEmpty ( ) ) {
                 patient = patientRepository.findByEmail ( patient.getEmail ( ) ).get ( );
 
-                if ( patient.getUserAccount ( ) != null ) {
-                    throw new UserAlreadyExistsException (
-                            "User already has account " + patient.getUserAccount ( ).getEmail ( )
-                    );
-                }
-
                 if ( patient.getPhone ( ) == null ) {
                     patient.setPhone ( newUserAccount.getPhoneNumber ( ) );
                 }
@@ -191,13 +185,13 @@ public class PatientService {
             } else {
                 patient = patientByPhone.get ( );
 
-                if ( patient.getUserAccount ( ) != null ) {
-                    throw new UserAlreadyExistsException (
-                            "User already has account " + patient.getUserAccount ( ).getEmail ( )
-                    );
-                }
-
                 patient.setEmail ( newUserAccount.getUserAccount ( ).getEmail ( ) );
+            }
+
+            if ( patient.getUserAccount ( ) != null ) {
+                throw new UserAlreadyExistsException (
+                        "User already has account " + patient.getUserAccount ( ).getEmail ( )
+                );
             }
         }
         patient.setUserAccount ( newUserAccount.getUserAccount ( ) );
