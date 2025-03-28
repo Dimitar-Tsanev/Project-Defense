@@ -25,28 +25,6 @@ public class TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
     private final PatientService patientService;
 
-    Collection<TimeSlot> generateTimeSlots (
-            LocalTime scheduleStartTime,
-            LocalTime scheduleEndTime,
-            Integer timeSlotInterval, DailySchedule schedule ) {
-
-        List<TimeSlot> timeSlots = new ArrayList<> ( );
-        LocalTime startTime = scheduleStartTime;
-
-        while (startTime.isBefore ( scheduleEndTime )) {
-            TimeSlot timeSlot = TimeSlot.builder ( )
-                    .startTime ( startTime )
-                    .durationInMinutes ( timeSlotInterval )
-                    .status ( Status.FREE )
-                    .dailySchedule ( schedule )
-                    .build ( );
-
-            timeSlots.add ( timeSlotRepository.save ( timeSlot ) );
-            startTime = startTime.plusMinutes ( timeSlotInterval );
-        }
-        return timeSlots;
-    }
-
     public void inactivate ( UUID timeSlotId ) {
         Optional<TimeSlot> timeSlotOptional = timeSlotRepository.findById ( timeSlotId );
 
@@ -74,10 +52,6 @@ public class TimeSlotService {
 
         timeSlot.setStatus ( Status.INACTIVE );
         timeSlotRepository.save ( timeSlot );
-    }
-
-    public void delete ( TimeSlot timeSlot ) {
-        timeSlotRepository.delete ( timeSlot );
     }
 
     public void makeAppointment ( UUID accountId, UUID timeSlotId ) {
@@ -132,6 +106,32 @@ public class TimeSlotService {
         timeSlotRepository.save ( timeSlot );
     }
 
+    Collection<TimeSlot> generateTimeSlots (
+            LocalTime scheduleStartTime,
+            LocalTime scheduleEndTime,
+            Integer timeSlotInterval, DailySchedule schedule ) {
+
+        List<TimeSlot> timeSlots = new ArrayList<> ( );
+        LocalTime startTime = scheduleStartTime;
+
+        while (startTime.isBefore ( scheduleEndTime )) {
+            TimeSlot timeSlot = TimeSlot.builder ( )
+                    .startTime ( startTime )
+                    .durationInMinutes ( timeSlotInterval )
+                    .status ( Status.FREE )
+                    .dailySchedule ( schedule )
+                    .build ( );
+
+            timeSlots.add ( timeSlotRepository.save ( timeSlot ) );
+            startTime = startTime.plusMinutes ( timeSlotInterval );
+        }
+        return timeSlots;
+    }
+
+    void delete ( TimeSlot timeSlot ) {
+        timeSlotRepository.delete ( timeSlot );
+    }
+
     @Scheduled(cron = "0 */15 06-22 * * *")
     void checkForPassedTimeSlots () {
         List<TimeSlot> passedFreeTimeSlots = timeSlotRepository
@@ -159,10 +159,14 @@ public class TimeSlotService {
         LocalDate appointmentDate = timeSlot.getDailySchedule ( ).getDate ( );
         LocalTime appointmentStartTime = timeSlot.getStartTime ( );
 
+        if ( appointmentDate.isBefore ( currentDate )){
+            return true;
+        }
+
         if ( currentDate.equals ( appointmentDate ) ) {
             return !currentTime.isBefore ( appointmentStartTime );
         }
 
-        return !currentDate.isAfter ( appointmentDate );
+        return false;
     }
 }
