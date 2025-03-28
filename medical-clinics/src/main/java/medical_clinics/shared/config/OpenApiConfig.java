@@ -32,7 +32,7 @@ public class OpenApiConfig {
                                 )
                 )
                 .servers (
-                        List.of ( new Server ( ).url ( "http://localhost:8080/api/v0/" ).description ( "Development" ) )
+                        List.of ( new Server ( ).url ( "http://localhost:8080/api/v0" ).description ( "Development" ) )
                 )
                 .components (
                         new Components ( ).addSecuritySchemes ( "Bearer token",

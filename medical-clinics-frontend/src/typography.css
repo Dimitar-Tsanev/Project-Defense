@@ -1,0 +1,71 @@
+html{
+  font-family: Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+p{
+  padding-bottom: 1.5rem;
+}
+ol, ul {
+  padding-left: 1.5rem;
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+ul ol, ol ul, ol ol, ul ul {
+  margin: 0.5rem 0;
+
+}
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-family: Georgia;
+}
+h1 {
+  font-size: 2.2rem;
+}
+h2 {
+  font-size: 2.0rem;
+}
+h3 {
+  font-size: 1.8rem;
+}
+h4 {
+  font-size: 1.6rem;
+}
+h5 {
+  font-size: 1.4rem;
+}
+h6 {
+  font-size: 1.2rem;
+}
+hr{
+  margin: 2rem 0;
+}
+table{
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border: 1px solid darkgrey;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+td, th{
+  text-align: left;
+  border: 1px solid darkgray;
+  padding: 0.3rem 0.5rem;
+}
+thead {
+  background-color: darkgray;
+}
+tbody tr:nth-last-of-type(2n - 1){
+  background-color: #f1f1f1;
+}
+blockquote{
+  margin: 0 0 1.5rem 2rem;
+  padding: 1.5em 1.5em 1.5em 2em;
+  border-left: 0.3rem solid #d3d3d3 ;
+  font-style: italic;
+}
+blockquote footer {
+  text-align: right;
+}

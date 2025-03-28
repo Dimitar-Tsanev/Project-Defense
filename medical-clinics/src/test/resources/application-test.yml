@@ -1,6 +1,6 @@
 server:
   servlet:
-    context-path: /api/v0/
+    context-path: /api/v0
 spring:
   datasource:
     url: jdbc:h2:mem:testdb;MODE=MYSQL
