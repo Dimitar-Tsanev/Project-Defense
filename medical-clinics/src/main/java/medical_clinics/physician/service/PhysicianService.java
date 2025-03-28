@@ -159,7 +159,7 @@ public class PhysicianService {
     public UUID getPhysicianIdByUserAccountId ( UUID physicianAccountId ) {
         return physicianRepository.findByUserAccount_Id ( physicianAccountId ).orElseThrow (
                 () -> new PhysicianNotFoundException ( "Physician not found" )
-        ).getId ();
+        ).getId ( );
     }
 
     public PhysicianInfo getPhysicianInfo ( UUID physicianId ) {
@@ -242,8 +242,9 @@ public class PhysicianService {
 
             physician.setUserAccount ( newUserAccount.getUserAccount ( ) );
             physicianRepository.save ( physician );
+
+            eventPublisher.publishEvent ( new PhysicianAccountEvent ( newAccountEmail ) );
         }
-        eventPublisher.publishEvent ( new PhysicianAccountEvent ( newAccountEmail ) );
     }
 
     @EventListener
