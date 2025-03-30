@@ -62,7 +62,7 @@ public class SecurityConfig {
                                         "/auth/**", "/api-docs*/**", "/swagger-ui/**"
                                 )
                                 .permitAll ( )
-                                .requestMatchers ( HttpMethod.GET, "/clinics*/**", "/physicians" ).permitAll ( )
+                                .requestMatchers ( HttpMethod.GET, "/clinics*/**", "/physicians*/**" ).permitAll ( )
                                 .anyRequest ( )
                                 .authenticated ( )
                 )
