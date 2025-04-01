@@ -1,0 +1,135 @@
+<div class="main-container">
+  <div class="register-form-container">
+    <h2>Registration Form</h2>
+
+    <form class="register" #form="ngForm" (ngSubmit)="register(form)">
+      <fieldset>
+        <div class="field-wrapper">
+          <label for="email">Email:</label>
+          <div>
+            <input type="email" class="form-control" name="email" id="email" appEmail ngModel
+                   placeholder="example@example.com" #email="ngModel" required/>
+            <span class="field-info">?<span class="info-text">Field must contain valid email address</span></span>
+          </div>
+        </div>
+
+        @if (email?.touched) {
+          <div>
+            @if (email?.errors?.['required']) {
+              <p class="error">Email is required!</p>
+            }
+            @if (email?.errors?.['emailValidator']) {
+              <p class="error">Email is not valid!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="firstName">First name:</label>
+          <div>
+            <input type="text" id="firstName" name="firstName" class="form-control" ngModel
+                   required minlength="2" maxlength="30" pattern="^[A-Za-z]+$" #firstName="ngModel"/>
+            <span class="field-info">?<span class="info-text">Field must be long between 2 and 30 characters and contain only latin letters!</span></span>
+          </div>
+        </div>
+
+        @if (firstName?.touched) {
+          <div>
+            @if (firstName?.errors?.['required']) {
+              <p class="error">First name is required!</p>
+            }
+            @if (firstName?.errors?.['minlength'] || firstName?.errors?.['maxlength']) {
+              <p class="error">First name must be between 2 and 30 letters long!</p>
+            }
+            @if (firstName?.errors?.['pattern']) {
+              <p class="error"> First name must contain only latin letters!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="lastName">Last name:</label>
+          <div>
+            <input type="text" id="lastName" name="lastName" class="form-control" ngModel
+                   required minlength="2" maxlength="30" pattern="^[A-Za-z]+$" #lastName="ngModel"/>
+            <span class="field-info">?<span class="info-text">Field must be long between 2 and 30 characters and contain only latin letters!</span></span>
+          </div>
+        </div>
+
+        @if (lastName?.touched) {
+          <div>
+            @if (lastName?.errors?.['required']) {
+              <p class="error">Last name is required!</p>
+            }
+            @if (lastName?.errors?.['minlength'] || lastName?.errors?.['maxlength']) {
+              <p class="error">Last name must be between 2 and 30 letters long!</p>
+            }
+            @if (lastName?.errors?.['pattern']) {
+              <p class="error"> Last name must contain only latin letters!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="password">Password:</label>
+          <div>
+            <input type="password" id="password" name="password" class="form-control" ngModel appPassword
+                   required minlength="8" maxlength="20" #password="ngModel"/>
+            <span class="field-info">?
+              <span class="info-text">
+                 Password must contain at least one upper and lower case letters one digit and one of the following characters:
+                .!&#64;#$%^&*()_+<>? and be between 8 and 20 characters!
+              </span>
+            </span>
+          </div>
+        </div>
+
+        @if (password?.touched) {
+          <div>
+            @if (password?.errors?.['required']) {
+              <p class="error">Password is required!</p>
+            }
+            @if (password?.errors?.['minlength'] || password?.errors?.['maxlength']) {
+              <p class="error">Password must be between 8 and 20 characters!</p>
+            }
+            @if (password?.errors?.['passwordValidator']) {
+              <p class="error">
+                Password must contain at least one upper and lower case letters one digit and one of the following
+                characters: .!&#64;#$%^&*()_+<>?
+              </p>
+            }
+          </div>
+        }
+        <div class="field-wrapper">
+          <label for="phone">Phone number:</label>
+          <div>
+            <input type="text" id="phone" name="phone" class="form-control" ngModel
+                   minlength="4" maxlength="21" pattern="^[+]?\d+$" #phone="ngModel"/>
+
+            <span class="field-info">?
+              <span class="info-text">
+                Phone number may or may not start with + length between 4 and 21 digits only.
+                Phone numbers with + and without are considered different.
+                The phone number is not required but provides more options for connecting to your patient record.
+              </span>
+            </span>
+          </div>
+        </div>
+
+        @if (phone?.touched) {
+          <div>
+            @if (phone?.errors?.['pattern']) {
+              <p class="error"> Phone number may or may not start with + and contain only digits.</p>
+            }
+            @if (phone?.errors?.['minlength'] || phone?.errors?.['maxlength']) {
+              <p class="error">Phone number must be between 4 and 21 characters!</p>
+            }
+          </div>
+        }
+      </fieldset>
+
+      <button [disabled]="form.invalid" class="register-submit">Create Account</button>
+    </form>
+    <p class="text-center"> Have an account? <a routerLink="/login">Log In</a></p>
+  </div>
+</div>

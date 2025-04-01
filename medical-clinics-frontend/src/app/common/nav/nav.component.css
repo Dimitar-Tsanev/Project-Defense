@@ -1,0 +1,21 @@
+.nav-container ul{
+  margin: 0;
+  padding: 0;
+}
+mini-navbar{
+  margin-bottom: 2rem;
+}
+.nav-container ul li{
+}
+.nav-container ul li a{
+  padding: 0.3rem  1.2rem ;
+  display: block;
+  align-items: center;
+}
+
+.nav-container ul li a:hover, p:hover{
+  background: #26a6ff;
+  box-shadow: 5px 5px 5px #bde6ff;
+  text-decoration: none;
+  color: #fff;
+}

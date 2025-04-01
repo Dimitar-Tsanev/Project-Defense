@@ -1,0 +1,48 @@
+<div class="main-container">
+  @if (isLoading) {
+    <app-loader/>
+
+  } @else {
+    <div class="details-wrapper shadow-md shadow-blue-200 rounded-md overflow-hidden">
+      <img class="float-left" [src]="clinic?.pictureUrl" alt="clinic-picture">
+      <div class="text-container">
+        <h5> City: {{ clinic?.city }}</h5>
+        <p> Street: {{ clinic?.address }}</p>
+        <p> Contact us: {{ clinic?.phoneNumber }}</p>
+        <p> About the clinic: {{ clinic?.description }}</p>
+      </div>
+    </div>
+
+    <div>
+      <p> Our working days are:</p>
+      <div class="workdays-container">
+        @for (workday of clinic?.workingDays; track $index) {
+          <table>
+            <th>{{ workday.dayName }}</th>
+            <tr>
+              <td>{{ workday.startOfWorkingDay }}</td>
+            </tr>
+            <tr>
+              <td>{{ workday.endOfWorkingDay }}</td>
+            </tr>
+          </table>
+        }
+      </div>
+    </div>
+
+    @if (clinic?.specialties?.length) {
+      <p> Select one of the following specialities to see our specialists in this category.</p>
+      <div class="specialities-wrapper flex flex-wrap gap-2 ">
+        @for (speciality of clinic?.specialties; track $index) {
+          <div class="speciality-wrapper bg-blue-400 shadow-md shadow-blue-200 rounded-md">
+            <a [routerLink]="['/physicians']"
+               [queryParams]="{clinic: clinic?.id, speciality: speciality.id}">
+              <p class="text-white">{{ speciality.name }}</p>
+            </a>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+

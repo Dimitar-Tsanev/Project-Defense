@@ -1,0 +1,26 @@
+<div class="main-container">
+  @if (user === undefined) {
+    <app-loader/>
+
+  } @else {
+    <div class="details-wrapper shadow-md shadow-blue-200 rounded-md overflow-hidden">
+      <div class="text-container">
+        <h5> First name: {{ user.firstName }}</h5>
+        <p> Last name: {{ user.lastName }}</p>
+        <p> Contacts:</p>
+        <div class="contacts">
+          <p> email: {{ user.email }}</p>
+          <p> phone: {{ user.phone }}</p>
+        </div>
+        <p>Lives in:</p>
+        <div class="coordinates">
+          <p>Country: {{ user.country }}</p>
+          <p>City: {{ user.city }}</p>
+          <p>Address: {{ user.address }}</p>
+        </div>
+        <p>Personal identification number: {{ user.identificationCode }}</p>
+      </div>
+      <a [routerLink]="['/profile','edit', userAccountId]">Edit profile</a>
+    </div>
+  }
+</div>

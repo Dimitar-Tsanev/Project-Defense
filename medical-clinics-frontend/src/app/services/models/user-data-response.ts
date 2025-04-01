@@ -5,6 +5,6 @@
 import { PatientInfo } from '../models/patient-info';
 export interface UserDataResponse {
   accountId?: string;
-  patientInfo?: PatientInfo;
+  patientInfo: PatientInfo;
   role?: 'PATIENT' | 'ADMIN' | 'PHYSICIAN';
 }

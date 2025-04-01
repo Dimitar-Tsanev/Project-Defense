@@ -1,0 +1,31 @@
+<div class="main-container flex grow">
+  <div class="clinic-list-container">
+    @if (isLoading) {
+      <app-loader/>
+
+    } @else {
+      @if (physicians.length > 0) {
+        <div class="clinic-content">
+          <p> Clinic: <span>{{ physicians[0].workplace }}</span></p>
+          <p> Speciality: <span>{{ physicians[0].specialty }}</span></p>
+        </div>
+      }
+      <div class="clinics-wrapper grid grid-cols-3 gap-5">
+        @for (physician of physicians; track $index) {
+          <div class="shadow-md shadow-blue-200 rounded-md overflow-hidden">
+            <a class="gap-1 " [routerLink]="['/physician', physician.physicianId]">
+              <div class="aside-theme overflow-hidden ">
+                <img class="float-left ..." [src]="physician.pictureUrl" alt="clinic-picture">
+              </div>
+              <div class="text-container">
+                <h6> Name: {{ physician.firstName + " " + physician.lastName + " " + physician.abbreviation }}</h6>
+                <p>  Description: {{ physician.description }}</p>
+              </div>
+            </a>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+

@@ -1,0 +1,32 @@
+<div class="main-container flex grow">
+  <div class="clinic-list-container">
+    <div class="clinic-content">
+      <h2> Welcome to my medical clinics demo application </h2>
+      <p> These app is for medical group that have more than one clinic around the country. </p>
+      <p> Currently we have to offer you {{ clinicCount }} demo clinics in different test locations.
+      <p>
+      <p> Find the nearest to you. Learn more details by clicking on your selection. </p>
+    </div>
+    @if (isLoading) {
+      <app-loader/>
+
+    } @else {
+      <div class="clinics-wrapper grid grid-cols-3 gap-5">
+        @for (clinic of clinics; track $index) {
+          <div class="shadow-md shadow-blue-200 rounded-md overflow-hidden">
+            <a class="gap-1 " [routerLink]="['/clinic', clinic.id]">
+              <div class="aside-theme overflow-hidden ">
+                <img class="float-left ..." [src]="clinic.pictureUrl" alt="clinic-picture">
+              </div>
+              <div class="text-container">
+                <h6> City: {{ clinic.city }}</h6>
+                <p> Street: {{ clinic.address }}</p>
+              </div>
+            </a>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
