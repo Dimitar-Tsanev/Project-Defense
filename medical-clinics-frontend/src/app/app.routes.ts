@@ -9,6 +9,8 @@ import {RegisterComponent} from './pages/register/register.component';
 import {ProfileComponent} from './pages/profile/profile.component';
 import {EditProfileComponent} from './pages/edit-profile/edit-profile.component';
 import {AuthGuard} from './guard/auth.guard';
+import {UsersComponent} from './pages/users/users.component';
+import {AdminGuard} from './guard/admin.guard';
 
 export const routes: Routes = [
   {path: '', redirectTo: '/clinics', pathMatch: 'full'},
@@ -48,4 +50,5 @@ export const routes: Routes = [
       }
     ]
   },
+  { path: 'users', component: UsersComponent, canActivate: [AdminGuard] },
 ];
