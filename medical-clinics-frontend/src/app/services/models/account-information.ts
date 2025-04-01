@@ -4,7 +4,7 @@
 
 export interface AccountInformation {
   email?: string;
-  id?: string;
+  id: string;
   role?: 'PATIENT' | 'ADMIN' | 'PHYSICIAN';
   status?: 'ACTIVE' | 'INACTIVE' | 'BLOCKED';
 }
