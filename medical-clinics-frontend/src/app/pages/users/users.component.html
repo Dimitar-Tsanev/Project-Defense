@@ -1,0 +1,25 @@
+<div class="main-container flex grow">
+  <div class="users-list-container">
+    <h3>All registered users</h3>
+    @if (isLoading) {
+      <app-loader/>
+
+    } @else {
+      <div class="users-wrapper">
+        @for (user of accounts; track $index) {
+          <div class="user-wrapper shadow-md shadow-blue-200 rounded-md">
+            <div class="text-container">
+              <p> email: {{ user.email }}</p>
+              <p>role: {{ user.role }}</p>
+              <p> Street: {{ user.status }}</p>
+            </div>
+            <div class="buttons-container">
+              <button class="action-button" (click)="blockUser(user.id)">Block</button>
+              <button class="action-button" (click)="switchRole(user.id)">Switch role</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
