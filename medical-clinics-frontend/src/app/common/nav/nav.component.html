@@ -1,7 +1,7 @@
 <div class="nav-container">
   <div class="mini-navbar">
     <ul>
-      @if (isLogged) {
+      @if (isLogged()) {
         <li class="user-profile-btn">
           <a routerLink="/profile">Profile</a>
         </li>
