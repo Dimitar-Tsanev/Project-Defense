@@ -57,3 +57,10 @@ input {
   z-index: 10;
   background: #ffffff;
 }
+
+button {
+  background: #26a6ff;
+  border-radius: 3px;
+  padding: 0.3rem 0.75rem;
+  color: #ffffff;
+}
