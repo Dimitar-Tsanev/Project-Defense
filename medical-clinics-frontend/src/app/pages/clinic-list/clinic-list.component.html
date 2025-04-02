@@ -13,10 +13,10 @@
     } @else {
       <div class="clinics-wrapper grid grid-cols-3 gap-5">
         @for (clinic of clinics; track $index) {
-          <div class="shadow-md shadow-blue-200 rounded-md overflow-hidden">
+          <div class="clinic-wrapper shadow-md shadow-blue-200 rounded-md overflow-hidden">
             <a class="gap-1 " [routerLink]="['/clinic', clinic.id]">
-              <div class="aside-theme overflow-hidden ">
-                <img class="float-left ..." [src]="clinic.pictureUrl" alt="clinic-picture">
+              <div class="overflow-hidden ">
+                <img class="float-left" [src]="clinic.pictureUrl" alt="clinic-picture">
               </div>
               <div class="text-container">
                 <h6> City: {{ clinic.city }}</h6>

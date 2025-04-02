@@ -1,20 +1,28 @@
-.text-container{
+.text-container {
   padding: 0 2rem;
 }
-div.clinic-content > h2{
+
+div.clinic-content > h2 {
   margin: 0 0 1.5rem 0;
   padding: 0;
 }
 
-div.clinic-content > p{
+div.clinic-content > p {
   margin: 0 0 0.5rem 0.5rem;
   padding: 0;
 }
-div.clinic-content > p:last-child{
+
+div.clinic-content > p:last-child {
   margin-bottom: 2rem;
 }
-.clinic-list-container{
+
+.clinic-list-container {
   display: flex;
   flex-direction: column;
   min-width: 89vw;
+}
+
+.clinic-wrapper:hover {
+  box-shadow: inset 0 0 5px 2px rgba(127, 182, 253, 0.53);
+
 }
