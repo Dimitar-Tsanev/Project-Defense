@@ -1,0 +1,60 @@
+<div class="main-container">
+  @if (isLoading) {
+    <app-loader/>
+
+  } @else {
+    <div class="record-wrapper">
+      @if (record.length === 0) {
+        <p> You don't have medical record yet.</p>
+        <p> Record is creat automatically after visit some of our doctors.</p>
+        <p> Find clinic near by: <a routerLink="/clinics">Our clinics</a></p>
+      } @else {
+
+        @for (note of record; track $index) {
+          <section class="note-wrapper">
+            <header class="note-header">
+              <h5>Document number: {{ note.documentNumber }} date: {{ note.creationDate }}</h5>
+              <div class="info">
+                <div class="patient-info">
+                  <p>Patient name: {{ note.patientName }}</p>
+                  <p>Identification number: {{ note.patientIdentificationCode }}
+                  <p>Full address: {{ note.patientFullAddress }}</p>
+                </div>
+                <div class="clinic-info">
+                  <p>Clinic identification code: {{ note.clinicIdentificationNumber }}</p>
+                  <p>Physician identification code: {{ note.physicianIdentificationNumber }}</p>
+                  <p> Physician name: {{ note.physicianInfo }}</p>
+                </div>
+              </div>
+            </header>
+            <article class="note-main-content">
+              <p>Diagnosis: {{ note.diagnosis }} code: {{ note.diagnosisCode }}</p>
+              <div>
+                <p>Chief complaint: </p>
+                <p>{{ note.chiefComplaint }}</p>
+              </div>
+              <div>
+                <p>Medical history: </p>
+                <p>{{ note.medicalHistory }}</p>
+              </div>
+              <div>
+                <p>Examination information: </p>
+                <p>{{ note.examination }}</p>
+              </div>
+              <div>
+                <p>Tests results: </p>
+                <p>{{ note.testResults }}</p>
+              </div>
+              <div>
+                <p>Medication and recommendations: </p>
+                <p>{{ note.medicationAndRecommendations }}</p>
+              </div>
+            </article>
+          </section>
+        }
+      }
+    </div>
+  }
+</div>
+
+

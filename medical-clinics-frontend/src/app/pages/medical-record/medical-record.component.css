@@ -1,0 +1,39 @@
+h5{
+  text-align: center;
+}
+.record-wrapper{
+  display: flex;
+  flex-grow: 1;
+  gap: 1rem;
+  flex-direction: column;
+}
+.note-main-content{
+  border-left: 2px solid #5f859c;
+  border-right: 2px solid #5f859c;
+}
+.note-wrapper{
+  padding: 1rem;
+  margin: 1rem;
+  border: 2px solid #5f859c;
+}
+.note-header {
+  border: 2px solid #5f859c;
+}
+.note-header .info{
+  display: flex;
+  border-top: 2px solid #5f859c;
+}
+.patient-info{
+  border-right: 2px solid #5f859c;
+}
+
+.patient-info, .clinic-info{
+  padding: 0.7rem;
+}
+.note-main-content div,.note-main-content>p{
+  border-bottom: 2px solid #5f859c;
+  padding: 1rem;
+}
+.note-main-content div p:first-of-type{
+  text-decoration: underline #5f859c;
+}
