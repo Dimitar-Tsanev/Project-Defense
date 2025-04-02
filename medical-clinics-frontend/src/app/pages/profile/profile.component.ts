@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {LoaderComponent} from '../../common/loader/loader.component';
 import {PatientInfo} from '../../services/models/patient-info';
-import {AuthService} from '../../services/my-services/auth.Service';
+import {AuthService} from '../../services/my-services/auth-service';
 
 @Component({
   selector: 'app-profile',

@@ -4,7 +4,7 @@ import {FormsModule, NgForm, ReactiveFormsModule} from "@angular/forms";
 import {PasswordDirective} from "../../utils/validators/password.directive";
 import {RouterLink} from "@angular/router";
 import {LoginRequest} from '../../services/models/login-request';
-import {AuthService} from '../../services/my-services/auth.Service';
+import {AuthService} from '../../services/my-services/auth-service';
 
 @Component({
   selector: 'app-login',

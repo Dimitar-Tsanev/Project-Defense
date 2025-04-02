@@ -1,6 +1,6 @@
 import {inject} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot,} from '@angular/router';
-import {AuthService} from '../services/my-services/auth.Service';
+import {AuthService} from '../services/my-services/auth-service';
 
 
 export const AdminGuard: CanActivateFn = (

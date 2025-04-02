@@ -3,7 +3,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {UserAccountControllerService} from '../../services/services/user-account-controller.service';
 import {FormsModule, NgForm, ReactiveFormsModule} from '@angular/forms';
 import {UserAccountEditRequest} from '../../services/models/user-account-edit-request';
-import {AuthService} from '../../services/my-services/auth.Service';
+import {AuthService} from '../../services/my-services/auth-service';
 import {EmailDirective} from '../../utils/validators/email.directive';
 import {PasswordDirective} from '../../utils/validators/password.directive';
 import {PatientInfo} from '../../services/models/patient-info';
