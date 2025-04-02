@@ -2,7 +2,8 @@ import {HttpInterceptorFn} from '@angular/common/http';
 import {catchError} from 'rxjs';
 import {inject} from '@angular/core';
 import {Router} from '@angular/router';
-import {AuthService} from '../services/my-services/auth.Service';
+import {AuthService} from '../services/my-services/auth-service';
+import {ErrorMessagesService} from '../services/my-services/error-messages-service';
 
 export const appInterceptor: HttpInterceptorFn = (req, next) => {
   if (!req.url.includes("/auth") &&
@@ -17,13 +18,25 @@ export const appInterceptor: HttpInterceptorFn = (req, next) => {
     });
     console.log(req);
   }
+
   const router = inject(Router);
+  const errorService = inject(ErrorMessagesService)
 
   return next(req).pipe(
     catchError((err) => {
       console.log(err);
       if (err.status === 401) {
         router.navigate(['/login']);
+      }
+      if(err.status === 403) {
+        router.navigate(['/forbidden']);
+      }
+      if(err.status === 500) {
+        router.navigate(['/internal-server-error']);
+      }
+      if(err.status === 404 || err.status === 400 || err.status === 409) {
+        errorService.solve(err);
+        router.navigate(['/errors']);
       }
       return [err];
     })

@@ -1,0 +1,27 @@
+.notification {
+  position: fixed;
+  z-index: 100;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 0.5rem;
+  border-radius: 3px;
+  color: #ffffff;
+  box-shadow: 0 0 3px 2px rgba(38, 166, 255, 0.87);
+}
+
+.error-message {
+  background-color: rgba(221, 52, 117, 0.77);
+
+  -webkit-animation: cssAnimation 10s forwards;
+  animation: cssAnimation 10s forwards;
+}
+@keyframes cssAnimation {
+  0%   {opacity: 1;}
+  90%  {opacity: 1;}
+  100% {opacity: 0;}
+}
+@-webkit-keyframes cssAnimation {
+  0%   {opacity: 1;}
+  90%  {opacity: 1;}
+  100% {opacity: 0;}
+}
