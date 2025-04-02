@@ -1,39 +1,41 @@
 <div class="nav-container">
-  <div class="mini-navbar">
-    <ul>
-      @if (isLogged()) {
-        <li class="user-profile-btn">
-          <a routerLink="/profile">Profile</a>
-        </li>
-        <li>
-          <a (click)="logout()">Logout</a>
-        </li>
-      } @else {
-        <li class="hover:cursor-pointer">
-          <a routerLink="/login">Login</a>
-        </li>
-        <li class="hover:cursor-pointer">
-          <a routerLink="/register">Register</a>
-        </li>
-      }
-      @if(isAdmin()){
-        <li>
-          <a routerLink="/users">Users</a>
-        </li>
-      }
-    </ul>
-  </div>
   <nav>
     <ul>
       <li class="hover:cursor-pointer">
         <a routerLink="/clinics">Clinics</a>
       </li>
-      <li class="hover:cursor-pointer">
-        <a routerLink="/">Undefined</a>
-      </li>
-      <li class="hover:cursor-pointer">
-        <a routerLink="/">Undefined</a>
-      </li>
+    </ul>
+  </nav>
+  <nav class="mini-navbar">
+    <ul>
+      @if (isLogged()) {
+        <li>
+          <a routerLink="/profile">Profile</a>
+        </li>
+        <li>
+          <a routerLink="/my-medical-record">My medical<span class="block"> record</span></a>
+        </li>
+        @if (hasCredentials()) {
+          <li>
+            <a routerLink="/physician-notes">My outpatient<span class="block">sheets</span></a>
+          </li>
+        }
+        @if (isAdmin()) {
+          <li>
+            <a routerLink="/users">Users</a>
+          </li>
+        }
+        <li>
+          <a (click)="logout()" routerLink="/clinics">Logout</a>
+        </li>
+      } @else {
+        <li>
+          <a routerLink="/login">Login</a>
+        </li>
+        <li>
+          <a routerLink="/register">Register</a>
+        </li>
+      }
     </ul>
   </nav>
 </div>
