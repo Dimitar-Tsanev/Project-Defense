@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
-import {AuthService} from '../../services/my-services/auth.Service';
+import {AuthService} from '../../services/my-services/auth-service';
 
 @Component({
   selector: 'app-nav',
@@ -19,7 +19,7 @@ export class NavComponent {
     return this.authService.isLogged();
   }
 
-  isAdmin():boolean {
+  isAdmin(): boolean {
     return this.authService.isAdmin();
   }
 
@@ -27,5 +27,9 @@ export class NavComponent {
   logout() {
     this.authService.logout();
     this.router.navigate(['/clinics']);
+  }
+
+  hasCredentials() {
+    return this.authService.hasCredentials();
   }
 }

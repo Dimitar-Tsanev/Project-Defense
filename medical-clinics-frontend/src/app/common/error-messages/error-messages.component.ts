@@ -1,6 +1,5 @@
-import {Component, OnInit, signal, WritableSignal} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ErrorMessagesService} from '../../services/my-services/error-messages-service';
-import {ExceptionResponse} from '../../services/models/exception-response';
 
 @Component({
   selector: 'app-error-messages',

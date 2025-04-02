@@ -1,15 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {LoaderComponent} from "../../common/loader/loader.component";
-import {Router, RouterLink} from "@angular/router";
+import {Router} from "@angular/router";
 import {NoteResponse} from '../../services/models/note-response';
 import {AuthService} from '../../services/my-services/auth-service';
 import {MedicalRecordControllerService} from '../../services/services/medical-record-controller.service';
 
 @Component({
   selector: 'app-physician-notes',
-    imports: [
-        LoaderComponent
-    ],
+  imports: [
+    LoaderComponent
+  ],
   templateUrl: './physician-notes.component.html',
   styleUrl: './physician-notes.component.css'
 })
