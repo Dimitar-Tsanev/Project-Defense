@@ -32,13 +32,22 @@ export class UsersComponent implements OnInit {
   }
 
   blockUser(userId: string) {
-    this.userService.blockUserAccount({'accountId': userId as string}).subscribe();
+    this.userService.blockUserAccount({'accountId': userId as string}).subscribe({
+      next: () => {
+        this.fetchUsers();
+        userId = '';
+      }
+    });
     this.fetchUsers();
   }
 
   switchRole(userId: string) {
-    this.userService.switchRole({'accountId': userId as string}).subscribe();
-    this.fetchUsers();
+    this.userService.switchRole({'accountId': userId as string}).subscribe({
+      next: () => {
+        this.fetchUsers();
+        userId = '';
+      }
+    })
   }
 
 }
