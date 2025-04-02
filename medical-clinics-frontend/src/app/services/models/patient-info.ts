@@ -10,6 +10,6 @@ export interface PatientInfo {
   firstName?: string;
   identificationCode?: string;
   lastName?: string;
-  patientId?: string;
+  patientId: string;
   phone?: string;
 }

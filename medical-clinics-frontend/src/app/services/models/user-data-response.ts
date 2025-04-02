@@ -4,7 +4,7 @@
 
 import { PatientInfo } from './patient-info';
 export interface UserDataResponse {
-  accountId?: string;
+  accountId: string;
   patientInfo: PatientInfo;
   role?: 'PATIENT' | 'ADMIN' | 'PHYSICIAN';
 }
