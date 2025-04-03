@@ -32,10 +32,8 @@ export class RegisterComponent {
     this.request.lastName = form.value.lastName;
     this.request.email = form.value.email;
     this.request.password = form.value.password;
+    this.request.phone = form.value.phone.length > 0? form.value.phone : null;
 
-    if (form.value.phone.length <= 3) {
-      this.request.phone = form.value.phone;
-    }
 
     this.authenticationService.register({body: this.request}).subscribe({
       next: () => this.router.navigate(['/login'])

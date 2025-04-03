@@ -24,10 +24,10 @@
   } @else {
     <div class="create-note-form-container">
       <h2>Create note</h2>
-      <div class="patient-wrapper">
+      <div class="patient-wrapper-note">
         <p> Patient names: {{ patient?.firstName }} {{ patient?.lastName }}</p>
         <p> Patient identification number: {{ patient?.identificationCode }}</p>
-        <p>Patient full address{{ patient?.country }}, {{ patient?.city }}, {{ patient?.address }}</p>
+        <p>Patient full address: {{ patient?.country }}, {{ patient?.city }}, {{ patient?.address }}</p>
         <p> Contacts: email - {{ patient?.email }}, phone - {{ patient?.phone }}</p>
       </div>
 
@@ -97,7 +97,7 @@
               <label for="diagnosis">Diagnosis:</label>
               <div>
 
-              <textarea id="diagnosis" name="diagnosis" class="form-control"
+              <textarea rows="5" cols="100" id="diagnosis" name="diagnosis" class="form-control"
                         ngModel required minlength="5" maxlength="255" pattern="^[A-Za-z0-9,.\-_\s]+$"
                         #diagnosis="ngModel">
               </textarea>
@@ -153,14 +153,14 @@
             <div class="field-wrapper">
               <label for="chiefComplaint">Chief complaint:</label>
               <div>
-                <textarea class="form-control" name="chiefComplaint" id="chiefComplaint" ngModel></textarea>
+                <textarea rows="5" cols="100" class="form-control" name="chiefComplaint" id="chiefComplaint" ngModel></textarea>
               </div>
             </div>
 
             <div class="field-wrapper">
               <label for="medicalHistory">Medical History:</label>
               <div>
-              <textarea class="form-control" name="medicalHistory" id="medicalHistory" ngModel required
+              <textarea rows="5" cols="100" class="form-control" name="medicalHistory" id="medicalHistory" ngModel required
                         #medicalHistory="ngModel">
               </textarea>
                 <span class="field-info">?<span class="info-text">Field is required.</span></span>
@@ -178,7 +178,7 @@
             <div class="field-wrapper">
               <label for="examination">Examination:</label>
               <div>
-              <textarea class="form-control" name="examination" id="examination" ngModel
+              <textarea rows="5" cols="100" class="form-control" name="examination" id="examination" ngModel
                         #examination="ngModel" required>
               </textarea>
                 <span class="field-info">?<span class="info-text">Required filed.</span></span>
@@ -196,7 +196,7 @@
             <div class="field-wrapper">
               <label for="medicationAndRecommendations">Medication and recommendations:</label>
               <div>
-              <textarea id="medicationAndRecommendations" name="medicationAndRecommendations" ngModel>
+              <textarea rows="5" cols="100" id="medicationAndRecommendations" name="medicationAndRecommendations" ngModel>
               </textarea>
               </div>
             </div>
@@ -204,7 +204,7 @@
             <div class="field-wrapper">
               <label for="testResults">Tests results:</label>
               <div>
-                <textarea name="testResults" id="testResults" ngModel></textarea>
+                <textarea rows="5" cols="100" name="testResults" id="testResults" ngModel></textarea>
               </div>
             </div>
           </fieldset>

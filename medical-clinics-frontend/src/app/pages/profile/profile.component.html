@@ -20,7 +20,10 @@
         </div>
         <p>Personal identification number: {{ user.identificationCode }}</p>
       </div>
-      <a [routerLink]="['/profile','edit', userAccountId]">Edit profile</a>
+      <div class="buttons-container">
+        <button class="action-button" [routerLink]="['/profile','edit', userAccountId]">Edit profile</button>
+        <button class="action-button profile-inactive" (click)="inactivateAccount()">Delete profile</button>
+      </div>
     </div>
   }
 </div>

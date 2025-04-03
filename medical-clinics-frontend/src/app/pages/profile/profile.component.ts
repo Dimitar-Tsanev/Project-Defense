@@ -3,6 +3,7 @@ import {Router, RouterLink} from '@angular/router';
 import {LoaderComponent} from '../../common/loader/loader.component';
 import {PatientInfo} from '../../services/models/patient-info';
 import {AuthService} from '../../services/my-services/auth-service';
+import {UserAccountControllerService} from '../../services/services/user-account-controller.service';
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +21,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private userService: UserAccountControllerService,
     private router: Router,
   ) {
   }
@@ -34,5 +36,14 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-
+  inactivateAccount() {
+    if (this.userAccountId) {
+      this.userService.deleteUserAccount({'accountId': this.userAccountId as string}).subscribe({
+        next: () => {
+          this.authService.logout()
+          this.router.navigate(['clinics']);
+        }
+      })
+    }
+  }
 }

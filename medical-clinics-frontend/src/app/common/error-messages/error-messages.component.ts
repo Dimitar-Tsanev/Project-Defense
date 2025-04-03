@@ -20,7 +20,11 @@ export class ErrorMessagesComponent implements OnInit {
       if (error.messages) {
         for (let message of error.messages) {
           this.errorMessages.push(message);
+
         }
+        setTimeout(()=>{
+          this.errorMessages = []
+        }, 1000 * 12);
       }
     });
   }

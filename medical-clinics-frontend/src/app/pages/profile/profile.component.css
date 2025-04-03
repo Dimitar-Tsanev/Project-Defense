@@ -1,3 +1,8 @@
 .text-container{
   margin: 2rem;
 }
+.buttons-container{
+  display: flex;
+  justify-content: space-between;
+  margin: 2rem;
+}
