@@ -19,6 +19,7 @@ import medical_clinics.user_account.exceptions.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
@@ -86,7 +87,7 @@ public class GlobalExceptionHandler {
         return buildResponseError ( HttpStatus.UNAUTHORIZED, ex );
     }
 
-    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ExceptionHandler({AuthorizationDeniedException.class, LockedException.class })
     public ResponseEntity<ExceptionResponse> handleException ( AuthorizationDeniedException e ) {
         return buildResponseError ( HttpStatus.FORBIDDEN, e );
     }
