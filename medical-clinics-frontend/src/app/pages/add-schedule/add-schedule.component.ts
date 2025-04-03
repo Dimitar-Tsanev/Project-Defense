@@ -39,8 +39,8 @@ export class AddScheduleComponent implements OnInit {
     }
     let schedule: NewDaySchedule = {
       date: newSchedule.value.date,
-      startTime: newSchedule.value.startTime.toString().replaceAll("'", ''),
-      endTime: newSchedule.value.endTime.toString().replaceAll("'", ''),
+      startTime: newSchedule.value.startTime + ':00',
+      endTime: newSchedule.value.endTime + ':00',
       timeSlotInterval: newSchedule.value.timeSlotInterval
     }
     console.log(schedule);
