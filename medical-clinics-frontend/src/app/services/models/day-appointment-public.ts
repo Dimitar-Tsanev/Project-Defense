@@ -5,5 +5,5 @@
 export interface DayAppointmentPublic {
   startTime?: string;
   status?: 'RESERVED' | 'FREE' | 'PASSED' | 'INACTIVE';
-  timeslotId?: string;
+  timeslotId: string;
 }

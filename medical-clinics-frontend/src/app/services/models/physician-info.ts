@@ -7,7 +7,7 @@ export interface PhysicianInfo {
   description?: string;
   firstName?: string;
   lastName?: string;
-  physicianId?: string;
+  physicianId: string;
   pictureUrl?: string;
   specialty?: string;
   workplace?: string;
