@@ -19,7 +19,7 @@ div.clinic-content > p:last-child {
 .clinic-list-container {
   display: flex;
   flex-direction: column;
-  min-width: 89vw;
+  flex-grow: 1;
 }
 
 .clinic-wrapper:hover {

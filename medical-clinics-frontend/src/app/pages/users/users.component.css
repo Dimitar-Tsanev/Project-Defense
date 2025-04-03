@@ -5,11 +5,14 @@
   align-items: center;
   flex-grow: 1;
   flex-wrap: wrap;
+
 }
 .users-list-container{
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   gap: 1rem;
+  padding-right: 1rem;
 }
 .user-wrapper{
   border: 1px solid rgba(38, 166, 255, 0.87);
@@ -17,9 +20,15 @@
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
-}
-.user-wrapper{
   margin: 0.7rem;
+  flex-grow: 1;
+  width: 100%;
+}
+.users-wrapper{
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+  flex-direction: column;
 }
 .buttons-container button{
   margin: 1rem;
@@ -29,6 +38,6 @@
   display: flex;
   padding: 0 1rem;
   align-self: center;
-  width: 16rem;
+  width: calc((100% - 3rem)/3);
 }
 

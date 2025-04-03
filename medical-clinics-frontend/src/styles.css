@@ -11,17 +11,22 @@ body {
   background: oklch(0.896 0.031 248.178);
 }
 
-body > app-root:nth-child(1) {
+app-root {
   display: flex;
 }
-
+body > app-root:nth-child(1)>*:nth-child(3) {
+  display: flex;
+  min-width: calc(100vw - 9.5rem); ;
+}
 .main-container {
   background-color: #fff;
   box-shadow: 0 4px 8px 0 rgba(86, 124, 149, 0.6), 0 6px 20px 0 rgba(207, 237, 255, 0.19);
   height: 100vh;
   margin: 0 1rem;
   padding: 2rem 1rem;
-  overflow: scroll
+  overflow-y: scroll;
+  overflow-x: visible;
+  flex-grow: 1;
 }
 
 .nav-container {
@@ -38,11 +43,11 @@ body > app-root:nth-child(1) {
   text-align: center;
 }
 
-input:focus {
+input:focus, textarea:focus {
   outline: none;
 }
 
-input {
+input, textarea {
   border: 2px solid #5f859c;
   border-radius: 5px;
   padding: 0.1rem 0.5rem;
@@ -74,4 +79,25 @@ button {
 button:hover {
   cursor: pointer;
   box-shadow: 0 0 3px 2px rgba(38, 166, 255, 0.87);
+}
+
+.error img {
+  max-width: 40rem;
+  aspect-ratio: 1/1;
+}
+
+.error{
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+.error a {
+  color: #26a6ff;
+}
+.error a:hover {
+  cursor: pointer;
 }

@@ -19,7 +19,7 @@ export class ErrorMessagesComponent implements OnInit {
 
       if (error.messages) {
         for (let message of error.messages) {
-          console.log(this.errorMessages.push(message));
+          this.errorMessages.push(message);
         }
       }
     });

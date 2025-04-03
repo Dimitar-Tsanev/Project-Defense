@@ -1,0 +1,216 @@
+<div class="main-container">
+  @if (!found) {
+    <p class="error">No patients found.<p>
+      }
+  @if (!patient && patients.length === 0) {
+    <form class="form" #findForm="ngForm" (ngSubmit)="loadPatient(findForm)">
+      <label for="phone">Find by phone:</label>
+      <input type="text" id="phone" name="phone" ngModel/>
+
+      <label for="email">Find by email:</label>
+      <input type="text" id="email" name="email" ngModel/>
+      <button>Find</button>
+    </form>
+
+  } @else if (patients.length > 1) {
+    @for (patient of patients; track $index) {
+      <div class="patient-wrapper">
+        <p> {{ patient.firstName }} {{ patient.lastName }}</p>
+        <p>{{ patient.country }} {{ patient.identificationCode }}</p>
+        <p> {{ patient.email }} {{ patient.phone }}</p>
+        <button class="action-button" routerLink="/create-note" (click)="selectPatient($index)">Select</button>
+      </div>
+    }
+  } @else {
+    <div class="create-note-form-container">
+      <h2>Create note</h2>
+      <div class="patient-wrapper">
+        <p> Patient names: {{ patient?.firstName }} {{ patient?.lastName }}</p>
+        <p> Patient identification number: {{ patient?.identificationCode }}</p>
+        <p>Patient full address{{ patient?.country }}, {{ patient?.city }}, {{ patient?.address }}</p>
+        <p> Contacts: email - {{ patient?.email }}, phone - {{ patient?.phone }}</p>
+      </div>
+
+      @if (!patient?.identificationCode || !patient?.country) {
+        <p> Patient identification number is missing please edit patient first. </p>
+        <form class="form" #editForm="ngForm" (ngSubmit)="editPatient(editForm)">
+
+          <div class="field-wrapper">
+            <label for="country">Country:</label>
+            <div>
+              <input type="text" class="form-control" name="country" id="country" ngModel required
+                     #country="ngModel" pattern="[A-Za-z0-9\-\s]+"/>
+              <span class="field-info">?<span class="info-text">Country is required. Use only latin letters with word separation hyphens or white space.</span></span>
+            </div>
+          </div>
+
+          @if (country?.touched) {
+            <div>
+              @if (country?.errors?.['required']) {
+                <p class="error">Country is required!</p>
+              }
+              @if (country?.errors?.['pattern']) {
+                <p class="error">
+                  Country name may contain only latin letters with word separation hyphens or white space.
+                </p>
+              }
+            </div>
+          }
+
+          <div class="field-wrapper">
+            <label for="identificationCode">Identification number:</label>
+            <div>
+              <input type="text" class="form-control" name="identificationCode" id="identificationCode"
+                     ngModel required minlength="5" maxlength="18" pattern="^[0-9A-Z]+([.\-]*[0-9A-Z]+)+$"
+                     #identificationCode="ngModel"/>
+              <span class="field-info">?
+              <span class="info-text">
+                Identification number is required.
+                Must be between 5 and 18 character length and contain upper case latin letters digits and separators (.-)
+              </span>
+            </span>
+            </div>
+          </div>
+
+          @if (identificationCode?.touched) {
+            <div>
+              @if (identificationCode?.errors?.['required']) {
+                <p class="error">Identification code is required!</p>
+              }
+              @if (identificationCode?.errors?.['minlength'] || identificationCode?.errors?.['maxlength']) {
+                <p class="error">Must be between 5 and 18 characters long!</p>
+              }
+              @if (identificationCode?.errors?.['pattern']) {
+                <p class="error">
+                  Identification code may contain upper case latin letters digits and separators (.-)!
+                </p>
+              }
+            </div>
+          }
+          <button class="action-button">Submit</button>
+        </form>
+      } @else {
+
+        <form class="form" #form="ngForm" (ngSubmit)="createNote(form)">
+          <fieldset>
+            <div class="field-wrapper">
+              <label for="diagnosis">Diagnosis:</label>
+              <div>
+
+              <textarea id="diagnosis" name="diagnosis" class="form-control"
+                        ngModel required minlength="5" maxlength="255" pattern="^[A-Za-z0-9,.\-_\s]+$"
+                        #diagnosis="ngModel">
+              </textarea>
+                <span class="field-info">?
+                <span class="info-text">
+                  Field must be long between 5 and 255 characters and contain:
+                  hyphens, commas, dots, digits, spaces, upper and lower case latin letters!
+                </span>
+              </span>
+              </div>
+            </div>
+
+            @if (diagnosis?.touched) {
+              <div>
+                @if (diagnosis?.errors?.['required']) {
+                  <p class="error">Diagnosis name is required!</p>
+                }
+                @if (diagnosis?.errors?.['minlength'] || diagnosis?.errors?.['maxlength']) {
+                  <p class="error">Diagnosis must be long between 5 and 255</p>
+                }
+                @if (diagnosis?.errors?.['pattern']) {
+                  <p class="error">
+                    Diagnosis must contain only: hyphens, commas, dots, digits, spaces, upper and lower case latin
+                    letters!
+                  </p>
+                }
+              </div>
+            }
+
+            <div class="field-wrapper">
+              <label for="diagnosisCode">Diagnosis code:</label>
+              <div>
+                <input type="text" id="diagnosisCode" name="diagnosisCode" class="form-control"
+                       ngModel pattern="^[A-Z]\d{2}\.\d$" #diagnosisCode="ngModel"/>
+                <span class="field-info">?
+                <span class="info-text">
+                  Diagnosis code must follow the pattern uppercase latin letter two digits dot digit! Example - F30.9.
+                </span>
+              </span>
+              </div>
+            </div>
+
+            @if (diagnosisCode?.touched) {
+              <div>
+                @if (diagnosisCode?.errors?.['pattern']) {
+                  <p class="error">
+                    Diagnosis code must follow the pattern uppercase latin letter two digits dot digit! Example - F30.9.
+                  </p>
+                }
+              </div>
+            }
+
+            <div class="field-wrapper">
+              <label for="chiefComplaint">Chief complaint:</label>
+              <div>
+                <textarea class="form-control" name="chiefComplaint" id="chiefComplaint" ngModel></textarea>
+              </div>
+            </div>
+
+            <div class="field-wrapper">
+              <label for="medicalHistory">Medical History:</label>
+              <div>
+              <textarea class="form-control" name="medicalHistory" id="medicalHistory" ngModel required
+                        #medicalHistory="ngModel">
+              </textarea>
+                <span class="field-info">?<span class="info-text">Field is required.</span></span>
+              </div>
+            </div>
+
+            @if (medicalHistory?.touched) {
+              <div>
+                @if (medicalHistory?.errors?.['required']) {
+                  <p class="error">Required text.</p>
+                }
+              </div>
+            }
+
+            <div class="field-wrapper">
+              <label for="examination">Examination:</label>
+              <div>
+              <textarea class="form-control" name="examination" id="examination" ngModel
+                        #examination="ngModel" required>
+              </textarea>
+                <span class="field-info">?<span class="info-text">Required filed.</span></span>
+              </div>
+            </div>
+
+            @if (examination?.touched) {
+              <div>
+                @if (examination?.errors?.['required']) {
+                  <p class="error">Required text.</p>
+                }
+              </div>
+            }
+
+            <div class="field-wrapper">
+              <label for="medicationAndRecommendations">Medication and recommendations:</label>
+              <div>
+              <textarea id="medicationAndRecommendations" name="medicationAndRecommendations" ngModel>
+              </textarea>
+              </div>
+            </div>
+
+            <div class="field-wrapper">
+              <label for="testResults">Tests results:</label>
+              <div>
+                <textarea name="testResults" id="testResults" ngModel></textarea>
+              </div>
+            </div>
+          </fieldset>
+          <button [disabled]="form.invalid" class="note-submit">Submit</button>
+        </form>
+      }
+    </div>
+  }
+</div>

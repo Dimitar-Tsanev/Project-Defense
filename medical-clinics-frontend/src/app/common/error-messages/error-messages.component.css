@@ -11,16 +11,9 @@
 
 .error-message {
   background-color: rgba(221, 52, 117, 0.77);
-
-  -webkit-animation: cssAnimation 10s forwards;
   animation: cssAnimation 10s forwards;
 }
 @keyframes cssAnimation {
-  0%   {opacity: 1;}
-  90%  {opacity: 1;}
-  100% {opacity: 0;}
-}
-@-webkit-keyframes cssAnimation {
   0%   {opacity: 1;}
   90%  {opacity: 1;}
   100% {opacity: 0;}

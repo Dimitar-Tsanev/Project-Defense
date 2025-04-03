@@ -33,7 +33,7 @@
         <div class="field-wrapper">
           <label for="lastName">Last name:</label>
           <div>
-            <input type="text" id="lastName" name="lastName" class="form-control" value="{{userData.lastName}}" ngModel
+            <input type="text" id="lastName" name="lastName" class="form-control" value="{{userData?.lastName}}" ngModel
                    required minlength="2" maxlength="30" pattern="^[A-Za-z]+$" #lastName="ngModel"/>
             <span class="field-info">?<span class="info-text">Field must be long between 2 and 30 characters and contain only latin letters!</span></span>
           </div>
@@ -56,7 +56,7 @@
         <div class="field-wrapper">
           <label for="country">Country:</label>
           <div>
-            <input type="text" class="form-control" name="country" id="country" value="{{userData.country}}" ngModel
+            <input type="text" class="form-control" name="country" id="country" value="{{userData?.country}}" ngModel
                    #country="ngModel" pattern="[A-Za-z0-9\-\s]+"/>
             <span class="field-info">?<span class="info-text">Country is not required. Use only latin letters with word separation hyphens or white space.</span></span>
           </div>
@@ -72,7 +72,7 @@
         <div class="field-wrapper">
           <label for="city">City:</label>
           <div>
-            <input type="text" class="form-control" name="country" id="city" value="{{userData.city}}" ngModel
+            <input type="text" class="form-control" name="country" id="city" value="{{userData?.city}}" ngModel
                    #city="ngModel" pattern="[A-Za-z0-9\-\s]+"/>
             <span class="field-info">?<span class="info-text">City is not required. Use only latin letters with word separation hyphens or white space.</span></span>
           </div>
@@ -89,7 +89,7 @@
         <div class="field-wrapper">
           <label for="address">Address :</label>
           <div>
-            <input type="text" class="form-control" name="address" id="address" value="{{userData.address}}" ngModel
+            <input type="text" class="form-control" name="address" id="address" value="{{userData?.address}}" ngModel
                    #address="ngModel" pattern="[A-Za-z0-9_\-\s]+"/>
             <span class="field-info">?<span class="info-text">Address is not required. Use only latin letters and digits with word separation hyphens or white space.</span></span>
           </div>
@@ -105,7 +105,7 @@
         <div class="field-wrapper">
           <label for="phone">Phone number:</label>
           <div>
-            <input type="text" id="phone" name="phone" class="form-control" value="{{userData.phone}}" ngModel
+            <input type="text" id="phone" name="phone" class="form-control" value="{{userData?.phone}}" ngModel
                    minlength="4" maxlength="21" pattern="^[+]?\d+$" #phone="ngModel"/>
 
             <span class="field-info">?
@@ -132,7 +132,7 @@
         <div class="field-wrapper">
           <label for="email">Email:</label>
           <div>
-            <input type="email" class="form-control" name="email" id="email" value="{{userData.email}}" appEmail
+            <input type="email" class="form-control" name="email" id="email" value="{{userData?.email}}" appEmail
                    ngModel
                    #email="ngModel" required/>
             <span class="field-info">?<span class="info-text">Field must contain valid email address</span></span>

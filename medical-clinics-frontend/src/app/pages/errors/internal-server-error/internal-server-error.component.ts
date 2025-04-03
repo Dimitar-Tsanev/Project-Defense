@@ -5,7 +5,6 @@ import {RouterLink} from "@angular/router";
 @Component({
   selector: 'app-internal-server-error',
     imports: [
-        NgOptimizedImage,
         RouterLink
     ],
   templateUrl: './internal-server-error.component.html',

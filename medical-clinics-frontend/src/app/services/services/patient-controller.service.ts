@@ -165,7 +165,7 @@ export class PatientControllerService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  findPatient(params?: FindPatient$Params, context?: HttpContext): Observable<Array<PatientInfo>> {
+  findPatient(p0: string, p1: string, p2: string, p3: string, params?: FindPatient$Params, context?: HttpContext): Observable<Array<PatientInfo>> {
     return this.findPatient$Response(params, context).pipe(
       map((r: StrictHttpResponse<Array<PatientInfo>>): Array<PatientInfo> => r.body)
     );

@@ -3,8 +3,10 @@
     <app-loader/>
 
   } @else {
-    <div class="details-wrapper shadow-md shadow-blue-200 rounded-md overflow-hidden">
-      <img class="float-left" [src]="clinic?.pictureUrl" alt="clinic-picture">
+    <div class="details-wrapper shadow-md shadow-blue-200 rounded-md">
+      <div class="overflow-hidden">
+        <img class="float-left" [src]="clinic?.pictureUrl" alt="clinic-picture">
+      </div>
       <div class="text-container">
         <h5> City: {{ clinic?.city }}</h5>
         <p> Street: {{ clinic?.address }}</p>

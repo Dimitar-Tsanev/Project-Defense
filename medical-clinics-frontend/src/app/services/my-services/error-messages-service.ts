@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
 @Injectable({
@@ -9,6 +9,6 @@ export class ErrorMessagesService {
   public error$ = this.error$$.asObservable();
 
   solve(err: any) {
-    this.error$$.next(err)
+    this.error$$.next(err);
   }
 }

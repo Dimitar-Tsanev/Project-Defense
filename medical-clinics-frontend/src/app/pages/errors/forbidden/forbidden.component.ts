@@ -5,7 +5,6 @@ import {RouterLink} from "@angular/router";
 @Component({
   selector: 'app-forbidden',
     imports: [
-        NgOptimizedImage,
         RouterLink
     ],
   templateUrl: './forbidden.component.html',
