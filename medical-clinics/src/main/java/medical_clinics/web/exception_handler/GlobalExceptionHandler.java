@@ -87,8 +87,13 @@ public class GlobalExceptionHandler {
         return buildResponseError ( HttpStatus.UNAUTHORIZED, ex );
     }
 
-    @ExceptionHandler({AuthorizationDeniedException.class, LockedException.class })
+    @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ExceptionResponse> handleException ( AuthorizationDeniedException e ) {
+        return buildResponseError ( HttpStatus.FORBIDDEN, e );
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ExceptionResponse> handleException ( LockedException e ) {
         return buildResponseError ( HttpStatus.FORBIDDEN, e );
     }
 
