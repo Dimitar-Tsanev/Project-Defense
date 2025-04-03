@@ -41,7 +41,6 @@ public class Note {
 
     private String diagnosisCode;
 
-    @Basic(optional = false)
     private String chiefComplaint;
 
     @Basic(optional = false)
