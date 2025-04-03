@@ -1,5 +1,23 @@
 table td{
   border: none;
+}
+table, table tr{
+  border: 2px solid #ffffff;
+}
+table{
+  max-width: 10rem;
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0;
+}
+
+.schedules-container{
   display: flex;
   flex-direction: row;
+}
+.unavailable{
+  background: #5f859c;
+}
+span{
+  display: block;
 }

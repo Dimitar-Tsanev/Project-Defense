@@ -21,24 +21,26 @@
         <p>Please try someone else.</p>
 
       } @else {
-        @for (schedule of schedules; track $index) {
-          <table>
-            <th>{{ schedule.date }}</th>
-            @for (timeslot of schedule.schedule; track $index) {
-              @if (timeslot.status === 'FREE') {
-                <button class="action-button" (click)="reserve(timeslot.timeslotId)">
+        <div class="schedules-container">
+          @for (schedule of schedules; track $index) {
+            <table>
+              <th>{{ schedule.date }}</th>
+              @for (timeslot of schedule.schedule; track $index) {
+                @if (timeslot.status === 'FREE') {
                   <tr>
-                    <td>{{ timeslot.startTime }} <span> Click to reserve.</span></td>
+                    <button class="action-button" (click)="reserve(timeslot.timeslotId)">
+                      <td>{{ timeslot.startTime }} <span> Click to reserve.</span></td>
+                    </button>
                   </tr>
-                </button>
-              } @else {
-                <tr class="unavailable">
-                  <td>{{ timeslot.startTime }}</td>
-                </tr>
+                } @else {
+                  <tr class="unavailable">
+                    <td>{{ timeslot.startTime }}</td>
+                  </tr>
+                }
               }
-            }
-          </table>
-        }
+            </table>
+          }
+        </div>
       }
     } @else {
       <p>To see physician schedules <a routerLink="/login">Login</a> if you don't have account yet <a
