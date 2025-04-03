@@ -1,2 +1,49 @@
-<p>{{ physician?.firstName }}</p>
-<p>{{ physician?.lastName }}</p>
+<div class="main-container">
+  @if (isLoading) {
+    <app-loader/>
+
+  } @else {
+    <div class="details-wrapper shadow-md shadow-blue-200 rounded-md overflow-hidden">
+      <div class="overflow-hidden">
+        <img class="float-left" [src]="physician?.pictureUrl" alt="clinic-picture">
+      </div>
+      <div class="text-container">
+        <h5> Name: {{ physician?.firstName }} {{ physician?.lastName }}, {{ physician?.abbreviation }}</h5>
+        <p> Speciality: {{ physician?.specialty }}</p>
+        <p> Clinic: {{ physician?.workplace }}</p>
+        <p> Description: {{ physician?.description }}</p>
+      </div>
+    </div>
+
+    @if (isAuthenticated) {
+      @if (schedules.length === 0) {
+        <p> This physician dont have present or future schedules!</p>
+        <p>Please try someone else.</p>
+
+      } @else {
+        @for (schedule of schedules; track $index) {
+          <table>
+            <th>{{ schedule.date }}</th>
+            @for (timeslot of schedule.schedule; track $index) {
+              @if (timeslot.status === 'FREE') {
+                <button class="action-button" (click)="reserve(timeslot.timeslotId)">
+                  <tr>
+                    <td>{{ timeslot.startTime }} <span> Click to reserve.</span></td>
+                  </tr>
+                </button>
+              } @else {
+                <tr class="unavailable">
+                  <td>{{ timeslot.startTime }}</td>
+                </tr>
+              }
+            }
+          </table>
+        }
+      }
+    } @else {
+      <p>To see physician schedules <a routerLink="/login">Login</a> if you don't have account yet <a
+        routerLink="/register">Register</a></p>
+    }
+  }
+</div>
+
