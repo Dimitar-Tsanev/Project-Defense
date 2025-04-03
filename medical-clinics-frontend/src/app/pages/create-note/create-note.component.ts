@@ -6,8 +6,6 @@ import {MedicalRecordControllerService} from '../../services/services/medical-re
 import {NewNoteRequest} from '../../services/models/new-note-request';
 import {PatientControllerService} from '../../services/services/patient-controller.service';
 import {PatientInfo} from '../../services/models/patient-info';
-import {ErrorMessagesComponent} from '../../common/error-messages/error-messages.component';
-import {ErrorMessagesService} from '../../services/my-services/error-messages-service';
 import {HttpClient, HttpParams} from '@angular/common/http';
 
 @Component({
