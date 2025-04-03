@@ -1,0 +1,5 @@
+table td{
+  border: none;
+  display: flex;
+  flex-direction: row;
+}

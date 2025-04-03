@@ -1,0 +1,95 @@
+<div class="main-container">
+  @if (schedules.length !== 0) {
+    @for (schedule of schedules; track $index) {
+      <div class="schedule-container">
+        <p> Schedule date: {{ schedule.date }}</p>
+        <p>Initial time: {{ schedule.startTime }}</p>
+        <p>End of the schedule: {{ schedule.endTime }}</p>
+        <p>Timeslots interval: {{ schedule.timeSlotInterval }}</p>
+        <button class="action-button profile-inactive" (click)="removeSchedule($index)">Remove</button>
+      </div>
+    }
+    <button class="action-button" (click)="submitSchedule()">Generate all</button>
+  }
+  <div class="form-container">
+    <h2>Create schedule</h2>
+    <form class="form" #form="ngForm" (ngSubmit)="pushSchedule(form)">
+      <fieldset>
+        <div class="field-wrapper">
+          <label for="date">Select date:</label>
+          <div>
+            <input type="date" class="form-control" name="date" id="date" ngModel
+                   #date="ngModel" required/>
+            <span class="field-info">?<span class="info-text">Required future date</span></span>
+          </div>
+        </div>
+
+        @if (date?.touched) {
+          <div>
+            @if (date?.errors?.['required']) {
+              <p class="error">Required future date!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="startTime">Start time:</label>
+          <div>
+            <input type="time" id="startTime" name="startTime" class="form-control" ngModel
+                   required #startTime="ngModel"/>
+            <span class="field-info">?<span class="info-text">Required start time!</span></span>
+          </div>
+        </div>
+
+        @if (startTime?.touched) {
+          <div>
+            @if (startTime?.errors?.['required']) {
+              <p class="error">Required start time!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="endTime">End time:</label>
+          <div>
+            <input type="time" id="endTime" name="endTime" class="form-control" ngModel
+                   required #endTime="ngModel"/>
+            <span class="field-info">?<span class="info-text">Required start time!</span></span>
+          </div>
+        </div>
+
+        @if (endTime?.touched) {
+          <div>
+            @if (endTime?.errors?.['required']) {
+              <p class="error">Required start time!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="timeSlotInterval">Timeslot interval:</label>
+          <div>
+            <input type="number" id="timeSlotInterval" name="timeSlotInterval" class="form-control" ngModel
+                   required min="15" max="60" #timeSlotInterval="ngModel"/>
+            <span class="field-info">?<span class="info-text">Interval is required must be between 15 and 60 min.</span>
+            </span>
+          </div>
+        </div>
+
+        @if (timeSlotInterval?.touched) {
+          <div>
+            @if (timeSlotInterval?.errors?.['required']) {
+              <p class="error">Password is required!</p>
+            }
+            @if (timeSlotInterval?.errors?.['min'] || timeSlotInterval?.errors?.['max']) {
+              <p class="error">Interval is must be between 15 and 60 min.</p>
+            }
+          </div>
+        }
+      </fieldset>
+
+      <button [disabled]="form.invalid" class="action-button">Add schedule</button>
+    </form>
+  </div>
+</div>
+

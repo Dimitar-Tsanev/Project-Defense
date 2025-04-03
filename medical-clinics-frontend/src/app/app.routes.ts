@@ -19,6 +19,7 @@ import {ErrorMessagesComponent} from './common/error-messages/error-messages.com
 import {ForbiddenComponent} from './pages/errors/forbidden/forbidden.component';
 import {InternalServerErrorComponent} from './pages/errors/internal-server-error/internal-server-error.component';
 import {CreateNoteComponent} from './pages/create-note/create-note.component';
+import {AddScheduleComponent} from './pages/add-schedule/add-schedule.component';
 
 export const routes: Routes = [
   {path: '', redirectTo: '/clinics', pathMatch: 'full'},
@@ -62,7 +63,13 @@ export const routes: Routes = [
   {path: 'my-medical-record', component: MedicalRecordComponent, canActivate: [AuthGuard]},
   {path: 'physician-notes', component: PhysicianNotesComponent, canActivate: [CredentialsGuard]},
   {path: 'create-note', component: CreateNoteComponent, canActivate: [CredentialsGuard]},
+  {
+    path: 'schedule',
+    children: [
+      {path: 'new', component: AddScheduleComponent, canActivate: [CredentialsGuard]},
 
+    ]
+  },
   { path: 'errors', component: ErrorMessagesComponent },
   { path: 'not-found', component: PageNotFoundComponent },
   { path: 'forbidden', component: ForbiddenComponent },
