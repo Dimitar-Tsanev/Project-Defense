@@ -17,8 +17,4 @@ public class UserProperty {
     private Role defaultRole;
 
     private UserStatus status;
-
-    private String adminMail;
-
-    private String adminPassword;
 }

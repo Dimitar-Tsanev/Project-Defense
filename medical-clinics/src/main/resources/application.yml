@@ -21,8 +21,14 @@ user:
   account:
     defaultRole: PATIENT
     status: ACTIVE
-    adminMail: admin@admin.com
-    adminPassword: 1Ae#92cO.gK
+
+admin:
+  default:
+    mail: admin@admin.com
+    password: 1Ae#92cO.gK
+    firstName: Admin
+    lastName: Admin
+    phone:
 
 app:
   jwt:
