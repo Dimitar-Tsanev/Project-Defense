@@ -1,6 +1,5 @@
 package medical_clinics.user_account.service;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import medical_clinics.shared.exception.PersonalInformationDontMatchException;
@@ -10,6 +9,7 @@ import medical_clinics.user_account.mapper.UserAccountMapper;
 import medical_clinics.user_account.model.Role;
 import medical_clinics.user_account.model.UserAccount;
 import medical_clinics.user_account.model.UserStatus;
+import medical_clinics.user_account.property.InitializedAdmin;
 import medical_clinics.user_account.property.UserProperty;
 import medical_clinics.user_account.repository.UserAccountRepository;
 import medical_clinics.web.dto.RegisterRequest;
@@ -18,6 +18,7 @@ import medical_clinics.web.dto.events.*;
 import medical_clinics.web.dto.response.AccountInformation;
 import medical_clinics.web.dto.response.UserDataResponse;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,18 +37,24 @@ public class UserAccountService implements UserDetailsService {
     private final ApplicationEventPublisher eventPublisher;
     private final PasswordEncoder passwordEncoder;
     private final UserProperty userProperty;
+    private final InitializedAdmin defaultAdmin;
 
-    @PostConstruct
-    private void initAdmin () {
+    @EventListener(ContextRefreshedEvent.class)
+    @Transactional
+    void initAdmin () {
         if ( !userAccountRepository.existsByRole ( Role.ADMIN ) ) {
             UserAccount admin = UserAccount.builder ( )
                     .role ( Role.ADMIN )
-                    .email ( userProperty.getAdminMail ( ) )
-                    .password ( passwordEncoder.encode ( userProperty.getAdminPassword ( ) ) )
+                    .email ( defaultAdmin.getMail () )
+                    .password ( passwordEncoder.encode ( defaultAdmin.getPassword ( ) ) )
                     .status ( UserStatus.ACTIVE )
                     .build ( );
 
-            userAccountRepository.save ( admin );
+            UserAccount adminAccount = userAccountRepository.save ( admin );
+
+            publishNewUserAccountEvent (
+                    adminAccount, defaultAdmin.getFirstName ( ), defaultAdmin.getLastName ( ), defaultAdmin.getPhone ( )
+            );
         }
     }
 
@@ -75,12 +82,9 @@ public class UserAccountService implements UserDetailsService {
                 UserAccountMapper.registrationMapper ( registerRequest, passwordEncoder, userProperty )
         );
 
-        NewUserAccountEvent newUserAccountEvent = UserAccountMapper.mapToNewUserAccountEvent (
-                userAccount, registerRequest.getFirstName ( ),
+        publishNewUserAccountEvent ( userAccount, registerRequest.getFirstName ( ),
                 registerRequest.getLastName ( ), registerRequest.getPhone ( )
         );
-
-        eventPublisher.publishEvent ( newUserAccountEvent );
     }
 
     public UserDataResponse getAccountData ( String email ) {
@@ -208,6 +212,15 @@ public class UserAccountService implements UserDetailsService {
         if ( account.isPresent ( ) && !newEmail.equals ( oldEmail ) ) {
             changeAccountEmail ( account.get ( ), newEmail );
         }
+    }
+
+    void publishNewUserAccountEvent ( UserAccount userAccount, String firstName, String lastName, String phone ) {
+        NewUserAccountEvent newUserAccountEvent = UserAccountMapper.mapToNewUserAccountEvent (
+                userAccount, firstName,
+                lastName, phone
+        );
+
+        eventPublisher.publishEvent ( newUserAccountEvent );
     }
 
     private void promoteToAdmin ( UserAccount userAccount ) {
