@@ -14,9 +14,8 @@ export const appInterceptor: HttpInterceptorFn = (req, next) => {
     const token = authService.getToken();
 
     req = req.clone({
-      headers: req.headers.set('Authorization',`Bearer ${token}` )
+      headers: req.headers.set('Authorization', `Bearer ${token}`)
     });
-    console.log(req);
   }
 
   const router = inject(Router);
@@ -24,18 +23,14 @@ export const appInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((err) => {
-      if (err.status === 401) {
-        router.navigate(['/login']);
-      }
-      if(err.status === 403) {
+      if (err.status === 403) {
         router.navigate(['/forbidden']);
-      }
-      if(err.status === 500) {
+
+      }else if (err.status === 500) {
         router.navigate(['/internal-server-error']);
-      }
-      if(err.status === 404 || err.status === 400 || err.status === 409) {
+
+      }else{
         errorService.solve(err);
-        router.navigate(['/errors']);
       }
       return [err];
     })

@@ -15,14 +15,17 @@ export class ErrorMessagesComponent implements OnInit {
 
   ngOnInit(): void {
     this.errorService.error$.subscribe((err: any) => {
+      if (err == null) {
+        return;
+      }
+
       let {error}: any = err;
 
       if (error.messages) {
         for (let message of error.messages) {
           this.errorMessages.push(message);
-
         }
-        setTimeout(()=>{
+        setTimeout(() => {
           this.errorMessages = []
         }, 1000 * 12);
       }

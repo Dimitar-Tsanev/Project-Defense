@@ -15,7 +15,6 @@ import {MedicalRecordComponent} from './pages/medical-record/medical-record.comp
 import {CredentialsGuard} from './guard/Credentials.guard';
 import {PhysicianNotesComponent} from './pages/physician-notes/physician-notes.component';
 import {PageNotFoundComponent} from './pages/errors/page-not-found/page-not-found.component';
-import {ErrorMessagesComponent} from './common/error-messages/error-messages.component';
 import {ForbiddenComponent} from './pages/errors/forbidden/forbidden.component';
 import {InternalServerErrorComponent} from './pages/errors/internal-server-error/internal-server-error.component';
 import {CreateNoteComponent} from './pages/create-note/create-note.component';
@@ -70,7 +69,6 @@ export const routes: Routes = [
 
     ]
   },
-  { path: 'errors', component: ErrorMessagesComponent },
   { path: 'not-found', component: PageNotFoundComponent },
   { path: 'forbidden', component: ForbiddenComponent },
   { path: 'internal-server-error', component: InternalServerErrorComponent },
