@@ -43,7 +43,6 @@ export class AddScheduleComponent implements OnInit {
       endTime: newSchedule.value.endTime + ':00',
       timeSlotInterval: newSchedule.value.timeSlotInterval
     }
-    console.log(schedule);
     this.schedules.push(schedule);
   }
 
