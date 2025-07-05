@@ -21,7 +21,17 @@ import {PatientInfo} from '../../services/models/patient-info';
 })
 export class EditProfileComponent implements OnInit {
   accountId: string = '';
-  userData: PatientInfo | undefined = undefined
+  userData: PatientInfo = {
+    address: '',
+    city: '',
+    country: '',
+    email: '',
+    firstName: '',
+    identificationCode: '',
+    lastName: '',
+    patientId: '',
+    phone: '',
+  }
 
   constructor(
     private route: ActivatedRoute,
