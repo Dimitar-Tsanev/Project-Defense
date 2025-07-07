@@ -1,0 +1,220 @@
+<div class="main-container">
+  <div class="add-clinic-form-container">
+    <h2>Add clinic</h2>
+
+    <form #form="ngForm" (ngSubmit)="addClinic(form)">
+      <div class="add-clinic form-div">
+        <fieldset>
+          <div class="field-wrapper">
+            <label for="city">City:</label>
+            <div>
+              <input type="text" id="city" name="city" class="form-control" ngModel required #city="ngModel"/>
+              <span class="field-info">?<span class="info-text">Field must not been empty!</span></span>
+            </div>
+          </div>
+
+          @if (city?.touched) {
+            <div>
+              @if (city?.errors?.['required']) {
+                <p class="error">City is required!</p>
+              }
+            </div>
+          }
+
+          <div class="field-wrapper">
+            <label for="address">Address:</label>
+            <div>
+              <input type="text" id="address" name="address" class="form-control" ngModel required
+                     #address="ngModel"/>
+              <span class="field-info">?<span class="info-text">Field must not been empty!</span></span>
+            </div>
+          </div>
+
+          @if (address?.touched) {
+            <div>
+              @if (address?.errors?.['required']) {
+                <p class="error">Address is required!</p>
+              }
+            </div>
+          }
+
+          <div class="field-wrapper">
+            <label for="description">Description:</label>
+            <div>
+             <textarea rows="5" cols="20" type="text" class="form-control" name="description" id="description" ngModel
+                       required
+                       #description="ngModel">
+             </textarea>
+              <span class="field-info">?<span class="info-text">Field must not been empty!</span></span>
+            </div>
+          </div>
+
+          @if (description?.touched) {
+            <div>
+              @if (description?.errors?.['required']) {
+                <p class="error">Description is required!</p>
+              }
+            </div>
+          }
+
+          <div class="field-wrapper">
+            <label for="phoneNumber">Phone number:</label>
+            <div>
+              <input type="text" class="form-control" name="phoneNumber" id="phoneNumber" ngModel required
+                     #phoneNumber="ngModel" minlength="4" maxlength="21" pattern="^[+]?\d+$"/>
+              <span class="field-info">?
+              <span class="info-text">
+                Phone number is required. Phone number may or may not start with + and contain only digits!
+              </span>
+            </span>
+            </div>
+          </div>
+
+          @if (phoneNumber?.touched) {
+            <div>
+              @if (phoneNumber?.errors?.['required']) {
+                <p class="error">Phone number is required!</p>
+              }
+              @if (phoneNumber?.errors?.['pattern']) {
+                <p class="error"> Phone number may or may not start with + and contain only digits.</p>
+              }
+              @if (phoneNumber?.errors?.['minlength'] || phoneNumber?.errors?.['maxlength']) {
+                <p class="error">Phone number must be between 4 and 21 characters!</p>
+              }
+            </div>
+          }
+
+          <div class="field-wrapper">
+            <label for="identificationNumber">Clinic identification number :</label>
+            <div>
+              <input type="text" class="form-control" name="identificationNumber" id="identificationNumber" ngModel
+                     #identificationNumber="ngModel" required/>
+              <span class="field-info">?
+              <span class="info-text">Identification number of the clinic is required.</span>
+            </span>
+            </div>
+          </div>
+
+          @if (identificationNumber?.touched) {
+            <div>
+              @if (identificationNumber?.errors?.['required']) {
+                <p class="error">Identification number of the clinic is required.</p>
+              }
+            </div>
+          }
+
+          <div class="field-wrapper">
+            <label for="pictureUrl">Link for clinic picture:</label>
+            <div>
+              <input type="url" id="pictureUrl" name="pictureUrl" class="form-control" ngModel required
+                     #pictureUrl="ngModel" appUrl/>
+              <span class="field-info">?
+              <span class="info-text">Picture of clinic is required. Valid link(url) of image.</span>
+            </span>
+            </div>
+          </div>
+
+          @if (pictureUrl?.touched) {
+            <div>
+              @if (pictureUrl?.errors?.['required']) {
+                <p class="error">Picture of clinic is required.</p>
+              }
+              @if (pictureUrl?.errors?.['urlValidator']) {
+                <p class="error">Valid link(url) of image.</p>
+              }
+            </div>
+          }
+        </fieldset>
+      </div>
+
+      @if (workdays.size > 0) {
+        <div class="workdays-container">
+          @for (workday of workdays.keys(); track $index) {
+            <div class="workday-container">
+              <p>{{ workday }}</p>
+              <p>{{ workdays.get(workday)?.startOfWorkingDay }}</p>
+              <p>{{ workdays.get(workday)?.endOfWorkingDay }}</p>
+              <button class="action-button profile-inactive" id="inactive"
+                      (click)="removeWorkday(workday.toString())">
+                Remove
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      @if (workdays.size < 7) {
+        <form #workDayForm="ngForm" (ngSubmit)="addWorkday(workDayForm)">
+          <div class="workday form-div">
+            <h2>Add workday</h2>
+            <fieldset>
+              <div class="field-wrapper">
+                <label for="dayName">Select day:</label>
+                <div>
+                  <select id="dayName" name="dayName" class="form-control" ngModel
+                          #dayName="ngModel" required>
+                    <option value="">SELECT DAY</option>
+                    @for (day of days; track $index) {
+                      <option [value]="day">{{ day }}</option>
+                    }
+                  </select>
+                  <span class="field-info">?<span class="info-text">Required day of week!</span></span>
+                </div>
+              </div>
+
+              @if ((dayName?.touched && workdays.has(dayName.value)) || (dayName?.touched && dayName.value === '')) {
+                <div>
+                  @if (dayName.value === '') {
+                    <p class="error">Please select day!</p>
+                  }
+                  @if (workdays.has(dayName.value)) {
+                    <p class="error">Day of week already exists!</p>
+                  }
+                </div>
+              }
+
+              <div class="field-wrapper">
+                <label for="startOfWorkingDay">Start time:</label>
+                <div>
+                  <input type="time" id="startOfWorkingDay" name="startOfWorkingDay" class="form-control" ngModel
+                         required #startOfWorkingDay="ngModel"/>
+                  <span class="field-info">?<span class="info-text">Required start time!</span></span>
+                </div>
+              </div>
+
+              @if (startOfWorkingDay?.touched) {
+                <div>
+                  @if (startOfWorkingDay?.errors?.['required']) {
+                    <p class="error">Required start time!</p>
+                  }
+                </div>
+              }
+
+              <div class="field-wrapper">
+                <label for="endOfWorkingDay">End time:</label>
+                <div>
+                  <input type="time" id="endOfWorkingDay" name="endOfWorkingDay" class="form-control" ngModel
+                         required #endOfWorkingDay="ngModel"/>
+                  <span class="field-info">?<span class="info-text">Required end time!</span></span>
+                </div>
+              </div>
+
+              @if (endOfWorkingDay?.touched) {
+                <div>
+                  @if (endOfWorkingDay?.errors?.['required']) {
+                    <p class="error">Required end time!</p>
+                  }
+                </div>
+              }
+            </fieldset>
+
+            <button [disabled]="workDayForm.invalid || workdays.has(dayName.value)" class="action-button">Add workday
+            </button>
+          </div>
+        </form>
+      }
+
+      <button [disabled]="form.invalid || workdays.size === 0" class="submit">Submit</button>
+    </form>
+  </div>
+</div>

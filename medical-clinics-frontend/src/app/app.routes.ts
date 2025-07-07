@@ -19,6 +19,7 @@ import {ForbiddenComponent} from './pages/errors/forbidden/forbidden.component';
 import {InternalServerErrorComponent} from './pages/errors/internal-server-error/internal-server-error.component';
 import {CreateNoteComponent} from './pages/create-note/create-note.component';
 import {AddScheduleComponent} from './pages/add-schedule/add-schedule.component';
+import {AddClinicComponent} from './pages/add-clinic/add-clinic.component';
 
 export const routes: Routes = [
   {path: '', redirectTo: '/clinics', pathMatch: 'full'},
@@ -69,6 +70,7 @@ export const routes: Routes = [
 
     ]
   },
+  { path: 'add-clinic', component: AddClinicComponent, canActivate: [AuthGuard]},
   { path: 'not-found', component: PageNotFoundComponent },
   { path: 'forbidden', component: ForbiddenComponent },
   { path: 'internal-server-error', component: InternalServerErrorComponent },

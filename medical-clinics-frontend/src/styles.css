@@ -47,7 +47,7 @@ input:focus, textarea:focus {
   outline: none;
 }
 
-input, textarea {
+input, textarea, select {
   border: 2px solid #5f859c;
   border-radius: 5px;
   padding: 0.1rem 0.5rem;
