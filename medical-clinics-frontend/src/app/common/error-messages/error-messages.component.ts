@@ -20,15 +20,26 @@ export class ErrorMessagesComponent implements OnInit {
       }
 
       let {error}: any = err;
-
-      if (error.messages) {
-        for (let message of error.messages) {
-          this.errorMessages.push(message);
-        }
-        setTimeout(() => {
-          this.errorMessages = []
-        }, 1000 * 12);
-      }
+      this.parseMessages(error);
+      this.setTimeout()
     });
+  }
+
+  parseMessages(error: any) {
+    if (error.messages) {
+      for (let message of error.messages) {
+        this.errorMessages.push(message);
+      }
+
+    } else {
+      let {messages} = JSON.parse(error)
+      this.errorMessages = messages;
+    }
+  }
+
+  setTimeout() {
+    setTimeout(() => {
+      this.errorMessages = []
+    }, 1000 * 12);
   }
 }
