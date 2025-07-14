@@ -1,14 +1,20 @@
 <div class="main-container">
   <div class="add-clinic-form-container">
-    <h2>Add clinic</h2>
+    @if (clinicEdit) {
+      <h2>Edit clinic</h2>
 
-    <form #form="ngForm" (ngSubmit)="addClinic(form)">
+    } @else {
+      <h2>Add clinic</h2>
+    }
+
+    <form #form="ngForm" (ngSubmit)="submit(form)">
       <div class="add-clinic form-div">
         <fieldset>
           <div class="field-wrapper">
             <label for="city">City:</label>
             <div>
-              <input type="text" id="city" name="city" class="form-control" ngModel required #city="ngModel"/>
+              <input type="text" id="city" name="city" class="form-control" [(ngModel)]="clinic.city" required
+                     #city="ngModel"/>
               <span class="field-info">?<span class="info-text">Field must not been empty!</span></span>
             </div>
           </div>
@@ -24,7 +30,7 @@
           <div class="field-wrapper">
             <label for="address">Address:</label>
             <div>
-              <input type="text" id="address" name="address" class="form-control" ngModel required
+              <input type="text" id="address" name="address" class="form-control" [(ngModel)]="clinic.address" required
                      #address="ngModel"/>
               <span class="field-info">?<span class="info-text">Field must not been empty!</span></span>
             </div>
@@ -41,9 +47,8 @@
           <div class="field-wrapper">
             <label for="description">Description:</label>
             <div>
-             <textarea rows="5" cols="20" type="text" class="form-control" name="description" id="description" ngModel
-                       required
-                       #description="ngModel">
+             <textarea rows="5" cols="20" type="text" class="form-control" name="description" id="description"
+                       [(ngModel)]="clinic.description" required #description="ngModel">
              </textarea>
               <span class="field-info">?<span class="info-text">Field must not been empty!</span></span>
             </div>
@@ -60,8 +65,9 @@
           <div class="field-wrapper">
             <label for="phoneNumber">Phone number:</label>
             <div>
-              <input type="text" class="form-control" name="phoneNumber" id="phoneNumber" ngModel required
-                     #phoneNumber="ngModel" minlength="4" maxlength="21" pattern="^[+]?\d+$"/>
+              <input type="text" class="form-control" name="phoneNumber" id="phoneNumber"
+                     [(ngModel)]="clinic.phoneNumber" #phoneNumber="ngModel"
+                     required minlength="4" maxlength="21" pattern="^[+]?\d+$"/>
               <span class="field-info">?
               <span class="info-text">
                 Phone number is required. Phone number may or may not start with + and contain only digits!
@@ -87,8 +93,8 @@
           <div class="field-wrapper">
             <label for="identificationNumber">Clinic identification number :</label>
             <div>
-              <input type="text" class="form-control" name="identificationNumber" id="identificationNumber" ngModel
-                     #identificationNumber="ngModel" required/>
+              <input type="text" class="form-control" name="identificationNumber" id="identificationNumber"
+                     [(ngModel)]="clinic.identificationNumber" #identificationNumber="ngModel" required/>
               <span class="field-info">?
               <span class="info-text">Identification number of the clinic is required.</span>
             </span>
@@ -106,11 +112,14 @@
           <div class="field-wrapper">
             <label for="pictureUrl">Link for clinic picture:</label>
             <div>
-              <input type="url" id="pictureUrl" name="pictureUrl" class="form-control" ngModel required
-                     #pictureUrl="ngModel" appUrl/>
+              <input type="url" id="pictureUrl" name="pictureUrl" class="form-control" [(ngModel)]="clinic.pictureUrl"
+                     required #pictureUrl="ngModel" appUrl (change)="showImage(form)"/>
               <span class="field-info">?
               <span class="info-text">Picture of clinic is required. Valid link(url) of image.</span>
             </span>
+              @if (clinic.pictureUrl !== '') {
+                <img class="input-image" src="{{clinic.pictureUrl}}" alt="clinic-input-image">
+              }
             </div>
           </div>
 

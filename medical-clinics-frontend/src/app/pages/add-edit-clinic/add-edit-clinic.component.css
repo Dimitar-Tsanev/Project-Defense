@@ -76,6 +76,11 @@ p.error {
   margin: 0.5rem;
 }
 
+.input-image{
+  max-width: 13rem;
+  margin: 1rem;
+}
+
 .workday-container p {
   padding: 1rem;
 }
