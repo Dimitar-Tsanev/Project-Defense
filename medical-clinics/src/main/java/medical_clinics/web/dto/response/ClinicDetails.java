@@ -28,6 +28,8 @@ public class ClinicDetails {
 
     private String phoneNumber;
 
+    private String identificationNumber;
+
     private Collection<WorkDayDto> workingDays;
 
     private Collection<SpecialityDto> specialties;

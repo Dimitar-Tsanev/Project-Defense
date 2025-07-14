@@ -28,6 +28,7 @@ public class ClinicMapper {
                 .address ( clinic.getAddress ( ) )
                 .pictureUrl ( clinic.getPictureUrl ( ) )
                 .phoneNumber ( clinic.getPhoneNumber ( ) )
+                .identificationNumber ( clinic.getIdentificationNumber ( ) )
                 .description ( clinic.getDescription ( ) )
                 .workingDays (
                         clinic.getWorkingDays ( ).stream ( ).map ( WorkDayMapper::mapToDto ).collect ( Collectors.toSet ( ) )

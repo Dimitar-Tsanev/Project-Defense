@@ -10,6 +10,7 @@ export interface ClinicDetails {
   description?: string;
   id?: string;
   phoneNumber?: string;
+  identificationNumber: string;
   pictureUrl?: string;
   specialties?: Array<SpecialityDto>;
   workingDays?: Array<WorkDayDto>;
