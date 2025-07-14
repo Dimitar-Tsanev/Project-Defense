@@ -19,7 +19,8 @@ import {ForbiddenComponent} from './pages/errors/forbidden/forbidden.component';
 import {InternalServerErrorComponent} from './pages/errors/internal-server-error/internal-server-error.component';
 import {CreateNoteComponent} from './pages/create-note/create-note.component';
 import {AddScheduleComponent} from './pages/add-schedule/add-schedule.component';
-import {AddClinicComponent} from './pages/add-clinic/add-clinic.component';
+import {AddEditClinicComponent} from './pages/add-edit-clinic/add-edit-clinic.component';
+import {AddPhysicianComponent} from './pages/add-physician/add-physician.component';
 
 export const routes: Routes = [
   {path: '', redirectTo: '/clinics', pathMatch: 'full'},
@@ -70,9 +71,17 @@ export const routes: Routes = [
 
     ]
   },
-  { path: 'add-clinic', component: AddClinicComponent, canActivate: [AuthGuard]},
-  { path: 'not-found', component: PageNotFoundComponent },
-  { path: 'forbidden', component: ForbiddenComponent },
-  { path: 'internal-server-error', component: InternalServerErrorComponent },
-  { path: '**', redirectTo: '/not-found'},
+  {path: 'add-edit-clinic', component: AddEditClinicComponent, canActivate: [AdminGuard]},
+  {
+    path: 'add-edit-clinic',
+    component: AddEditClinicComponent,
+    children: [
+      {path: ':clinicId', component: AddEditClinicComponent, canActivate: [AdminGuard]},
+    ],
+  },
+  {path: 'add-physician', component: AddPhysicianComponent, canActivate: [AdminGuard]},
+  {path: 'not-found', component: PageNotFoundComponent},
+  {path: 'forbidden', component: ForbiddenComponent},
+  {path: 'internal-server-error', component: InternalServerErrorComponent},
+  {path: '**', redirectTo: '/not-found'},
 ];
