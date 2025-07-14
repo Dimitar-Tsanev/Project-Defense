@@ -1,18 +1,21 @@
 .text-container {
   padding: 0 0 0 1.5rem;
 }
-.main-container{
+
+.main-container {
   display: flex;
   justify-content: space-between;
   flex-direction: column;
 }
-.details-wrapper{
+
+.details-wrapper {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 2rem;
 }
+
 .workdays-container {
   padding: 0;
   box-sizing: border-box;
@@ -21,11 +24,17 @@
   margin: 0 auto;
   max-width: 70%;
 }
-.specialities-wrapper{
+
+.specialities-wrapper {
   align-items: center;
   justify-content: center;
 }
-.speciality-wrapper a,p{
+
+.admin-buttons button {
+  margin: 0 1rem 1rem;
+}
+
+.speciality-wrapper a, p {
   display: block;
   padding: 1.5rem;
   align-items: center;

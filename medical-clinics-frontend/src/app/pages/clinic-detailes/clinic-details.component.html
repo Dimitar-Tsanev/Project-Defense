@@ -12,6 +12,15 @@
         <p> Street: {{ clinic?.address }}</p>
         <p> Contact us: {{ clinic?.phoneNumber }}</p>
         <p> About the clinic: {{ clinic?.description }}</p>
+        @if (isAdmin) {
+          <div class="admin-buttons">
+            <button class="action-button profile-inactive" (click)="deleteClinic()">Delete</button>
+            <button class="action-button" (click)="editClinic()" >Edit</button>
+            <button class="action-button" [routerLink]="['/add-physician']"
+                    [queryParams]="{workplaceCity: clinic?.city, workplaceAddress: clinic?.address}">Add physician
+            </button>
+          </div>
+        }
       </div>
     </div>
 
