@@ -9,6 +9,9 @@ export function urlValidator(): ValidatorFn {
 }
 
 function isValidUrl(control:string) {
+  if (control === ''){
+    return true;
+  }
   try {
     new URL(control);
     return true;
