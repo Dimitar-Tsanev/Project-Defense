@@ -1,0 +1,175 @@
+<div class="main-container">
+  <div class="add-physician-form-container">
+    <h2>Add physician</h2>
+
+    <div class="clinic-info">
+      <h5>Workplace info:</h5>
+      <p>Clinic city: {{workplaceCity}}</p>
+      <p>Clinic address: {{workplaceAddress}}</p>
+    </div>
+
+    <form class="add-physician" #form="ngForm" (ngSubmit)="addPhysician(form)">
+      <fieldset>
+        <div class="field-wrapper">
+          <label for="specialty">Select specialty:</label>
+          <div>
+            <select id="specialty" name="specialty" class="form-control" ngModel
+                    #specialty="ngModel" required>
+              <option value="">SELECT SPECIALTY</option>
+              @for (specialty of specialties.keys(); track $index) {
+                <option [value]="specialties.get(specialty)">{{ specialty }}</option>
+              }
+            </select>
+            <span class="field-info">?<span class="info-text">Physician speciality is required</span></span>
+          </div>
+        </div>
+
+        @if (specialty?.touched) {
+          <div>
+            @if (specialty?.errors?.['required']) {
+              <p class="error">Physician speciality is required!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="email">Email:</label>
+          <div>
+            <input type="email" class="form-control" name="email" id="email" appEmail ngModel
+                  #email="ngModel" required/>
+            <span class="field-info">?<span class="info-text">Field must contain valid email address</span></span>
+          </div>
+        </div>
+
+        @if (email?.touched) {
+          <div>
+            @if (email?.errors?.['required']) {
+              <p class="error">Email is required!</p>
+            }
+            @if (email?.errors?.['emailValidator']) {
+              <p class="error">Email is not valid!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="firstName">First name:</label>
+          <div>
+            <input type="text" id="firstName" name="firstName" class="form-control" ngModel
+                   required minlength="2" maxlength="30" pattern="^[A-Za-z]+$" #firstName="ngModel"/>
+            <span class="field-info">?<span class="info-text">Name must be between 2 and 30 characters long and contain only latin letters!</span></span>
+          </div>
+        </div>
+
+        @if (firstName?.touched) {
+          <div>
+            @if (firstName?.errors?.['required']) {
+              <p class="error">First name is required!</p>
+            }
+            @if (firstName?.errors?.['minlength'] || firstName?.errors?.['maxlength']) {
+              <p class="error">First name must be between 2 and 30 letters long!</p>
+            }
+            @if (firstName?.errors?.['pattern']) {
+              <p class="error"> First name must contain only latin letters!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="lastName">Last name:</label>
+          <div>
+            <input type="text" id="lastName" name="lastName" class="form-control" ngModel
+                   required minlength="2" maxlength="30" pattern="^[A-Za-z]+$" #lastName="ngModel"/>
+            <span class="field-info">?<span class="info-text">Name must be between 2 and 30 characters long and contain only latin letters!</span></span>
+          </div>
+        </div>
+
+        @if (lastName?.touched) {
+          <div>
+            @if (lastName?.errors?.['required']) {
+              <p class="error">Last name is required!</p>
+            }
+            @if (lastName?.errors?.['minlength'] || lastName?.errors?.['maxlength']) {
+              <p class="error">Last name must be between 2 and 30 letters long!</p>
+            }
+            @if (lastName?.errors?.['pattern']) {
+              <p class="error"> Last name must contain only latin letters!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="abbreviation">Abbreviation:</label>
+          <div>
+            <input type="text" id="abbreviation" name="abbreviation" class="form-control"
+                   ngModel #abbreviation="ngModel"/>
+            <span class="field-info">?<span class="info-text">Physician abbreviation example - m.d. </span></span>
+          </div>
+        </div>
+
+        <div class="field-wrapper">
+          <label for="identificationNumber">Physician identification number :</label>
+          <div>
+            <input type="text" class="form-control" name="identificationNumber" id="identificationNumber"
+                   ngModel #identificationNumber="ngModel" required minlength="5" maxlength="18"
+                   pattern="^[0-9A-Z]+([\.\-]*[0-9A-Z]+)+$"/>
+            <span class="field-info">?
+              <span class="info-text">
+                Identification number is between 5 and 18 characters long and may contain only uppercase latin letters digits and separators (.-).
+              </span>
+            </span>
+          </div>
+        </div>
+
+        @if (identificationNumber?.touched) {
+          <div>
+            @if (identificationNumber?.errors?.['required']) {
+              <p class="error">Identification number is required.</p>
+            }
+            @if (identificationNumber?.errors?.['minlength'] || identificationNumber?.errors?.['maxlength']) {
+              <p class="error">Identification number must be between 5 and 18 characters long!</p>
+            }
+            @if (identificationNumber?.errors?.['pattern']) {
+              <p class="error">Identification number must contain only uppercase latin letters digits and separators (.-)!</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="pictureUrl">Picture link:</label>
+          <div>
+            <input type="url" id="pictureUrl" name="pictureUrl" class="form-control" ngModel
+                   #pictureUrl="ngModel" appUrl/>
+            <span class="field-info">?
+              <span class="info-text">Picture of physician. Valid link(url) of image.</span>
+            </span>
+            @if ( form.value.pictureUrl !== '' && !pictureUrl?.errors?.['urlValidator']) {
+              <img class="input-image" src="{{form.value.pictureUrl}}" alt="clinic-input-image">
+            }
+          </div>
+        </div>
+
+        @if (pictureUrl?.touched && pictureUrl.value !== '') {
+          <div>
+            @if (pictureUrl?.errors?.['urlValidator']) {
+              <p class="error">Valid link(url) of image.</p>
+            }
+          </div>
+        }
+
+        <div class="field-wrapper">
+          <label for="description">Description:</label>
+          <div>
+             <textarea rows="5" cols="20" type="text" class="form-control" name="description" id="description"
+                       ngModel #description="ngModel">
+             </textarea>
+            <span class="field-info">?<span class="info-text">Physician short description.</span></span>
+          </div>
+        </div>
+
+      </fieldset>
+
+      <button [disabled]="form.invalid" class="add-physician">Add physician</button>
+    </form>
+  </div>
+</div>
