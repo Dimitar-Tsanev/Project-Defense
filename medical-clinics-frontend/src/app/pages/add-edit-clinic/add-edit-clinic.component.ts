@@ -6,7 +6,6 @@ import {WorkDayDto} from '../../services/models/work-day-dto';
 import {CreateEditClinicRequest} from '../../services/models/create-edit-clinic-request';
 import {Router} from '@angular/router';
 import {ObjectTransferService} from '../../services/my-services/object-transfer-service';
-import {NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-add-clinic',
@@ -14,7 +13,6 @@ import {NgIf} from '@angular/common';
     FormsModule,
     ReactiveFormsModule,
     UrlDirective,
-    NgIf
   ],
   templateUrl: './add-edit-clinic.component.html',
   styleUrl: './add-edit-clinic.component.css'
